@@ -1,0 +1,607 @@
+---
+import '../styles/global.css';
+
+// Form Data Options
+const raasiOptions = ["Mesham", "Rishabam", "Mithunam", "Kadagam", "Simham", "Kanni", "Thulam", "Viruchigam", "Dhanusu", "Magaram", "Kumbam", "Meenam"];
+const lagnamOptions = ["Mesham", "Rishabam", "Mithunam", "Kadagam", "Simham", "Kanni", "Thulam", "Viruchigam", "Dhanusu", "Magaram", "Kumbam", "Meenam"];
+const struggleOptions = [
+  "Money / Debt / Income instability", "Health anxiety / Fear", "Relationship / Marriage stress", 
+  "Family pressure / Guilt", "Career confusion / No direction", "Overthinking / Analysis paralysis", 
+  "Anger / Frustration / Impatience", "Lack of confidence / Self-doubt", "Loneliness / Feeling misunderstood", 
+  "Emotional overwhelm / Sensitivity", "Commitment issues", "Work-life imbalance", "Feeling stuck / Life not moving"
+];
+const dailyLifeOptions = [
+  "Hectic — no fixed pattern", "Office job — structured hours", "Work from home", 
+  "Entrepreneur / Own business", "Homemaker / Family-focused", "Student", "Multiple roles / All of the above"
+];
+const goalOptions = [
+  "Financial stability / Independence", "Better relationships / Marriage harmony", "Career growth / Find purpose", 
+  "Inner peace / Stop overthinking", "Build confidence / Self-worth", "Recognition / Be valued", 
+  "Independence / Freedom", "Health improvement", "Build a business / Grow income", "Spiritual growth"
+];
+const spiritualOptions = [
+  "Hindu / Temple / Devotional", "Spiritual but not religious", "Practical — no spiritual angle needed", "Open to all / Mixed"
+];
+---
+
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Astroraja - Personalized Astrology Guidance Report</title>
+  <meta name="description" content="Discover what your Raasi, Lagnam, and Nakshatra reveal about your life path. Get a personalized astrology guidance report based on ancient spiritual wisdom." />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased bg-brand-navy-dark text-brand-cream relative selection:bg-brand-purple-light selection:text-white">
+
+  <!-- Fixed Background Glows -->
+  <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+    <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-brand-purple-dark/40 blur-[120px]"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-brand-navy/60 blur-[120px]"></div>
+    <img src="/images/cosmic_birth_chart_1779193390034.png" alt="" class="absolute top-0 w-full h-full object-cover opacity-5 mix-blend-screen" />
+  </div>
+
+  <!-- Header / Nav -->
+  <header class="fixed w-full top-0 z-50 bg-brand-navy-dark/80 backdrop-blur-md border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-brand-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 1 0 10 10"/></svg>
+        <span class="text-xl font-bold tracking-wide text-white">Astroraja</span>
+      </div>
+      <a href="#form-section" class="hidden md:flex bg-brand-gold text-brand-navy-dark px-5 py-2 rounded-full font-semibold hover:bg-brand-gold-light transition-all shadow-[0_0_15px_rgba(251,191,36,0.3)]">
+        Get My Report
+      </a>
+    </div>
+  </header>
+
+  <main class="pt-16">
+    <!-- 1. Hero Section -->
+    <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden px-4 py-20">
+      <div class="absolute inset-0 z-0">
+        <img src="/images/hero_moon_zodiac_1779193351110.png" alt="Moon and Zodiac Astrology" class="w-full h-full object-cover opacity-30 object-top mask-image-b" style="-webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0)); mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0));" />
+      </div>
+      
+      <div class="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-brand-gold-light text-sm font-medium mb-8 backdrop-blur-sm">
+          <span class="w-2 h-2 rounded-full bg-brand-gold animate-pulse"></span>
+          Personalized Spiritual Guidance
+        </div>
+        
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight md:leading-tight mb-6 text-white drop-shadow-xl">
+          Discover What Your <span class="gradient-text block mt-2">Raasi, Lagnam & Nakshatra</span> Reveal About Your Life Path
+        </h1>
+        
+        <p class="text-lg md:text-xl text-brand-cream/80 max-w-2xl mb-10 leading-relaxed font-light">
+          Share your birth star, moon sign, current struggles, daily lifestyle, goals, and spiritual orientation. Get a personalized astrology-based guidance report without repeated follow-up questions.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <a href="#form-section" class="w-full sm:w-auto px-8 py-4 bg-brand-gold text-brand-navy-dark rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-[0_0_20px_rgba(251,191,36,0.4)] flex items-center justify-center gap-2">
+            Generate My Astro Report
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+          <a href="#how-it-works" class="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/15 text-white rounded-xl font-medium text-lg transition-colors border border-white/10 flex items-center justify-center backdrop-blur-sm">
+            See How It Works
+          </a>
+        </div>
+        
+        <p class="mt-8 text-sm text-brand-cream/60 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          Simple details. Personalized guidance. No complicated process.
+        </p>
+      </div>
+    </section>
+
+    <!-- 2. Problem Section -->
+    <section class="py-20 px-4 bg-gradient-to-b from-brand-navy-dark to-brand-navy relative">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">Feeling Confused About Life, <br class="hidden md:block" />Career, Family or Future?</h2>
+          <p class="text-brand-cream/70 text-lg">We all face phases where the path ahead seems unclear.</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          {["Career confusion", "Family pressure", "Financial stress", "Marriage delay", "Health worries", "Mental stress", "Spiritual disconnect", "Unclear future direction"].map(problem => (
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center text-center hover:bg-white/10 transition-colors group">
+              <div class="w-12 h-12 rounded-full bg-brand-purple/30 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-brand-gold-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <h3 class="font-medium text-white">{problem}</h3>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Solution Section -->
+    <section class="py-24 px-4 relative overflow-hidden">
+      <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 opacity-20 pointer-events-none">
+        <img src="/images/abstract_mandala_1779193425126.png" alt="" class="w-full h-auto animate-[spin_60s_linear_infinite]" />
+      </div>
+      
+      <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12 relative z-10">
+        <div class="w-full md:w-1/2 rounded-3xl overflow-hidden border border-white/10 relative group">
+          <div class="absolute inset-0 bg-brand-purple-dark/20 group-hover:bg-transparent transition-colors z-10"></div>
+          <img src="/images/indian_temple_lamp_1779193370073.png" alt="Indian Temple Lamp" class="w-full h-auto object-cover scale-105 group-hover:scale-100 transition-transform duration-700" />
+        </div>
+        
+        <div class="w-full md:w-1/2">
+          <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+            <span class="gradient-text">One Message.</span><br />
+            <span class="text-brand-purple-light">One Report.</span><br />
+            Clear Guidance.
+          </h2>
+          <p class="text-xl text-brand-cream/80 mb-8 font-light leading-relaxed">
+            Forget endless back-and-forth consultations. At Astroraja, users can send all their details in one simple form.
+          </p>
+          <div class="bg-brand-navy border border-brand-purple/30 rounded-2xl p-6 shadow-lg glow">
+            <h4 class="text-brand-gold mb-3 font-semibold text-lg flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              What we analyze:
+            </h4>
+            <ul class="grid grid-cols-2 gap-3 text-sm md:text-base text-brand-cream/90">
+              <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-gold rounded-full"></div> Name</li>
+              <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-gold rounded-full"></div> Raasi / Moon Sign</li>
+              <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-gold rounded-full"></div> Lagnam / Ascendant</li>
+              <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-gold rounded-full"></div> Nakshatra / Birth Star</li>
+              <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-gold rounded-full"></div> Current Struggles</li>
+              <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-gold rounded-full"></div> Daily Life Pattern</li>
+              <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-gold rounded-full"></div> Biggest Life Goals</li>
+              <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-gold rounded-full"></div> Spiritual Orientation</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. How It Works -->
+    <section id="how-it-works" class="py-20 px-4 bg-brand-navy/50">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-3xl md:text-5xl font-bold text-center text-white mb-16">How Astroraja Works</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {[
+            { step: "1", title: "Enter basic astrology details", icon: "M12 2a7 7 0 1 0 10 10" },
+            { step: "2", title: "Select your current life situation", icon: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" },
+            { step: "3", title: "Submit your complete details", icon: "m22 2-7 20-4-9-9-4Z" },
+            { step: "4", title: "Receive personalized Astro guidance report", icon: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" }
+          ].map(item => (
+            <div class="relative flex flex-col items-center text-center">
+              <div class="w-16 h-16 rounded-2xl bg-brand-purple-dark border border-brand-purple text-brand-gold flex items-center justify-center text-2xl font-bold mb-6 shadow-[0_0_15px_rgba(124,58,237,0.3)] relative z-10">
+                {item.step}
+              </div>
+              <h3 class="text-lg font-semibold text-white mb-2">{item.title}</h3>
+              <!-- Connector line for desktop -->
+              <div class="hidden md:block absolute top-8 left-[50%] w-full h-[1px] bg-gradient-to-r from-brand-purple to-transparent -z-0"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Form Section -->
+    <section id="form-section" class="py-24 px-4 relative">
+      <div class="absolute inset-0 z-0">
+        <img src="/images/peaceful_moonlight_1779193406223.png" alt="Peaceful Moonlight" class="w-full h-full object-cover opacity-20 object-center" />
+        <div class="absolute inset-0 bg-brand-navy-dark/80 backdrop-blur-[2px]"></div>
+      </div>
+      
+      <div class="max-w-4xl mx-auto relative z-10">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Request Your Astroraja Report</h2>
+          <p class="text-brand-cream/80">Provide your details once. Receive clear, actionable spiritual guidance.</p>
+        </div>
+
+        <div class="bg-brand-navy/80 backdrop-blur-xl border border-brand-purple/40 rounded-3xl p-6 md:p-10 shadow-2xl relative overflow-hidden">
+          
+          <form class="space-y-8" id="astro-main-form">
+            
+            <!-- STEP 1: BASIC DETAILS -->
+            <div id="form-step-1" class="transition-all duration-500">
+              <div class="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
+                <h3 class="text-xl font-bold text-brand-gold">Step 1: Birth Details</h3>
+                <span class="text-sm text-brand-cream/50 font-mono">1/3</span>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Name -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-brand-cream">Full Name</label>
+                  <input type="text" name="fullname" required placeholder="Enter your name" class="w-full bg-brand-navy-dark/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple transition-all placeholder:text-white/30" />
+                </div>
+                
+                <!-- Nakshatra -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-brand-cream">Nakshatra / Birth Star</label>
+                  <input type="text" name="nakshatra" required placeholder="Example: Chitra 4th Padam, Karthikai" class="w-full bg-brand-navy-dark/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple transition-all placeholder:text-white/30" />
+                </div>
+
+                <!-- Raasi -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-brand-cream">Raasi / Moon Sign</label>
+                  <select name="raasi" required class="w-full bg-brand-navy-dark/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple transition-all appearance-none cursor-pointer">
+                    <option value="" disabled selected>Select Raasi</option>
+                    {raasiOptions.map(opt => <option value={opt}>{opt}</option>)}
+                  </select>
+                </div>
+
+                <!-- Lagnam -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-brand-cream">Lagnam / Ascendant</label>
+                  <select name="lagnam" required class="w-full bg-brand-navy-dark/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple transition-all appearance-none cursor-pointer">
+                    <option value="" disabled selected>Select Lagnam</option>
+                    {lagnamOptions.map(opt => <option value={opt}>{opt}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div class="mt-8">
+                <button type="button" id="btn-proceed" class="w-full py-5 rounded-xl bg-gradient-to-r from-brand-gold to-brand-sandal text-brand-navy-dark font-bold text-lg hover:shadow-[0_0_25px_rgba(251,191,36,0.5)] transition-all flex justify-center items-center gap-2 group">
+                  Proceed to Secure Payment
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 2: PAYMENT (Simulated) -->
+            <div id="form-step-2" class="hidden transition-all duration-500">
+              <div class="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
+                <h3 class="text-xl font-bold text-brand-gold">Step 2: Unlock Report</h3>
+                <span class="text-sm text-brand-cream/50 font-mono">2/3</span>
+              </div>
+              
+              <div class="bg-brand-navy-dark/60 rounded-2xl p-6 md:p-8 border border-brand-purple/30 text-center mb-8">
+                <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/30">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                </div>
+                <h4 class="text-2xl font-bold text-white mb-2">Personalized Astro Report</h4>
+                <p class="text-brand-cream/80 mb-6">Gain complete clarity on your life path, career, and relationships.</p>
+                
+                <div class="text-4xl font-extrabold text-brand-gold mb-6">₹499 <span class="text-lg text-white/40 line-through font-normal">₹1499</span></div>
+                
+                <button type="button" id="btn-pay" class="w-full py-4 rounded-xl bg-green-500 text-white font-bold text-lg hover:bg-green-600 transition-colors shadow-[0_0_20px_rgba(34,197,94,0.3)] flex justify-center items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  Pay Securely Now
+                </button>
+                <p class="mt-4 text-xs text-white/40 flex items-center justify-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  100% Safe & Secure Payments
+                </p>
+              </div>
+              <button type="button" id="btn-back-1" class="text-sm text-brand-cream/60 hover:text-brand-gold transition-colors flex items-center justify-center gap-1 mx-auto w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                Back to Details
+              </button>
+            </div>
+
+            <!-- STEP 3: INTAKE QUESTIONS -->
+            <div id="form-step-3" class="hidden transition-all duration-500">
+              <div class="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
+                <h3 class="text-xl font-bold text-brand-gold flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                  Payment Successful!
+                </h3>
+                <span class="text-sm text-brand-cream/50 font-mono">3/3</span>
+              </div>
+              
+              <p class="text-sm text-brand-cream/70 mb-6">Please answer these 4 simple questions so we can personalize your guidance perfectly.</p>
+              
+              <!-- Q1 Struggles -->
+              <div class="space-y-3 mb-6">
+                <label class="block text-sm font-medium text-brand-cream">Q1. What are your current struggles? <span class="text-brand-gold/60 text-xs font-normal">(Select all that apply)</span></label>
+                <div class="flex flex-wrap gap-2">
+                  {struggleOptions.map((opt, i) => (
+                    <label class="cursor-pointer">
+                      <input type="checkbox" class="peer sr-only" name="struggles" value={opt} />
+                      <div class="px-4 py-2 rounded-full border border-white/10 bg-white/5 text-sm text-brand-cream/80 peer-checked:bg-brand-purple peer-checked:text-white peer-checked:border-brand-purple transition-all hover:bg-white/10">
+                        {opt}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Q2 Daily Life -->
+              <div class="space-y-3 mb-6">
+                <label class="block text-sm font-medium text-brand-cream">Q2. Describe your daily life pattern</label>
+                <div class="flex flex-wrap gap-2">
+                  {dailyLifeOptions.map((opt, i) => (
+                    <label class="cursor-pointer">
+                      <input type="radio" class="peer sr-only" name="dailylife" value={opt} />
+                      <div class="px-4 py-2 rounded-full border border-white/10 bg-white/5 text-sm text-brand-cream/80 peer-checked:bg-brand-gold peer-checked:text-brand-navy-dark peer-checked:font-medium peer-checked:border-brand-gold transition-all hover:bg-white/10">
+                        {opt}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Q3 Goals -->
+              <div class="space-y-3 mb-6">
+                <label class="block text-sm font-medium text-brand-cream">Q3. What are your biggest life goals? <span class="text-brand-gold/60 text-xs font-normal">(Select all that apply)</span></label>
+                <div class="flex flex-wrap gap-2">
+                  {goalOptions.map((opt, i) => (
+                    <label class="cursor-pointer">
+                      <input type="checkbox" class="peer sr-only" name="goals" value={opt} />
+                      <div class="px-4 py-2 rounded-full border border-white/10 bg-white/5 text-sm text-brand-cream/80 peer-checked:bg-brand-purple peer-checked:text-white peer-checked:border-brand-purple transition-all hover:bg-white/10">
+                        {opt}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <!-- Q4 Spiritual -->
+              <div class="space-y-3 mb-8">
+                <label class="block text-sm font-medium text-brand-cream">Q4. What is your spiritual orientation?</label>
+                <select class="w-full bg-brand-navy-dark/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple transition-all appearance-none cursor-pointer">
+                  <option value="" disabled selected>Select orientation</option>
+                  {spiritualOptions.map(opt => <option value={opt}>{opt}</option>)}
+                </select>
+              </div>
+
+              <button type="submit" class="w-full py-5 rounded-xl bg-gradient-to-r from-brand-gold to-brand-sandal text-brand-navy-dark font-bold text-lg hover:shadow-[0_0_25px_rgba(251,191,36,0.5)] transition-all flex justify-center items-center gap-2 group">
+                Generate My Personalized Astro Report
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+            
+          </form>
+        </div>
+      </div>
+      
+      <script>
+        window.showToast = function(title, message, type = 'success') {
+          const toast = document.getElementById('custom-toast');
+          const toastTitle = document.getElementById('toast-title');
+          const toastMessage = document.getElementById('toast-message');
+          const iconError = document.getElementById('toast-icon-error');
+          const iconSuccess = document.getElementById('toast-icon-success');
+          
+          toastTitle.textContent = title;
+          toastMessage.textContent = message;
+          
+          if (type === 'error') {
+            iconError.classList.remove('hidden');
+            iconSuccess.classList.add('hidden');
+            toast.querySelector('.toast-inner').classList.replace('border-brand-gold/50', 'border-red-500/50');
+            toast.querySelector('.toast-inner').classList.replace('shadow-[0_0_20px_rgba(251,191,36,0.3)]', 'shadow-[0_0_20px_rgba(239,68,68,0.3)]');
+          } else {
+            iconSuccess.classList.remove('hidden');
+            iconError.classList.add('hidden');
+            toast.querySelector('.toast-inner').classList.replace('border-red-500/50', 'border-brand-gold/50');
+            toast.querySelector('.toast-inner').classList.replace('shadow-[0_0_20px_rgba(239,68,68,0.3)]', 'shadow-[0_0_20px_rgba(251,191,36,0.3)]');
+          }
+          
+          toast.classList.remove('translate-x-full', 'opacity-0');
+          toast.classList.add('translate-x-0', 'opacity-100');
+          
+          if(window.toastTimer) clearTimeout(window.toastTimer);
+          window.toastTimer = setTimeout(() => {
+            closeToast();
+          }, 4000);
+        };
+        
+        window.closeToast = function() {
+          const toast = document.getElementById('custom-toast');
+          toast.classList.remove('translate-x-0', 'opacity-100');
+          toast.classList.add('translate-x-full', 'opacity-0');
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+          const step1 = document.getElementById('form-step-1');
+          const step2 = document.getElementById('form-step-2');
+          const step3 = document.getElementById('form-step-3');
+          const mainForm = document.getElementById('astro-main-form');
+          
+          const btnProceed = document.getElementById('btn-proceed');
+          const btnPay = document.getElementById('btn-pay');
+          const btnBack1 = document.getElementById('btn-back-1');
+          const toastClose = document.getElementById('toast-close');
+          
+          toastClose?.addEventListener('click', closeToast);
+
+          mainForm?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            showToast('Report Generating', 'Your personalized Astro Report has been started! Check your email shortly.', 'success');
+          });
+          
+          btnProceed?.addEventListener('click', () => {
+            const name = document.querySelector('input[name="fullname"]').value;
+            const nakshatra = document.querySelector('input[name="nakshatra"]').value;
+            const raasi = document.querySelector('select[name="raasi"]').value;
+            const lagnam = document.querySelector('select[name="lagnam"]').value;
+            
+            if(name && nakshatra && raasi && lagnam) {
+              step1.classList.add('hidden');
+              step2.classList.remove('hidden');
+            } else {
+              showToast('Missing Details', 'Please fill in all birth details to proceed.', 'error');
+            }
+          });
+          
+          btnBack1?.addEventListener('click', () => {
+            step2.classList.add('hidden');
+            step1.classList.remove('hidden');
+          });
+          
+          btnPay?.addEventListener('click', () => {
+            const originalText = btnPay.innerHTML;
+            btnPay.innerHTML = "Processing Secure Payment...";
+            
+            // Simulate payment processing
+            setTimeout(() => {
+              step2.classList.add('hidden');
+              step3.classList.remove('hidden');
+            }, 1500);
+          });
+        });
+      </script>
+    </section>
+
+    <!-- 6. Report Preview Section -->
+    <section class="py-20 px-4 bg-brand-navy">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-3xl md:text-5xl font-bold text-center text-white mb-4">What's Inside Your Report?</h2>
+        <p class="text-center text-brand-cream/70 mb-16 max-w-2xl mx-auto">A comprehensive view of your current phase, designed to provide clarity and peace of mind.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            { title: "Personality & Emotional Pattern", icon: "M12 2a10 10 0 1 0 10 10H12V2z" },
+            { title: "Current Life Challenges", icon: "m21 21-4.3-4.3M11 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z" },
+            { title: "Career & Money Direction", icon: "M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" },
+            { title: "Family & Relationship Guidance", icon: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" },
+            { title: "Spiritual Remedies & Practices", icon: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" },
+            { title: "Practical Next Steps", icon: "M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" }
+          ].map(card => (
+            <div class="bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-2xl p-6 hover:border-brand-purple/50 transition-colors group">
+              <div class="w-12 h-12 rounded-xl bg-brand-purple-dark text-brand-gold-light flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d={card.icon}/></svg>
+              </div>
+              <h3 class="text-xl font-semibold text-white mb-2">{card.title}</h3>
+              <div class="w-8 h-1 bg-brand-gold rounded-full group-hover:w-16 transition-all duration-300"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Why This Report Is Different -->
+    <section class="py-24 px-4 relative overflow-hidden bg-brand-navy-dark border-y border-white/5">
+      <div class="max-w-4xl mx-auto relative z-10 text-center">
+        <h2 class="text-3xl md:text-5xl font-bold text-white mb-12">Why Astroraja Is Different</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 text-left">
+          {[
+            "Based precisely on Raasi, Lagnam and Nakshatra",
+            "Considers your real, current life struggles",
+            "Aligns with your daily life and personal goals",
+            "Provides balanced spiritual and practical guidance",
+            "One seamless submission — no repeated questions"
+          ].map(point => (
+            <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors">
+              <div class="mt-1 w-6 h-6 rounded-full bg-brand-gold/20 flex-shrink-0 flex items-center justify-center text-brand-gold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <p class="text-lg text-brand-cream/90">{point}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Testimonials Section -->
+    <section class="py-24 px-4 bg-gradient-to-b from-brand-navy to-brand-navy-dark">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">Trusted by Devotees</h2>
+          <p class="text-brand-cream/70 text-lg">Real guidance. Real clarity.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { text: "Very clear and emotionally connected. Reading my report felt like sitting with an elder who truly understands my situation.", name: "Karthik R.", role: "Chennai" },
+            { text: "It helped me understand my current phase perfectly. The spiritual remedies suggested were practical and easy to follow daily.", name: "Priya S.", role: "Coimbatore" },
+            { text: "The guidance felt personal and practical. Astroraja completely cleared the confusion I had regarding my career switch.", name: "Venkatesh M.", role: "Madurai" }
+          ].map(review => (
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-8 relative hover:-translate-y-2 transition-transform duration-300">
+              <svg class="absolute top-6 right-6 w-8 h-8 text-brand-purple/40" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
+              <div class="flex gap-1 mb-6">
+                {[1,2,3,4,5].map(() => <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-brand-gold fill-brand-gold" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
+              </div>
+              <p class="text-brand-cream/90 text-lg mb-6 leading-relaxed">"{review.text}"</p>
+              <div>
+                <h4 class="font-bold text-white text-lg">{review.name}</h4>
+                <p class="text-brand-cream/50 text-sm">{review.role}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. FAQ Section -->
+    <section class="py-20 px-4">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-5xl font-bold text-center text-white mb-12">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          {[
+            { q: "What details are needed?", a: "We simply need your Name, Raasi, Lagnam, Nakshatra, and an understanding of your current life context through our form." },
+            { q: "Do I need exact birth time?", a: "If you already know your exact Raasi, Lagnam, and Nakshatra, you do not need to provide the exact birth time again." },
+            { q: "Can I send everything in one message?", a: "Yes, our seamless form collects all the necessary information in one go, preventing back-and-forth messages." },
+            { q: "Is this suitable for career and marriage guidance?", a: "Absolutely. The report covers major life themes including career, money, marriage, and family." },
+            { q: "Will I get spiritual remedies?", a: "Yes, we include practical and temple-based spiritual remedies aligned with your specific astrology profile." },
+            { q: "Is this only for Tamil astrology users?", a: "While rooted in traditional Vedic/Tamil astrology concepts (Raasi, Lagnam, Nakshatra), the guidance is universally applicable and delivered in clear English." }
+          ].map((faq, i) => (
+            <details class="bg-white/5 border border-white/10 rounded-xl group cursor-pointer overflow-hidden">
+              <summary class="p-6 font-semibold text-lg text-white list-none flex justify-between items-center outline-none focus-visible:bg-white/10">
+                {faq.q}
+                <span class="text-brand-gold group-open:rotate-180 transition-transform duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </summary>
+              <div class="px-6 pb-6 text-brand-cream/70 text-base leading-relaxed">
+                {faq.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Final CTA Section -->
+    <section class="py-24 px-4 relative text-center border-t border-white/10">
+      <div class="absolute inset-0 bg-gradient-to-t from-brand-purple-dark/50 to-transparent z-0"></div>
+      <div class="max-w-3xl mx-auto relative z-10 flex flex-col items-center">
+        <div class="w-20 h-20 mb-8 rounded-full bg-brand-navy border border-brand-gold/30 flex items-center justify-center glow shadow-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-brand-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 22l10-4 10 4L12 2z"/></svg>
+        </div>
+        <h2 class="text-4xl md:text-6xl font-bold text-white mb-6">Ready to Understand Your Life Direction?</h2>
+        <p class="text-xl text-brand-cream/80 mb-10">Get the spiritual clarity you've been looking for with Astroraja.</p>
+        <a href="#form-section" class="px-10 py-5 rounded-full bg-brand-gold text-brand-navy-dark font-bold text-xl hover:scale-105 transition-transform shadow-[0_0_30px_rgba(251,191,36,0.6)]">
+          Start My Astro Report Now
+        </a>
+        <p class="mt-8 text-xs text-brand-cream/40 uppercase tracking-widest max-w-lg mx-auto">
+          Disclaimer: This guidance is for spiritual and self-reflection purposes only.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/10 bg-brand-navy-dark py-10 px-4 text-center">
+    <div class="max-w-6xl mx-auto flex flex-col items-center">
+      <div class="flex items-center gap-2 mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-brand-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 1 0 10 10"/></svg>
+        <span class="text-xl font-bold tracking-wide text-white">Astroraja</span>
+      </div>
+      <p class="text-brand-cream/50 text-sm">© {new Date().getFullYear()} Astroraja. All spiritual rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Sticky Mobile CTA -->
+  <div class="fixed bottom-0 left-0 w-full p-4 md:hidden z-50 bg-brand-navy-dark/95 backdrop-blur-md border-t border-white/10 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
+    <a href="#form-section" class="flex w-full py-3 rounded-lg bg-gradient-to-r from-brand-gold to-brand-sandal text-brand-navy-dark font-bold text-lg justify-center items-center shadow-lg">
+      Generate My Astro Report
+    </a>
+  </div>
+
+  <!-- Custom Toast Notification -->
+  <div id="custom-toast" class="fixed top-4 right-4 z-[100] translate-x-full opacity-0 transition-all duration-300">
+    <div class="toast-inner bg-brand-navy border border-brand-gold/50 rounded-xl p-4 shadow-[0_0_20px_rgba(251,191,36,0.3)] flex items-start gap-3 max-w-sm">
+      <svg id="toast-icon-error" class="w-6 h-6 text-red-400 hidden flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <svg id="toast-icon-success" class="w-6 h-6 text-green-400 hidden flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <div>
+        <h4 id="toast-title" class="text-white font-bold text-sm">Notification</h4>
+        <p id="toast-message" class="text-brand-cream/80 text-sm mt-1"></p>
+      </div>
+      <button type="button" id="toast-close" class="text-brand-cream/50 hover:text-white transition-colors ml-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-navy: #1e1b4b;
+  --color-brand-navy-dark: #0f0a29;
+  --color-brand-purple: #4c1d95;
+  --color-brand-purple-dark: #2e1065;
+  --color-brand-purple-light: #7c3aed;
+  --color-brand-purple-glow: rgba(124, 58, 237, 0.5);
+  --color-brand-gold: #fbbf24;
+  --color-brand-gold-light: #fde68a;
+  --color-brand-sandal: #d97706;
+  --color-brand-cream: #fef3c7;
+  
+  --font-sans: 'Outfit', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-brand-navy-dark);
+  color: var(--color-brand-cream);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom glow utility */
+@utility glow {
+  box-shadow: 0 0 20px var(--color-brand-purple-glow);
+}
+
+@utility text-glow {
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+@utility gradient-text {
+  background: linear-gradient(to right, var(--color-brand-gold-light), var(--color-brand-gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
