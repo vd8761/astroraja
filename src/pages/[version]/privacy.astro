@@ -1,0 +1,64 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export function getStaticPaths() {
+  return [
+    {params: {version: 'v1'}},
+    {params: {version: 'v2'}},
+    {params: {version: 'v3'}}
+  ];
+}
+const { version } = Astro.params;
+---
+
+<Layout title="Privacy Policy - Ask Astro Raja" version={version}>
+  
+  <section class="py-24 px-4 bg-brand-light-bg relative overflow-hidden">
+    <div class="absolute inset-0 z-0 opacity-10">
+      <img src="/images/light_mandala_pattern.png" alt="" class="w-full h-full object-cover" />
+    </div>
+    <div class="max-w-4xl mx-auto relative z-10 text-center">
+      <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm">Legal</div>
+      <h1 class="text-5xl md:text-6xl font-extrabold leading-[1.1] mb-6 text-brand-navy">
+        Privacy Policy
+      </h1>
+      <p class="text-xl text-brand-text max-w-2xl mx-auto leading-relaxed">
+        We respect your privacy and the sacred trust you place in our spiritual guidance.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-20 px-4 bg-white">
+    <div class="max-w-3xl mx-auto">
+      <div class="prose prose-lg text-brand-text max-w-none">
+        
+        <h2 class="text-2xl font-bold text-brand-navy mb-4 mt-8">1. Information We Collect</h2>
+        <p class="mb-4">
+          When you request an astrological reading, we collect the necessary cosmic identity data (Name, Raasi, Lagnam, Nakshatra) and context regarding your current life struggles. We use this data exclusively for generating your personal Vedic report.
+        </p>
+
+        <h2 class="text-2xl font-bold text-brand-navy mb-4 mt-8">2. How We Use Your Information</h2>
+        <p class="mb-4">
+          Your information is processed securely by our proprietary AI to analyze planetary alignments and provide tailored spiritual remedies. We do not sell, rent, or trade your personal or astrological data to third-party data brokers.
+        </p>
+
+        <h2 class="text-2xl font-bold text-brand-navy mb-4 mt-8">3. Data Security & Deletion</h2>
+        <p class="mb-4">
+          Your birth details are sensitive. We employ secure encryption protocols for data transmission. If you would like your generated report and associated birth data permanently deleted from our servers, you may request so by contacting us.
+        </p>
+
+        <h2 class="text-2xl font-bold text-brand-navy mb-4 mt-8">4. Cookies and Analytics</h2>
+        <p class="mb-4">
+          We use strictly necessary cookies to ensure the multi-step form functions correctly across your visit. We may also use anonymized analytics to improve the platform experience for devotees globally.
+        </p>
+
+        <h2 class="text-2xl font-bold text-brand-navy mb-4 mt-8">5. Contact Us</h2>
+        <p class="mb-12">
+          If you have any questions regarding your privacy, please contact us at: <a href="mailto:contact@ask-astro-raja.com" class="text-brand-saffron hover:underline">contact@ask-astro-raja.com</a>
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+</Layout>

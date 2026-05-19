@@ -1,0 +1,64 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export function getStaticPaths() {
+  return [
+    {params: {version: 'v1'}},
+    {params: {version: 'v2'}},
+    {params: {version: 'v3'}}
+  ];
+}
+const { version } = Astro.params;
+---
+
+<Layout title="Terms of Use - Ask Astro Raja" version={version}>
+  
+  <section class="py-24 px-4 bg-brand-light-bg relative overflow-hidden">
+    <div class="absolute inset-0 z-0 opacity-10">
+      <img src="/images/light_mandala_pattern.png" alt="" class="w-full h-full object-cover" />
+    </div>
+    <div class="max-w-4xl mx-auto relative z-10 text-center">
+      <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm">Legal</div>
+      <h1 class="text-5xl md:text-6xl font-extrabold leading-[1.1] mb-6 text-brand-navy">
+        Terms of Use
+      </h1>
+      <p class="text-xl text-brand-text max-w-2xl mx-auto leading-relaxed">
+        Please read these terms carefully before accessing our astrological services.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-20 px-4 bg-white">
+    <div class="max-w-3xl mx-auto">
+      <div class="prose prose-lg text-brand-text max-w-none">
+        
+        <h2 class="text-2xl font-bold text-brand-navy mb-4 mt-8">1. Nature of the Service</h2>
+        <p class="mb-4">
+          Ask Astro Raja provides AI-powered astrological insights based on traditional Vedic astrology. The reports, interpretations, and remedies provided are intended for spiritual guidance, reflection, and entertainment purposes only. 
+        </p>
+
+        <h2 class="text-2xl font-bold text-brand-navy mb-4 mt-8">2. Disclaimer of Liability</h2>
+        <p class="mb-4 border-l-4 border-brand-saffron pl-4 bg-brand-saffron/5 py-2">
+          <strong>Crucial Disclaimer:</strong> Astrological advice is not a substitute for professional medical, legal, financial, or psychological counseling. Ask Astro Raja accepts no liability for decisions made by users based on the content of our reports.
+        </p>
+
+        <h2 class="text-2xl font-bold text-brand-navy mb-4 mt-8">3. User Conduct</h2>
+        <p class="mb-4">
+          You agree to provide accurate birth and situational data to receive a report. Attempting to bypass the payment gateway, exploiting the form submission APIs, or using the platform to generate spam is strictly prohibited.
+        </p>
+
+        <h2 class="text-2xl font-bold text-brand-navy mb-4 mt-8">4. Payments and Refunds</h2>
+        <p class="mb-4">
+          Because each report is dynamically generated via AI computing based on your unique data, all sales are final once the report has been generated and delivered. If technical issues prevent the delivery of your report, please contact support within 48 hours.
+        </p>
+
+        <h2 class="text-2xl font-bold text-brand-navy mb-4 mt-8">5. Intellectual Property</h2>
+        <p class="mb-12">
+          The content, design, logo, and proprietary AI algorithms of Ask Astro Raja are protected by copyright. You may download and share your personal report, but you may not scrape, reproduce, or resell the platform's core infrastructure.
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+</Layout>
