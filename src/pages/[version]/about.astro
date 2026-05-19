@@ -1,0 +1,75 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export function getStaticPaths() {
+  return [
+    {params: {version: 'v1'}},
+    {params: {version: 'v2'}},
+    {params: {version: 'v3'}}
+  ];
+}
+const { version } = Astro.params;
+---
+
+<Layout title="About Ask Astro Raja | Vedic Astrology Powered by AI" version={version}>
+  
+  <!-- Hero Section -->
+  <section class="py-24 px-4 bg-brand-light-bg relative overflow-hidden">
+    <div class="absolute inset-0 z-0 opacity-10">
+      <img src="/images/light_mandala_pattern.png" alt="" class="w-full h-full object-cover" />
+    </div>
+    <div class="max-w-4xl mx-auto relative z-10 text-center">
+      <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm">About Us</div>
+      <h1 class="text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6 text-brand-navy">
+        Rooted in Tradition. <br />
+        <span class="gradient-text-light">Empowered by Tech.</span>
+      </h1>
+      <p class="text-xl text-brand-text max-w-2xl mx-auto leading-relaxed">
+        Ask Astro Raja was built to bridge the gap between ancient Vedic wisdom and modern life challenges, providing accessible, deeply personalized spiritual guidance to everyone.
+      </p>
+    </div>
+  </section>
+
+  <!-- Mission Section -->
+  <section class="py-20 px-4 bg-white">
+    <div class="max-w-4xl mx-auto">
+      <div class="prose prose-lg text-brand-text max-w-none">
+        <h2 class="text-3xl font-bold text-brand-navy mb-6">Our Mission</h2>
+        <p class="mb-6">
+          For thousands of years, Vedic astrology has provided humanity with a profound understanding of the cosmic energies that shape our lives. The alignment of the stars at the moment of our birth—our Raasi, Lagnam, and Nakshatra—serves as a blueprint for our emotional patterns, strengths, and spiritual path.
+        </p>
+        <p class="mb-12">
+          However, finding an authentic, trustworthy astrologer who truly understands modern struggles can be difficult and expensive. Ask Astro Raja was created to democratize this ancient wisdom. Our mission is to provide you with clear, practical, and highly personalized astrological guidance without the wait, the anxiety, or the generic horoscopes.
+        </p>
+
+        <h2 class="text-3xl font-bold text-brand-navy mb-6">The AI Behind the Insight</h2>
+        <div class="bg-slate-50 border border-brand-border rounded-2xl p-8 mb-12">
+          <p class="mb-4">
+            We use a proprietary blend of traditional Vedic algorithms and advanced AI technology. Here is how it works:
+          </p>
+          <ul class="list-disc pl-6 space-y-3 marker:text-brand-saffron font-medium">
+            <li><strong>Astrological Computation:</strong> Your Raasi, Lagnam, and Nakshatra are analyzed using strictly traditional Vedic rules.</li>
+            <li><strong>Contextual Understanding:</strong> Our AI processes your current life struggles (e.g., career confusion, family pressure) and maps them directly to the active planetary energies affecting you.</li>
+            <li><strong>Personalized Synthesis:</strong> The system generates a report that doesn't just tell you your traits, but provides <em>actionable advice</em> for the exact problems you are facing today.</li>
+          </ul>
+        </div>
+
+        <h2 class="text-3xl font-bold text-brand-navy mb-6">Built for Tamil Nadu and Beyond</h2>
+        <p>
+          While Ask Astro Raja uses universal Vedic principles, it was built with a deep respect for the cultural and spiritual context of Tamil Nadu. We incorporate references to Tamil astrology terms (like Kadagam, Lagnam, and Padam) and suggest temple-based spiritual remedies that resonate with our local devotees.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="py-20 px-4 bg-brand-navy text-center border-t border-brand-border/50">
+    <div class="max-w-2xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Experience the clarity yourself.</h2>
+      <a href={`/${version}#form-section`} class="inline-block px-10 py-5 rounded-full bg-brand-saffron text-white font-bold text-xl hover:scale-105 transition-transform shadow-lg">
+        Start My Astro Report
+      </a>
+    </div>
+  </section>
+
+</Layout>

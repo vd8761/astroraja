@@ -1,0 +1,115 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  version?: 'v1' | 'v2' | 'v3';
+}
+
+const { title = "Ask Astro Raja | Personalized Vedic Astrology", version = 'v3' } = Astro.props;
+
+const prefix = `/${version}`;
+const homeLink = prefix;
+const getReadingLink = `${prefix}#form-section`;
+const sampleLink = `${prefix}#sample`;
+const howItWorksLink = `${prefix}/how-it-works`;
+const raasiGuideLink = `${prefix}/raasi-guide`;
+const aboutLink = `${prefix}/about`;
+const faqLink = `${prefix}/faq`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-brand-light-bg text-brand-text flex flex-col min-h-screen">
+    
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-brand-border/50 shadow-sm transition-all duration-300">
+      <div class="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+        <a href={homeLink} class="flex items-center gap-2 group">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-brand-saffron group-hover:rotate-12 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 1 0 10 10"/></svg>
+          <span class="text-2xl font-bold tracking-tight text-brand-navy">Ask Astro Raja</span>
+        </a>
+        
+        <nav class="hidden md:flex items-center gap-8 font-medium">
+          <a href={howItWorksLink} class="text-brand-text hover:text-brand-saffron transition-colors">How It Works</a>
+          <a href={sampleLink} class="text-brand-text hover:text-brand-saffron transition-colors">Sample Report</a>
+          <a href={raasiGuideLink} class="text-brand-text hover:text-brand-saffron transition-colors">Raasi Guide</a>
+          <a href={aboutLink} class="text-brand-text hover:text-brand-saffron transition-colors">About</a>
+        </nav>
+        
+        <div class="flex items-center gap-4">
+          <a href={getReadingLink} class="px-6 py-2.5 rounded-full bg-brand-navy text-white font-semibold hover:bg-brand-purple transition-all shadow-md hover:shadow-lg flex items-center gap-2 text-sm md:text-base">
+            Get My Reading
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-grow">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-brand-border/60 bg-white pt-16 pb-8 px-4 mt-auto">
+      <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div class="col-span-1 md:col-span-1">
+          <a href={homeLink} class="flex items-center gap-2 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-brand-saffron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 1 0 10 10"/></svg>
+            <span class="text-xl font-bold tracking-tight text-brand-navy">Ask Astro Raja</span>
+          </a>
+          <p class="text-brand-text-muted text-sm leading-relaxed">
+            AI-powered Vedic astrology guidance for Tamil Nadu and beyond. Rooted in authentic tradition, delivered with modern clarity.
+          </p>
+        </div>
+        
+        <div>
+          <h4 class="font-bold text-brand-navy mb-4">Tool</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href={getReadingLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Get Your Reading</a></li>
+            <li><a href={sampleLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Sample Report</a></li>
+            <li><a href={raasiGuideLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Raasi Guide</a></li>
+            <li><a href={howItWorksLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">How It Works</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-brand-navy mb-4">Company</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href={aboutLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">About Astro Raja</a></li>
+            <li><a href="mailto:contact@ask-astro-raja.com" class="text-brand-text-muted hover:text-brand-saffron transition-colors">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="font-bold text-brand-navy mb-4">Legal</h4>
+          <ul class="space-y-3 text-sm">
+            <li><a href={faqLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Privacy Policy</a></li>
+            <li><a href={faqLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Terms of Use</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="max-w-6xl mx-auto pt-8 border-t border-brand-border/40 text-center flex flex-col items-center">
+        <p class="text-xs text-brand-text-muted/70 max-w-2xl mb-4">
+          Disclaimer: Reports are for guidance and reflection only. Not a substitute for professional advice.
+        </p>
+        <p class="text-sm text-brand-text-muted font-medium mb-1">
+          © {new Date().getFullYear()} Ask Astro Raja. All rights reserved.
+        </p>
+        <p class="text-xs text-brand-saffron/80">Built with care for Tamil Nadu · ask-astro-raja.com</p>
+      </div>
+    </footer>
+    
+  </body>
+</html>

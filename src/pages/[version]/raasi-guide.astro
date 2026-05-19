@@ -1,0 +1,128 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const raasis = [
+  { icon: '♈', eng: 'Mesham', tam: 'மேஷம்', element: 'Fire', lord: 'Mars', description: 'Bold, pioneering, and energetic. Meshams are natural leaders who approach life with courage and passion.' },
+  { icon: '♉', eng: 'Rishabam', tam: 'ரிஷபம்', element: 'Earth', lord: 'Venus', description: 'Grounded, patient, and artistic. Rishabams value stability, beauty, and practical security.' },
+  { icon: '♊', eng: 'Midhunam', tam: 'மிதுனம்', element: 'Air', lord: 'Mercury', description: 'Communicative, adaptable, and intellectual. Midhunams thrive on variety and mental stimulation.' },
+  { icon: '♋', eng: 'Kadagam', tam: 'கடகம்', element: 'Water', lord: 'Moon', description: 'Nurturing, intuitive, and deeply emotional. Kadagams are strongly tied to family and home.' },
+  { icon: '♌', eng: 'Simbha', tam: 'சிம்மம்', element: 'Fire', lord: 'Sun', description: 'Charismatic, generous, and proud. Simbhas shine brightly and possess a regal, warm nature.' },
+  { icon: '♍', eng: 'Kanni', tam: 'கன்னி', element: 'Earth', lord: 'Mercury', description: 'Analytical, helpful, and detail-oriented. Kannis find purpose in service and improvement.' },
+  { icon: '♎', eng: 'Thulam', tam: 'துலாம்', element: 'Air', lord: 'Venus', description: 'Diplomatic, harmonious, and relationship-focused. Thulams seek balance and fairness in all things.' },
+  { icon: '♏', eng: 'Vrichigam', tam: 'விருச்சிகம்', element: 'Water', lord: 'Mars/Ketu', description: 'Intense, transformative, and secretive. Vrichigams possess profound emotional depth.' },
+  { icon: '♐', eng: 'Dhanusu', tam: 'தனுசு', element: 'Fire', lord: 'Jupiter', description: 'Philosophical, optimistic, and adventurous. Dhanusus are lifelong seekers of truth and wisdom.' },
+  { icon: '♑', eng: 'Magaram', tam: 'மகரம்', element: 'Earth', lord: 'Saturn', description: 'Disciplined, ambitious, and responsible. Magarams are the hard workers who climb to the top.' },
+  { icon: '♒', eng: 'Kumbam', tam: 'கும்பம்', element: 'Air', lord: 'Saturn/Rahu', description: 'Innovative, humanitarian, and unconventional. Kumbams are visionaries focused on the collective.' },
+  { icon: '♓', eng: 'Meenam', tam: 'மீனம்', element: 'Water', lord: 'Jupiter', description: 'Compassionate, mystical, and imaginative. Meenams are deeply spiritual and sensitive.' }
+];
+
+const nakshatras = [
+  "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", 
+  "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", 
+  "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", 
+  "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", 
+  "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+];
+
+export function getStaticPaths() {
+  return [
+    {params: {version: 'v1'}},
+    {params: {version: 'v2'}},
+    {params: {version: 'v3'}}
+  ];
+}
+const { version } = Astro.params;
+---
+
+<Layout title="Raasi Guide | Understand Your Moon Sign & Ascendant" version={version}>
+  
+  <section class="py-24 px-4 bg-brand-light-bg relative overflow-hidden border-b border-brand-border/50">
+    <div class="max-w-4xl mx-auto relative z-10 text-center">
+      <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm">Vedic Knowledge</div>
+      <h1 class="text-5xl md:text-6xl font-extrabold leading-[1.1] mb-6 text-brand-navy">
+        The Cosmic <span class="gradient-text-light">Blueprint.</span>
+      </h1>
+      <p class="text-xl text-brand-text max-w-2xl mx-auto leading-relaxed">
+        Understanding your Raasi (Moon Sign), Lagnam (Ascendant), and Nakshatra (Birth Star) is the first step to unlocking your spiritual potential.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-20 px-4 bg-white">
+    <div class="max-w-6xl mx-auto">
+      
+      <div class="mb-16">
+        <h2 class="text-3xl font-bold text-brand-navy mb-8">The 12 Raasis (Moon Signs)</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {raasis.map(raasi => (
+            <div class="bg-slate-50 border border-brand-border rounded-2xl p-6 hover:shadow-md transition-shadow group">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="w-14 h-14 rounded-full bg-white border border-brand-saffron/30 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                  {raasi.icon}
+                </div>
+                <div>
+                  <h3 class="font-bold text-xl text-brand-navy">{raasi.eng}</h3>
+                  <p class="text-sm text-brand-text-muted">{raasi.tam}</p>
+                </div>
+              </div>
+              <p class="text-brand-text text-sm leading-relaxed mb-4">
+                {raasi.description}
+              </p>
+              <div class="flex gap-4 text-xs font-semibold text-brand-text-muted uppercase">
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-brand-saffron"></span> {raasi.element}</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-brand-purple"></span> Lord {raasi.lord}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-16">
+        <!-- Lagnam Box -->
+        <div class="bg-brand-navy rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden">
+          <div class="absolute -right-12 -top-12 opacity-10">
+            <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 1 0 10 10"/></svg>
+          </div>
+          <div class="relative z-10">
+            <h3 class="text-3xl font-bold mb-4">What is Lagnam?</h3>
+            <p class="text-white/80 text-lg leading-relaxed mb-6">
+              Lagnam, or the Ascendant, is the specific zodiac sign that was rising on the eastern horizon at the exact moment of your birth.
+            </p>
+            <p class="text-white/80 leading-relaxed mb-6">
+              While your Raasi (Moon sign) dictates your mind and emotions, your Lagnam dictates your physical body, your approach to life, and how the world perceives you. It is the starting point (1st House) of your astrological chart.
+            </p>
+            <div class="inline-flex bg-white/10 px-4 py-2 rounded-lg text-sm font-medium">
+              Important for: Life direction, career choices, and overall vitality.
+            </div>
+          </div>
+        </div>
+
+        <!-- Nakshatra Box -->
+        <div>
+          <h3 class="text-3xl font-bold text-brand-navy mb-6">The 27 Nakshatras</h3>
+          <p class="text-brand-text mb-8 leading-relaxed">
+            A Nakshatra is a lunar mansion. The sky is divided into 27 equal sectors, and the moon travels through one each day. Your birth star reveals the microscopic details of your psychology and deep-seated spiritual patterns.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            {nakshatras.map(star => (
+              <span class="px-3 py-1.5 bg-slate-50 border border-brand-border text-brand-text rounded-md text-sm hover:border-brand-saffron transition-colors cursor-default">
+                {star}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="py-20 px-4 bg-slate-50 text-center border-t border-brand-border">
+    <div class="max-w-2xl mx-auto">
+      <h2 class="text-3xl font-bold text-brand-navy mb-4">Ready to uncover your unique cosmic design?</h2>
+      <a href={`/${version}#form-section`} class="inline-block px-8 py-4 mt-4 rounded-xl bg-brand-navy text-white font-bold text-lg hover:bg-brand-purple transition-colors shadow-lg">
+        Get Your Personalized Report
+      </a>
+    </div>
+  </section>
+
+</Layout>

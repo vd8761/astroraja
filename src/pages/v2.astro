@@ -1,0 +1,264 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Tamil Raasis for the Grid
+const raasis = [
+  { icon: '♈', eng: 'Mesham', tam: 'மேஷம்' },
+  { icon: '♉', eng: 'Rishabam', tam: 'ரிஷபம்' },
+  { icon: '♊', eng: 'Midhunam', tam: 'மிதுனம்' },
+  { icon: '♋', eng: 'Kadagam', tam: 'கடகம்' },
+  { icon: '♌', eng: 'Simbha', tam: 'சிம்மம்' },
+  { icon: '♍', eng: 'Kanni', tam: 'கன்னி' },
+  { icon: '♎', eng: 'Thulam', tam: 'துலாம்' },
+  { icon: '♏', eng: 'Vrichigam', tam: 'விருச்சிகம்' },
+  { icon: '♐', eng: 'Dhanusu', tam: 'தனுசு' },
+  { icon: '♑', eng: 'Magaram', tam: 'மகரம்' },
+  { icon: '♒', eng: 'Kumbam', tam: 'கும்பம்' },
+  { icon: '♓', eng: 'Meenam', tam: 'மீனம்' }
+];
+---
+
+<Layout title="Ask Astro Raja - Know Your Path" version="v2">
+
+  <!-- Hero Section -->
+  <section class="relative min-h-[90vh] flex items-center overflow-hidden px-4 py-20 bg-brand-light-bg">
+    <!-- Abstract subtle background -->
+    <div class="absolute inset-0 z-0 opacity-10">
+      <img src="/images/light_mandala_pattern.png" alt="" class="w-full h-full object-cover" />
+    </div>
+
+    <div class="max-w-6xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      
+      <!-- Text Content -->
+      <div class="flex flex-col items-start text-left">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-saffron/10 border border-brand-saffron/20 text-brand-saffron-dark text-sm font-semibold mb-6 tracking-wide uppercase">
+          Vedic · AI-Powered · Personalised
+        </div>
+        
+        <h1 class="text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6 text-brand-navy drop-shadow-sm">
+          Know Your <br />
+          <span class="gradient-text-light">Path.</span>
+        </h1>
+        
+        <p class="text-lg md:text-xl text-brand-text max-w-lg mb-10 leading-relaxed font-light">
+          Share your Raasi, Lagnam and Nakshatra. In minutes, receive a deeply personal guidance report — rooted in authentic Vedic astrology, powered by AI.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-12">
+          <a href="/v3#form-section" class="w-full sm:w-auto px-8 py-4 bg-brand-navy text-white rounded-xl font-bold text-lg hover:bg-brand-purple transition-all shadow-[0_4px_15px_rgba(30,27,75,0.3)] flex items-center justify-center gap-2">
+            Begin Your Reading
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+          <a href="#sample" class="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 text-brand-navy rounded-xl font-medium text-lg transition-colors border border-brand-border flex items-center justify-center shadow-sm">
+            See a sample report
+          </a>
+        </div>
+        
+        <!-- Stats -->
+        <div class="flex items-center gap-8 border-t border-brand-border pt-8">
+          <div>
+            <div class="text-2xl font-bold text-brand-navy">12K+</div>
+            <div class="text-xs text-brand-text-muted uppercase tracking-wider font-semibold mt-1">Readings Generated</div>
+          </div>
+          <div class="w-px h-8 bg-brand-border"></div>
+          <div>
+            <div class="text-2xl font-bold text-brand-navy">27</div>
+            <div class="text-xs text-brand-text-muted uppercase tracking-wider font-semibold mt-1">Nakshatras Covered</div>
+          </div>
+          <div class="w-px h-8 bg-brand-border"></div>
+          <div>
+            <div class="text-2xl font-bold text-brand-navy">4 min</div>
+            <div class="text-xs text-brand-text-muted uppercase tracking-wider font-semibold mt-1">Average Time</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Visual Element -->
+      <div class="relative">
+        <!-- Floating Latest Reading Card -->
+        <div class="absolute -left-12 bottom-12 bg-white rounded-2xl p-4 shadow-xl border border-brand-border z-20 animate-bounce" style="animation-duration: 4s;">
+          <div class="text-xs text-brand-text-muted uppercase font-semibold mb-1">Latest Reading</div>
+          <div class="font-bold text-brand-navy mb-1 flex items-center gap-2">
+            Meenam · Revathi
+            <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <div class="flex gap-1">
+            {[1,2,3,4,5].map(() => <svg class="w-3 h-3 text-brand-saffron fill-brand-saffron" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
+          </div>
+        </div>
+        
+        <div class="rounded-[2.5rem] overflow-hidden border-8 border-white shadow-2xl relative">
+          <img src="/images/light_temple_lamp.png" alt="Indian Astrology Reading" class="w-full aspect-[4/5] object-cover" />
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- The Process -->
+  <section class="py-24 px-4 bg-white">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-2xl mx-auto mb-20">
+        <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm">The Process</div>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-navy mb-6">Three steps to your personal reading</h2>
+        <p class="text-brand-text text-lg">No lengthy forms. No waiting for a human astrologer. Just your details, and a report that speaks to your exact situation.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+        <div class="hidden md:block absolute top-12 left-[16%] right-[16%] h-px bg-gradient-to-r from-brand-border via-brand-saffron/50 to-brand-border"></div>
+        
+        {[
+          { num: "01", symbol: "☽", title: "Share Your Cosmic Identity", desc: "Enter your name, Raasi (Moon Sign), Lagnam (Ascendant), and Nakshatra. These three form the soul of Vedic astrology — and of your reading." },
+          { num: "02", symbol: "◎", title: "Answer Four Guided Questions", desc: "Tell us your current struggles, daily rhythm, life goals, and spiritual orientation. Four simple questions that let the AI understand your exact context today." },
+          { num: "03", symbol: "↓", title: "Download Your Full Report", desc: "Within minutes, receive a personalised career and life guidance report. Download as PDF or Word, share with family, revisit whenever you need clarity." }
+        ].map((step, i) => (
+          <div class="relative bg-brand-light-bg rounded-3xl p-8 border border-brand-border hover:shadow-lg transition-shadow group">
+            <div class="absolute -top-6 left-8 bg-white border border-brand-border text-brand-navy font-bold w-12 h-12 rounded-full flex items-center justify-center shadow-sm">
+              {step.num}
+            </div>
+            <div class="text-4xl text-brand-saffron-dark/30 mb-6 font-serif">{step.symbol}</div>
+            <h3 class="text-xl font-bold text-brand-navy mb-4">{step.title}</h3>
+            <p class="text-brand-text leading-relaxed">{step.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Voices / Testimonials -->
+  <section class="py-24 px-4 bg-slate-50 border-y border-brand-border/50">
+    <div class="max-w-6xl mx-auto">
+      <div class="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm">Voices</div>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-navy">What our readers say</h2>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {[
+          { text: "I was confused about switching from IT to starting my own business. The report mapped out exactly what my Lagnam says about risk-taking. It gave me confidence I needed.", name: "Karthik S.", role: "Software Engineer, Chennai", astro: "Simbha · Uthiram" },
+          { text: "As a mother, I was worried about my daughter's career direction. This report gave us both something to discuss — it connected astrology with real, practical steps.", name: "Meenakshi R.", role: "Homemaker, Coimbatore", astro: "Thulam · Swathi" },
+          { text: "The part about my Nakshatra and commitment issues — spot on. I have shared it with my partner and it opened a real conversation we never had before.", name: "Priya N.", role: "Student, Madurai", astro: "Meenam · Revathi" }
+        ].map(review => (
+          <div class="bg-white border border-brand-border rounded-2xl p-8 relative shadow-sm hover:shadow-md transition-shadow">
+            <svg class="absolute top-6 right-6 w-8 h-8 text-brand-border" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
+            <p class="text-brand-text text-lg mb-8 leading-relaxed italic">"{review.text}"</p>
+            <div>
+              <h4 class="font-bold text-brand-navy text-lg">{review.name}</h4>
+              <p class="text-brand-text-muted text-sm mb-1">{review.role}</p>
+              <p class="text-brand-saffron-dark text-xs font-semibold uppercase">{review.astro}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Sample Report Visual -->
+  <section id="sample" class="py-24 px-4 bg-white relative overflow-hidden">
+    <div class="absolute right-0 top-0 w-1/2 h-full bg-brand-light-bg rounded-l-[100px] -z-10 hidden lg:block"></div>
+    <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+      
+      <div class="w-full lg:w-5/12">
+        <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm">Sample</div>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-navy mb-6">A report built just for you</h2>
+        <p class="text-brand-text text-lg mb-8">Every report is uniquely generated based on your Raasi, Lagnam, Nakshatra, and the four intake questions. No templates. No generic horoscopes.</p>
+        
+        <ul class="space-y-6 mb-10">
+          {[
+            "Personal strength and shadow analysis based on your Nakshatra",
+            "Career and life path aligned with your Lagnam and current struggles",
+            "Actionable monthly guidance and spiritual remedies",
+            "Downloadable as PDF or Word — share with family or counsellors"
+          ].map(li => (
+            <li class="flex items-start gap-4">
+              <span class="text-brand-saffron mt-1">✦</span>
+              <span class="text-brand-navy font-medium">{li}</span>
+            </li>
+          ))}
+        </ul>
+        
+        <a href="/v3#form-section" class="inline-flex px-8 py-4 bg-brand-navy text-white rounded-xl font-bold text-lg hover:bg-brand-purple transition-colors shadow-md">
+          Get Your Personal Report
+        </a>
+      </div>
+      
+      <div class="w-full lg:w-7/12">
+        <!-- Visual Mockup of the Report -->
+        <div class="bg-white rounded-xl shadow-2xl border border-brand-border p-8 transform rotate-2 hover:rotate-0 transition-transform duration-500">
+          <div class="border-b border-brand-border pb-6 mb-6 text-center">
+            <h3 class="text-2xl font-bold text-brand-navy uppercase tracking-widest">Priya Nandakumar</h3>
+            <p class="text-brand-text-muted mt-2">Meenam · Thulam Lagnam · Revathi Nakshatra</p>
+            <div class="text-xs font-bold text-brand-saffron mt-4 tracking-[0.2em]">PERSONAL REPORT</div>
+          </div>
+          
+          <div class="mb-6">
+            <h4 class="font-bold text-brand-navy border-l-4 border-brand-purple pl-3 mb-3">Core Strengths</h4>
+            <div class="flex flex-wrap gap-2">
+              {['Deep empathy', 'Intuitive thinking', 'Creative vision', 'Spiritual depth'].map(tag => (
+                <span class="px-3 py-1 bg-brand-purple/5 text-brand-purple rounded border border-brand-purple/20 text-sm font-medium">{tag}</span>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-bold text-brand-navy border-l-4 border-brand-saffron pl-3 mb-3">Current Struggle — Career Confusion</h4>
+            <p class="text-brand-text text-sm leading-relaxed mb-4">
+              Your Revathi Nakshatra, ruled by Pushan — the divine shepherd — gives you a natural pull towards guiding and nurturing others. The confusion you feel is not lack of direction; it is an abundance of it. Your Thulam Lagnam...
+            </p>
+            <div class="h-24 bg-gradient-to-b from-brand-text/5 to-transparent rounded mt-4 flex items-center justify-center border border-dashed border-brand-border">
+              <span class="text-brand-text-muted/50 font-bold text-xl blur-[2px]">Life Path Guidance...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- Raasi Grid Section -->
+  <section class="py-24 px-4 bg-slate-50 border-t border-brand-border">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm">All 12 Raasis</div>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-navy mb-4">Which Raasi are you?</h2>
+        <p class="text-brand-text text-lg">Click your Raasi to begin your reading with it pre-filled.</p>
+      </div>
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {raasis.map(raasi => (
+          <a href="/v3#form-section" class="bg-white border border-brand-border rounded-2xl p-6 text-center hover:border-brand-saffron hover:shadow-lg transition-all group">
+            <div class="text-4xl mb-3 text-brand-navy/30 group-hover:text-brand-saffron transition-colors">{raasi.icon}</div>
+            <h3 class="font-bold text-brand-navy text-lg">{raasi.eng}</h3>
+            <p class="text-brand-text-muted text-sm mt-1">{raasi.tam}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="py-24 px-4 bg-brand-navy text-center relative overflow-hidden">
+    <div class="absolute inset-0 z-0 opacity-5">
+      <img src="/images/light_mandala_pattern.png" alt="" class="w-full h-full object-cover invert" />
+    </div>
+    <div class="max-w-3xl mx-auto relative z-10">
+      <h2 class="text-4xl md:text-6xl font-bold text-white mb-6">Your Nakshatra has <br />something to tell you.</h2>
+      <p class="text-xl text-white/80 mb-10">Answer eight questions. Get a full Vedic guidance report in minutes.</p>
+      
+      <a href="/v3#form-section" class="inline-block px-10 py-5 rounded-full bg-brand-saffron text-white font-bold text-xl hover:scale-105 transition-transform shadow-[0_0_30px_rgba(245,158,11,0.5)] mb-8">
+        Begin My Reading — Free
+      </a>
+      
+      <div class="flex flex-wrap justify-center items-center gap-4 text-sm text-white/60 font-medium">
+        <span>No account required</span>
+        <span class="w-1.5 h-1.5 bg-brand-saffron rounded-full"></span>
+        <span>Download instantly</span>
+        <span class="w-1.5 h-1.5 bg-brand-saffron rounded-full"></span>
+        <span>Tamil names supported</span>
+      </div>
+    </div>
+  </section>
+
+</Layout>

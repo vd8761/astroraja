@@ -1,16 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-navy: #1e1b4b;
-  --color-brand-navy-dark: #0f0a29;
-  --color-brand-purple: #4c1d95;
-  --color-brand-purple-dark: #2e1065;
+  --color-brand-light-bg: #faf8f5;
+  --color-brand-white: #ffffff;
+  
+  --color-brand-navy: #1e1b4b; /* For text/headings */
+  --color-brand-navy-light: #312e81; 
+  
+  --color-brand-purple: #4c1d95; /* For primary buttons */
   --color-brand-purple-light: #7c3aed;
-  --color-brand-purple-glow: rgba(124, 58, 237, 0.5);
-  --color-brand-gold: #fbbf24;
-  --color-brand-gold-light: #fde68a;
-  --color-brand-sandal: #d97706;
-  --color-brand-cream: #fef3c7;
+  
+  --color-brand-saffron: #f59e0b; /* Spiritual orange/gold */
+  --color-brand-saffron-dark: #d97706;
+  
+  --color-brand-text: #334155;
+  --color-brand-text-dark: #0f172a;
+  --color-brand-text-muted: #64748b;
+  
+  --color-brand-border: #e2e8f0;
   
   --font-sans: 'Outfit', sans-serif;
 }
@@ -20,23 +27,22 @@ html {
 }
 
 body {
-  background-color: var(--color-brand-navy-dark);
-  color: var(--color-brand-cream);
+  background-color: var(--color-brand-light-bg);
+  color: var(--color-brand-text);
   font-family: var(--font-sans);
   overflow-x: hidden;
 }
 
-/* Custom glow utility */
-@utility glow {
-  box-shadow: 0 0 20px var(--color-brand-purple-glow);
+@utility glow-light {
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.15);
 }
 
-@utility text-glow {
-  text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+@utility text-glow-light {
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
 }
 
-@utility gradient-text {
-  background: linear-gradient(to right, var(--color-brand-gold-light), var(--color-brand-gold));
+@utility gradient-text-light {
+  background: linear-gradient(to right, var(--color-brand-saffron-dark), var(--color-brand-purple));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
