@@ -1,17 +1,10 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import Layout from '../layouts/Layout.astro';
 
-export function getStaticPaths() {
-  return [
-    {params: {version: 'v1'}},
-    {params: {version: 'v2'}},
-    {params: {version: 'v3'}}
-  ];
-}
-const { version } = Astro.params;
+
 ---
 
-<Layout title="Terms of Use - Ask Astro Raja" version={version}>
+<Layout title="Terms of Use - Ask Astro Raja">
   
   <section class="py-24 px-4 bg-brand-light-bg relative overflow-hidden">
     <div class="absolute inset-0 z-0 opacity-10">

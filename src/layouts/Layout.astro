@@ -3,21 +3,19 @@ import '../styles/global.css';
 
 interface Props {
   title?: string;
-  version?: 'v1' | 'v2' | 'v3';
 }
 
-const { title = "Ask Astro Raja | Personalized Vedic Astrology", version = 'v3' } = Astro.props;
+const { title = "Ask Astro Raja | Personalized Vedic Astrology" } = Astro.props;
 
-const prefix = `/${version}`;
-const homeLink = prefix;
-const getReadingLink = `${prefix}#form-section`;
-const sampleLink = `${prefix}#sample`;
-const howItWorksLink = `${prefix}/how-it-works`;
-const raasiGuideLink = `${prefix}/raasi-guide`;
-const aboutLink = `${prefix}/about`;
-const faqLink = `${prefix}/faq`;
-const privacyLink = `${prefix}/privacy`;
-const termsLink = `${prefix}/terms`;
+const homeLink = '/';
+const getReadingLink = '/#form-section';
+const sampleLink = '/#sample';
+const howItWorksLink = '/how-it-works';
+const raasiGuideLink = '/raasi-guide';
+const aboutLink = '/about';
+const faqLink = '/faq';
+const privacyLink = '/privacy';
+const termsLink = '/terms';
 ---
 
 <!doctype html>

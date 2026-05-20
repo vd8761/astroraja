@@ -1,5 +1,5 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import Layout from '../layouts/Layout.astro';
 
 const faqs = [
   { 
@@ -36,17 +36,10 @@ const faqs = [
   }
 ];
 
-export function getStaticPaths() {
-  return [
-    {params: {version: 'v1'}},
-    {params: {version: 'v2'}},
-    {params: {version: 'v3'}}
-  ];
-}
-const { version } = Astro.params;
+
 ---
 
-<Layout title="FAQ | Ask Astro Raja" version={version}>
+<Layout title="FAQ | Ask Astro Raja">
   
   <section class="py-24 px-4 bg-brand-light-bg relative overflow-hidden border-b border-brand-border/50">
     <div class="max-w-3xl mx-auto relative z-10 text-center">
