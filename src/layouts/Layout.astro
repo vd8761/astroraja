@@ -54,7 +54,7 @@ const termsLink = '/terms';
     <meta name="twitter:image" content={new URL(image, canonicalURL)} />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
   <body class="bg-brand-light-bg text-brand-text flex flex-col min-h-screen">
     
@@ -62,11 +62,13 @@ const termsLink = '/terms';
     <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-brand-border/50 shadow-sm transition-all duration-300 relative">
       <div class="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
         <a href={homeLink} class="flex items-center gap-2 group flex-shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 sm:w-9 sm:h-9 text-brand-saffron group-hover:rotate-180 transition-transform duration-700 ease-in-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <ellipse cx="12" cy="12" rx="4" ry="10"></ellipse>
-            <ellipse cx="12" cy="12" rx="10" ry="4"></ellipse>
-            <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 sm:w-9 sm:h-9 text-brand-saffron group-hover:scale-105 transition-transform duration-500 ease-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3s-4 5-4 9c0 2.2 1.8 4 4 4s4-1.8 4-4c0-4-4-9-4-9Z" fill="currentColor" fill-opacity="0.1"/>
+            <path d="M12 16s-7 1-7-4c0-2.8 4-6 7-6" />
+            <path d="M12 16s7 1 7-4c0-2.8-4-6-7-6" />
+            <path d="M12 16c-3 3-7 5-7 5" />
+            <path d="M12 16c3 3 7 5 7 5" />
+            <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
           </svg>
           <span class="text-xl sm:text-2xl font-bold tracking-tight text-brand-navy">Ask Astro Raja</span>
         </a>
@@ -126,11 +128,13 @@ const termsLink = '/terms';
       <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-12 mb-12">
         <div class="col-span-1 md:col-span-1 mb-6 md:mb-0">
           <a href={homeLink} class="flex items-center gap-2 mb-4 group">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-brand-saffron group-hover:rotate-180 transition-transform duration-700 ease-in-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <ellipse cx="12" cy="12" rx="4" ry="10"></ellipse>
-              <ellipse cx="12" cy="12" rx="10" ry="4"></ellipse>
-              <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-brand-saffron group-hover:scale-105 transition-transform duration-500 ease-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3s-4 5-4 9c0 2.2 1.8 4 4 4s4-1.8 4-4c0-4-4-9-4-9Z" fill="currentColor" fill-opacity="0.1"/>
+              <path d="M12 16s-7 1-7-4c0-2.8 4-6 7-6" />
+              <path d="M12 16s7 1 7-4c0-2.8-4-6-7-6" />
+              <path d="M12 16c-3 3-7 5-7 5" />
+              <path d="M12 16c3 3 7 5 7 5" />
+              <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
             </svg>
             <span class="text-xl font-bold tracking-tight text-brand-navy">Ask Astro Raja</span>
           </a>
