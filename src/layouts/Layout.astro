@@ -5,25 +5,37 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  basePath?: string;
 }
 
 const { 
   title = "Ask Astro Raja | Personalized Vedic Astrology",
   description = "Get a highly personalized, AI-powered Vedic astrology report without endless back-and-forth. Clear guidance based on your Raasi, Lagnam, and current struggles.",
-  image = "/images/hero_moon_zodiac_1779193351110.png"
+  image = "/images/hero_moon_zodiac_1779193351110.png",
+  basePath = "/v1"
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://askastroraja.com');
 
-const homeLink = '/';
-const getReadingLink = '/#form-section';
-const sampleLink = '/#sample';
-const howItWorksLink = '/how-it-works';
-const raasiGuideLink = '/raasi-guide';
-const aboutLink = '/about';
-const faqLink = '/faq';
-const privacyLink = '/privacy';
-const termsLink = '/terms';
+const homeLink = `${basePath}/`;
+const getReadingLink = `${basePath}/#form-section`;
+const sampleLink = `${basePath}/sample-report`;
+const howItWorksLink = `${basePath}/how-it-works`;
+const raasiGuideLink = `${basePath}/raasi-guide`;
+const aboutLink = `${basePath}/about`;
+const faqLink = `${basePath}/faq`;
+const privacyLink = `${basePath}/privacy`;
+const termsLink = `${basePath}/terms`;
+const contactLink = `${basePath}/contact`;
+const currentPath = Astro.url.pathname;
+const isActive = (path) => {
+  // exact match for home
+  if (path === basePath + '/' || path === basePath) {
+    return currentPath === path || currentPath === path + '/';
+  }
+  // startsWith for other pages (like /v2/about)
+  return currentPath.startsWith(path);
+};
 ---
 
 <!doctype html>
@@ -58,8 +70,8 @@ const termsLink = '/terms';
   </head>
   <body class="bg-brand-light-bg text-brand-text flex flex-col min-h-screen">
     
-    <!-- Navigation Bar -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-brand-border/50 shadow-sm transition-all duration-300 relative">
+    <!-- Navigation Bar (Hidden when printing) -->
+    <header class="print:hidden sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-brand-border/50 shadow-sm transition-all duration-300 relative">
       <div class="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
         <a href={homeLink} class="flex items-center gap-2 group flex-shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 sm:w-11 sm:h-11 text-brand-saffron group-hover:scale-105 transition-transform duration-500 ease-out" viewBox="0 0 100 100" fill="currentColor">
@@ -74,10 +86,10 @@ const termsLink = '/terms';
         </a>
         
         <nav class="hidden md:flex items-center gap-8 font-medium">
-          <a href={howItWorksLink} class="text-brand-text hover:text-brand-saffron transition-colors">How It Works</a>
-          <a href={sampleLink} class="text-brand-text hover:text-brand-saffron transition-colors">Sample Report</a>
-          <a href={raasiGuideLink} class="text-brand-text hover:text-brand-saffron transition-colors">Raasi Guide</a>
-          <a href={aboutLink} class="text-brand-text hover:text-brand-saffron transition-colors">About</a>
+          <a href={howItWorksLink} class={`transition-colors ${isActive(howItWorksLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>How It Works</a>
+          <a href={raasiGuideLink} class={`transition-colors ${isActive(raasiGuideLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>Raasi Guide</a>
+          <a href={aboutLink} class={`transition-colors ${isActive(aboutLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>About</a>
+          <a href={faqLink} class={`transition-colors ${isActive(faqLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>FAQ</a>
         </nav>
         
         <div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
@@ -94,10 +106,10 @@ const termsLink = '/terms';
       
       <!-- Mobile Menu Dropdown -->
       <div id="mobile-menu" class="hidden md:hidden absolute top-20 left-0 w-full bg-white border-b border-brand-border shadow-xl py-4 px-6 flex flex-col gap-4">
-        <a href={howItWorksLink} class="mobile-link text-brand-text hover:text-brand-saffron font-medium py-2 border-b border-brand-border/30">How It Works</a>
-        <a href={sampleLink} class="mobile-link text-brand-text hover:text-brand-saffron font-medium py-2 border-b border-brand-border/30">Sample Report</a>
-        <a href={raasiGuideLink} class="mobile-link text-brand-text hover:text-brand-saffron font-medium py-2 border-b border-brand-border/30">Raasi Guide</a>
-        <a href={aboutLink} class="mobile-link text-brand-text hover:text-brand-saffron font-medium py-2 border-b border-brand-border/30">About</a>
+        <a href={howItWorksLink} class={`mobile-link font-medium py-2 border-b border-brand-border/30 ${isActive(howItWorksLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>How It Works</a>
+        <a href={raasiGuideLink} class={`mobile-link font-medium py-2 border-b border-brand-border/30 ${isActive(raasiGuideLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>Raasi Guide</a>
+        <a href={aboutLink} class={`mobile-link font-medium py-2 border-b border-brand-border/30 ${isActive(aboutLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>About</a>
+        <a href={faqLink} class={`mobile-link font-medium py-2 border-b border-brand-border/30 ${isActive(faqLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>FAQ</a>
       </div>
     </header>
 
@@ -123,8 +135,8 @@ const termsLink = '/terms';
       });
     </script>
 
-    <!-- Footer -->
-    <footer class="border-t border-brand-border/60 bg-white pt-16 pb-8 px-4 mt-auto">
+    <!-- Footer (Hidden when printing) -->
+    <footer class="print:hidden border-t border-brand-border/60 bg-white pt-16 pb-8 px-4 mt-auto">
       <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-12 mb-12">
         <div class="col-span-1 md:col-span-1 mb-6 md:mb-0">
           <a href={homeLink} class="flex items-center gap-2 mb-4 group">
@@ -158,7 +170,7 @@ const termsLink = '/terms';
           <h4 class="font-bold text-brand-navy mb-4">Company</h4>
           <ul class="space-y-3 text-sm">
             <li><a href={aboutLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">About Astro Raja</a></li>
-            <li><a href="/contact" class="text-brand-text-muted hover:text-brand-saffron transition-colors">Contact Us</a></li>
+            <li><a href={contactLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Contact Us</a></li>
           </ul>
         </div>
         

@@ -1,456 +1,69 @@
 ---
-import Layout from '../layouts/Layout.astro';
-
-// Form Data Options
-const raasiOptions = ["Mesham", "Rishabam", "Mithunam", "Kadagam", "Simham", "Kanni", "Thulam", "Viruchigam", "Dhanusu", "Magaram", "Kumbam", "Meenam"];
-const lagnamOptions = ["Mesham", "Rishabam", "Mithunam", "Kadagam", "Simham", "Kanni", "Thulam", "Viruchigam", "Dhanusu", "Magaram", "Kumbam", "Meenam"];
-const struggleOptions = [
-  "Money / Debt / Income instability", "Health anxiety / Fear", "Relationship / Marriage stress", 
-  "Family pressure / Guilt", "Career confusion / No direction", "Overthinking / Analysis paralysis", 
-  "Anger / Frustration / Impatience", "Lack of confidence / Self-doubt", "Loneliness / Feeling misunderstood", 
-  "Emotional overwhelm / Sensitivity", "Commitment issues", "Work-life imbalance", "Feeling stuck / Life not moving"
-];
-const dailyLifeOptions = [
-  "Hectic — no fixed pattern", "Office job — structured hours", "Work from home", 
-  "Entrepreneur / Own business", "Homemaker / Family-focused", "Student", "Multiple roles / All of the above"
-];
-const goalOptions = [
-  "Financial stability / Independence", "Better relationships / Marriage harmony", "Career growth / Find purpose", 
-  "Inner peace / Stop overthinking", "Build confidence / Self-worth", "Recognition / Be valued", 
-  "Independence / Freedom", "Health improvement", "Build a business / Grow income", "Spiritual growth"
-];
-const spiritualOptions = [
-  "Hindu / Temple / Devotional", "Spiritual but not religious", "Practical — no spiritual angle needed", "Open to all / Mixed"
-];
-
-const problemCards = [
-  { title: "Career confusion", icon: '<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>' },
-  { title: "Family pressure", icon: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>' },
-  { title: "Financial stress", icon: '<path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' },
-  { title: "Marriage delay", icon: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>' },
-  { title: "Health worries", icon: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>' },
-  { title: "Mental stress", icon: '<path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9"/><polyline points="13 11 9 17 15 17 11 23"/>' },
-  { title: "Spiritual disconnect", icon: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>' },
-  { title: "Unclear future direction", icon: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>' }
-];
+import '../styles/global.css';
 ---
 
-<Layout 
-  title="Ask Astro Raja | AI-Powered Personalized Vedic Astrology" 
-  description="Get a highly personalized, AI-powered Vedic astrology report without endless back-and-forth. Discover what your Raasi, Lagnam & Nakshatra reveal about your life path."
->
-
-  <!-- 1. Hero Section -->
-  <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden px-4 py-20 bg-gradient-to-b from-brand-light-bg to-white">
-    <div class="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center">
-      <div class="flex items-center justify-center gap-3 mb-8">
-        <span class="w-8 md:w-12 h-[1px] bg-brand-saffron/40"></span>
-        <span class="italic text-brand-saffron-dark text-lg md:text-xl">Guidance crafted for your soul's journey</span>
-        <span class="w-8 md:w-12 h-[1px] bg-brand-saffron/40"></span>
-      </div>
-      
-      <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight md:leading-tight mb-6 text-brand-navy drop-shadow-sm">
-        Find Clarity in Your Stars. <span class="gradient-text-light block mt-2">Discover Your Life Path</span>
-      </h1>
-      
-      <p class="text-lg md:text-xl text-brand-text max-w-2xl mb-10 leading-relaxed font-light">
-        Share your cosmic imprint and current life struggles. Receive deep, personalized Vedic guidance tailored exactly to your current life phase, without the wait.
-      </p>
-      
-      <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-        <a href="#form-section" class="w-full sm:w-auto px-8 py-4 bg-brand-saffron text-white rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-[0_4px_15px_rgba(245,158,11,0.3)] flex items-center justify-center gap-2">
-          Generate My Astro Report
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </a>
-        <a href="#how-it-works" class="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 text-brand-navy rounded-xl font-medium text-lg transition-colors border border-brand-border flex items-center justify-center shadow-sm">
-          See How It Works
-        </a>
-      </div>
-      
-      <p class="mt-8 text-sm text-brand-text-muted flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
-        Simple details. Personalized guidance. No complicated process.
-      </p>
-    </div>
-  </section>
-
-  <!-- 2. Problem Section -->
-  <section class="py-20 px-4 bg-slate-50 border-y border-brand-border/50 relative">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl md:text-5xl font-bold text-brand-navy mb-4">Feeling Confused About Life, <br class="hidden md:block" />Career, Family or Future?</h2>
-        <p class="text-brand-text text-lg">We all face phases where the path ahead seems unclear.</p>
-      </div>
-      
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-        {problemCards.map(problem => (
-          <div class="bg-white border-0 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] rounded-[2rem] p-8 flex flex-col items-center text-center hover:shadow-[0_10px_30px_-10px_rgba(245,158,11,0.15)] transition-all duration-300 group hover:-translate-y-1">
-            <div class="w-14 h-14 rounded-full bg-brand-light-bg flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-brand-saffron-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" set:html={problem.icon}></svg>
-            </div>
-            <h3 class="font-semibold text-lg text-brand-navy">{problem.title}</h3>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- 3. Solution Section -->
-  <section class="py-24 px-4 relative overflow-hidden bg-white">
-    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12 relative z-10">
-      <div class="w-full md:w-1/2 rounded-3xl overflow-hidden border border-brand-border relative group shadow-xl">
-        <div class="absolute inset-0 bg-brand-purple/5 group-hover:bg-transparent transition-colors z-10"></div>
-        <img src="/images/light_temple_lamp.png" alt="Bright Indian Temple Lamp" class="w-full aspect-[4/3] object-cover scale-105 group-hover:scale-100 transition-transform duration-700" />
-      </div>
-      
-      <div class="w-full md:w-1/2">
-        <h2 class="text-4xl md:text-5xl font-bold text-brand-navy mb-6 leading-tight">
-          <span class="gradient-text-light">One Message.</span><br />
-          <span class="text-brand-purple">One Report.</span><br />
-          Clear Guidance.
-        </h2>
-        <p class="text-xl text-brand-text mb-8 font-light leading-relaxed">
-          Forget endless back-and-forth consultations. At Astroraja, users can send all their details in one simple form.
-        </p>
-        <div class="bg-slate-50 border border-brand-border rounded-2xl p-6 shadow-sm">
-          <h4 class="text-brand-saffron-dark mb-3 font-semibold text-lg flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            What we analyze:
-          </h4>
-          <ul class="grid grid-cols-2 gap-3 text-sm md:text-base text-brand-text-dark">
-            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-saffron rounded-full"></div> Name</li>
-            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-saffron rounded-full"></div> Raasi / Moon Sign</li>
-            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-saffron rounded-full"></div> Lagnam / Ascendant</li>
-            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-saffron rounded-full"></div> Nakshatra / Birth Star</li>
-            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-saffron rounded-full"></div> Current Struggles</li>
-            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-saffron rounded-full"></div> Daily Life Pattern</li>
-            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-saffron rounded-full"></div> Biggest Life Goals</li>
-            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-brand-saffron rounded-full"></div> Spiritual Orientation</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 4. How It Works -->
-  <section id="how-it-works" class="py-20 px-4 bg-brand-light-bg">
-    <div class="max-w-6xl mx-auto">
-      <h2 class="text-3xl md:text-5xl font-bold text-center text-brand-navy mb-16">How Astroraja Works</h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {[
-          { step: "1", title: "Enter basic astrology details", icon: "M12 2a7 7 0 1 0 10 10" },
-          { step: "2", title: "Select your current life situation", icon: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" },
-          { step: "3", title: "Submit your complete details", icon: "m22 2-7 20-4-9-9-4Z" },
-          { step: "4", title: "Receive personalized Astro guidance report", icon: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" }
-        ].map(item => (
-          <div class="relative flex flex-col items-center text-center">
-            <div class="w-16 h-16 rounded-2xl bg-white border border-brand-saffron text-brand-saffron-dark flex items-center justify-center text-2xl font-bold mb-6 shadow-md relative z-10">
-              {item.step}
-            </div>
-            <h3 class="text-lg font-semibold text-brand-navy mb-2">{item.title}</h3>
-            <!-- Connector line for desktop -->
-            <div class="hidden md:block absolute top-8 left-[50%] w-full h-[2px] bg-gradient-to-r from-brand-saffron/30 to-transparent -z-0"></div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- 5. Form Section -->
-  <section id="form-section" class="py-24 px-4 relative bg-white border-t border-brand-border/50">
-    
-    <div class="max-w-4xl mx-auto relative z-10">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ask Astro Raja | Version Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-brand-light-bg text-brand-text min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-4xl w-full">
       <div class="text-center mb-12">
-        <h2 class="text-3xl md:text-4xl font-bold text-brand-navy mb-4">Request Your Reading</h2>
-        <p class="text-brand-text">Provide your details once. Receive clear, actionable spiritual guidance.</p>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-brand-saffron mx-auto mb-6" viewBox="0 0 100 100" fill="currentColor">
+          <circle cx="38" cy="50" r="20" fill="none" stroke="currentColor" stroke-width="4.5" />
+          <circle cx="38" cy="18" r="3.5" />
+          <circle cx="38" cy="82" r="3.5" />
+          <circle cx="8" cy="50" r="3.5" />
+          <path d="M 38 38 Q 38 50 26 50 Q 38 50 38 62 Q 38 50 50 50 Q 38 50 38 38 Z" />
+          <path d="M 64 20 C 84 20 94 38 94 50 C 94 62 84 80 64 80 C 76 74 80 62 80 50 C 80 38 76 26 64 20 Z" />
+        </svg>
+        <h1 class="text-4xl md:text-5xl font-bold text-brand-navy mb-4">Select a Version to Review</h1>
+        <p class="text-lg text-brand-text-muted">Explore the different variations of the Ask Astro Raja website.</p>
       </div>
 
-      <div class="bg-white border border-brand-border rounded-3xl p-6 md:p-10 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] relative overflow-hidden">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <form class="space-y-8" id="astro-main-form">
-          
-          <!-- STEP 1: BASIC DETAILS -->
-          <div id="form-step-1" class="transition-all duration-500">
-            <div class="mb-6 flex items-center justify-between border-b border-brand-border pb-4">
-              <h3 class="text-xl font-bold text-brand-saffron-dark">Step 1: Your Cosmic Imprint</h3>
-              <span class="text-sm text-brand-text-muted font-mono">1/3</span>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Name -->
-              <div class="space-y-2">
-                <label for="fullname" class="block text-sm font-semibold text-brand-navy">Full Name</label>
-                <input type="text" id="fullname" name="fullname" placeholder="Enter your name" class="w-full bg-slate-50 border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:ring-2 focus:ring-brand-saffron focus:ring-offset-2 transition-all placeholder:text-brand-text-muted" />
-                <p id="err-fullname" class="text-red-500 text-xs mt-1 hidden">Please enter your full name.</p>
-              </div>
-              
-              <!-- Nakshatra -->
-              <div class="space-y-2">
-                <label for="nakshatra" class="block text-sm font-semibold text-brand-navy">Nakshatra / Birth Star</label>
-                <input type="text" id="nakshatra" name="nakshatra" placeholder="Example: Chitra 4th Padam, Karthikai" class="w-full bg-slate-50 border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:ring-2 focus:ring-brand-saffron focus:ring-offset-2 transition-all placeholder:text-brand-text-muted" />
-                <p id="err-nakshatra" class="text-red-500 text-xs mt-1 hidden">Please specify your Nakshatra.</p>
-              </div>
-
-              <!-- Raasi -->
-              <div class="space-y-2">
-                <label for="raasi" class="block text-sm font-semibold text-brand-navy">Raasi / Moon Sign</label>
-                <select id="raasi" name="raasi" class="w-full bg-slate-50 border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:ring-2 focus:ring-brand-saffron focus:ring-offset-2 transition-all appearance-none cursor-pointer">
-                  <option value="" disabled selected>Select Raasi</option>
-                  {raasiOptions.map(opt => <option value={opt}>{opt}</option>)}
-                </select>
-                <p id="err-raasi" class="text-red-500 text-xs mt-1 hidden">Please select your Raasi.</p>
-              </div>
-
-              <!-- Lagnam -->
-              <div class="space-y-2">
-                <label for="lagnam" class="block text-sm font-semibold text-brand-navy">Lagnam / Ascendant</label>
-                <select id="lagnam" name="lagnam" class="w-full bg-slate-50 border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:ring-2 focus:ring-brand-saffron focus:ring-offset-2 transition-all appearance-none cursor-pointer">
-                  <option value="" disabled selected>Select Lagnam</option>
-                  {lagnamOptions.map(opt => <option value={opt}>{opt}</option>)}
-                </select>
-                <p id="err-lagnam" class="text-red-500 text-xs mt-1 hidden">Please select your Lagnam.</p>
-              </div>
-            </div>
-
-            <div class="mt-8">
-              <button type="button" id="btn-proceed" class="w-full py-4 rounded-xl bg-brand-navy text-white font-bold text-lg hover:shadow-lg transition-all flex justify-center items-center gap-2 group">
-                Proceed to Secure Payment
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-              </button>
-            </div>
+        <!-- Version 1 -->
+        <a href="/v1/" class="bg-white border-2 border-brand-border hover:border-brand-saffron rounded-2xl p-8 transition-all hover:shadow-xl group flex flex-col items-center text-center">
+          <div class="w-16 h-16 bg-brand-navy text-white rounded-full flex items-center justify-center text-2xl font-bold mb-6 group-hover:scale-110 transition-transform">1</div>
+          <h2 class="text-xl font-bold text-brand-navy mb-3">V1: Current Version</h2>
+          <p class="text-brand-text-muted text-sm">
+            The polished, modern design featuring the newly written, highly-optimized marketing copy.
+          </p>
+          <div class="mt-6 px-6 py-2 bg-slate-100 rounded-full text-brand-navy text-sm font-semibold group-hover:bg-brand-saffron group-hover:text-white transition-colors">
+            View Version 1
           </div>
+        </a>
 
-          <!-- STEP 2: PAYMENT (Simulated) -->
-          <div id="form-step-2" class="hidden transition-all duration-500">
-            <div class="mb-6 flex items-center justify-between border-b border-brand-border pb-4">
-              <h3 class="text-xl font-bold text-brand-saffron-dark">Step 2: Unlock Your Reading</h3>
-              <span class="text-sm text-brand-text-muted font-mono">2/3</span>
-            </div>
-            
-            <div class="bg-slate-50 rounded-2xl p-6 md:p-8 border border-brand-border text-center mb-8">
-              <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-              </div>
-              <h4 class="text-2xl font-bold text-brand-navy mb-2">Your Personal Vedic Reading</h4>
-              <p class="text-brand-text mb-6">Gain complete clarity on your life path, career, and relationships.</p>
-              
-              <div class="text-4xl font-extrabold text-brand-saffron-dark mb-6">₹499 <span class="text-lg text-brand-text-muted line-through font-normal">₹1499</span></div>
-              
-              <button type="button" id="btn-pay" class="w-full py-4 rounded-xl bg-green-600 text-white font-bold text-lg hover:bg-green-700 transition-colors shadow-md flex justify-center items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                Pay Securely Now
-              </button>
-              <p class="mt-4 text-xs text-brand-text-muted flex items-center justify-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                100% Safe & Secure Payments
-              </p>
-            </div>
-            <button type="button" id="btn-back-1" class="text-sm font-medium text-brand-text-muted hover:text-brand-saffron-dark hover:underline active:scale-95 transition-all flex items-center justify-center gap-1 mx-auto w-full">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-              Back to Details
-            </button>
+        <!-- Version 2 -->
+        <a href="/v2/" class="bg-white border-2 border-brand-border hover:border-brand-saffron rounded-2xl p-8 transition-all hover:shadow-xl group flex flex-col items-center text-center">
+          <div class="w-16 h-16 bg-brand-navy text-white rounded-full flex items-center justify-center text-2xl font-bold mb-6 group-hover:scale-110 transition-transform">2</div>
+          <h2 class="text-xl font-bold text-brand-navy mb-3">V2: Hybrid</h2>
+          <p class="text-brand-text-muted text-sm">
+            The polished, modern design (V1 theme) but populated entirely with the original Claude-generated text.
+          </p>
+          <div class="mt-6 px-6 py-2 bg-slate-100 rounded-full text-brand-navy text-sm font-semibold group-hover:bg-brand-saffron group-hover:text-white transition-colors">
+            View Version 2
           </div>
+        </a>
 
-          <!-- STEP 3: INTAKE QUESTIONS -->
-          <div id="form-step-3" class="hidden transition-all duration-500">
-            <div class="mb-6 flex items-center justify-between border-b border-brand-border pb-4">
-              <h3 class="text-xl font-bold text-brand-saffron-dark flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
-                Payment Successful!
-              </h3>
-              <span class="text-sm text-brand-text-muted font-mono">3/3</span>
-            </div>
-            
-            <p class="text-sm text-brand-text mb-6">Please answer these 4 simple questions so we can personalize your guidance perfectly.</p>
-            
-            <!-- Q1 Struggles -->
-            <div class="space-y-3 mb-6">
-              <label class="block text-sm font-semibold text-brand-navy">Q1. What are your current struggles? <span class="text-brand-text-muted text-xs font-normal">(Select all that apply)</span></label>
-              <div class="flex flex-wrap gap-2">
-                {struggleOptions.map((opt, i) => (
-                  <label class="cursor-pointer">
-                    <input type="checkbox" class="peer sr-only" name="struggles" value={opt} />
-                    <div class="px-4 py-2 rounded-full border border-brand-border bg-slate-50 text-sm text-brand-text peer-checked:bg-brand-purple peer-checked:text-white peer-checked:border-brand-purple transition-all hover:bg-slate-100 peer-checked:hover:bg-brand-purple">
-                      {opt}
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <!-- Q2 Daily Life -->
-            <div class="space-y-3 mb-6">
-              <label class="block text-sm font-semibold text-brand-navy">Q2. Describe your daily life pattern</label>
-              <div class="flex flex-wrap gap-2">
-                {dailyLifeOptions.map((opt, i) => (
-                  <label class="cursor-pointer">
-                    <input type="radio" class="peer sr-only" name="dailylife" value={opt} />
-                    <div class="px-4 py-2 rounded-full border border-brand-border bg-slate-50 text-sm text-brand-text peer-focus-visible:ring-2 peer-focus-visible:ring-brand-saffron peer-focus-visible:ring-offset-2 peer-checked:bg-brand-saffron peer-checked:text-brand-navy peer-checked:font-medium peer-checked:border-brand-saffron transition-all hover:bg-slate-100 peer-checked:hover:bg-brand-saffron">
-                      {opt}
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <!-- Q3 Goals -->
-            <div class="space-y-3 mb-6">
-              <label class="block text-sm font-semibold text-brand-navy">Q3. What are your biggest life goals? <span class="text-brand-text-muted text-xs font-normal">(Select all that apply)</span></label>
-              <div class="flex flex-wrap gap-2">
-                {goalOptions.map((opt, i) => (
-                  <label class="cursor-pointer">
-                    <input type="checkbox" class="peer sr-only" name="goals" value={opt} />
-                    <div class="px-4 py-2 rounded-full border border-brand-border bg-slate-50 text-sm text-brand-text peer-focus-visible:ring-2 peer-focus-visible:ring-brand-saffron peer-focus-visible:ring-offset-2 peer-checked:bg-brand-purple peer-checked:text-white peer-checked:border-brand-purple transition-all hover:bg-slate-100 peer-checked:hover:bg-brand-purple">
-                      {opt}
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <!-- Q4 Spiritual -->
-            <div class="space-y-3 mb-8">
-              <label for="spiritual" class="block text-sm font-semibold text-brand-navy">Q4. What is your spiritual orientation?</label>
-              <select id="spiritual" name="spiritual" class="w-full bg-slate-50 border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:ring-2 focus:ring-brand-saffron focus:ring-offset-2 transition-all appearance-none cursor-pointer">
-                <option value="" disabled selected>Select orientation</option>
-                {spiritualOptions.map(opt => <option value={opt}>{opt}</option>)}
-              </select>
-            </div>
-
-            <button type="submit" class="w-full py-4 rounded-xl bg-brand-navy text-white font-bold text-lg hover:shadow-lg transition-all flex justify-center items-center gap-2 group">
-              Generate My Personalized Astro Report
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
+        <!-- Version 3 -->
+        <a href="/v3/" class="bg-white border-2 border-brand-border hover:border-brand-saffron rounded-2xl p-8 transition-all hover:shadow-xl group flex flex-col items-center text-center">
+          <div class="w-16 h-16 bg-brand-navy text-white rounded-full flex items-center justify-center text-2xl font-bold mb-6 group-hover:scale-110 transition-transform">3</div>
+          <h2 class="text-xl font-bold text-brand-navy mb-3">V3: Original Claude</h2>
+          <p class="text-brand-text-muted text-sm">
+            The original, unmodified HTML design and content directly from the Claude generation source.
+          </p>
+          <div class="mt-6 px-6 py-2 bg-slate-100 rounded-full text-brand-navy text-sm font-semibold group-hover:bg-brand-saffron group-hover:text-white transition-colors">
+            View Version 3
           </div>
-          
-        </form>
+        </a>
+
       </div>
     </div>
-    
-    <script>
-      window.showToast = function(title, message, type = 'success') {
-        const toast = document.getElementById('custom-toast');
-        const toastTitle = document.getElementById('toast-title');
-        const toastMessage = document.getElementById('toast-message');
-        const iconError = document.getElementById('toast-icon-error');
-        const iconSuccess = document.getElementById('toast-icon-success');
-        
-        toastTitle.textContent = title;
-        toastMessage.textContent = message;
-        
-        if (type === 'error') {
-          iconError.classList.remove('hidden');
-          iconSuccess.classList.add('hidden');
-          toast.querySelector('.toast-inner').classList.replace('border-brand-border', 'border-red-500');
-        } else {
-          iconSuccess.classList.remove('hidden');
-          iconError.classList.add('hidden');
-          toast.querySelector('.toast-inner').classList.replace('border-red-500', 'border-brand-border');
-        }
-        
-        toast.classList.remove('translate-x-[120vw]', 'sm:translate-x-full', 'opacity-0', 'pointer-events-none');
-        toast.classList.add('translate-x-0', 'opacity-100');
-        
-        if(window.toastTimer) clearTimeout(window.toastTimer);
-        window.toastTimer = setTimeout(() => {
-          closeToast();
-        }, 4000);
-      };
-      
-      window.closeToast = function() {
-        const toast = document.getElementById('custom-toast');
-        toast.classList.remove('translate-x-0', 'opacity-100');
-        toast.classList.add('translate-x-[120vw]', 'sm:translate-x-full', 'opacity-0', 'pointer-events-none');
-      };
-
-      document.addEventListener('DOMContentLoaded', () => {
-        const step1 = document.getElementById('form-step-1');
-        const step2 = document.getElementById('form-step-2');
-        const step3 = document.getElementById('form-step-3');
-        const mainForm = document.getElementById('astro-main-form');
-        
-        const btnProceed = document.getElementById('btn-proceed');
-        const btnPay = document.getElementById('btn-pay');
-        const btnBack1 = document.getElementById('btn-back-1');
-        const toastClose = document.getElementById('toast-close');
-        
-        toastClose?.addEventListener('click', closeToast);
-
-        mainForm?.addEventListener('submit', (e) => {
-          e.preventDefault();
-          showToast('Report Generating', 'Your personalized Astro Report has been started! Check your email shortly.', 'success');
-        });
-        
-        btnProceed?.addEventListener('click', () => {
-          const fields = ['fullname', 'nakshatra', 'raasi', 'lagnam'];
-          let isValid = true;
-          let firstInvalid = null;
-
-          // Reset all fields
-          fields.forEach(id => {
-            const el = document.getElementById(id);
-            const errEl = document.getElementById('err-' + id);
-            el.classList.remove('border-red-500', 'ring-red-500');
-            el.classList.add('border-brand-border');
-            errEl.classList.add('hidden');
-          });
-
-          // Validate each field
-          fields.forEach(id => {
-            const el = document.getElementById(id);
-            const errEl = document.getElementById('err-' + id);
-            if (!el.value.trim()) {
-              isValid = false;
-              el.classList.remove('border-brand-border');
-              el.classList.add('border-red-500', 'ring-red-500');
-              errEl.classList.remove('hidden');
-              if (!firstInvalid) firstInvalid = el;
-            }
-          });
-
-          if (!isValid) {
-            showToast('Missing Details', 'Please complete all highlighted fields to continue.', 'error');
-            firstInvalid.focus();
-            return;
-          }
-
-          step1.classList.add('hidden');
-          step2.classList.remove('hidden');
-        });
-        
-        btnBack1?.addEventListener('click', () => {
-          step2.classList.add('hidden');
-          step1.classList.remove('hidden');
-        });
-        
-        btnPay?.addEventListener('click', () => {
-          const originalText = btnPay.innerHTML;
-          btnPay.innerHTML = "Processing Secure Payment...";
-          
-          // Simulate payment processing
-          setTimeout(() => {
-            step2.classList.add('hidden');
-            step3.classList.remove('hidden');
-          }, 1500);
-        });
-      });
-    </script>
-  </section>
-
-  <!-- Custom Toast Notification -->
-  <div id="custom-toast" role="alert" aria-live="assertive" class="fixed top-4 left-4 right-4 sm:left-auto sm:w-96 z-[100] translate-x-[120vw] sm:translate-x-full opacity-0 pointer-events-none transition-all duration-300">
-    <div class="toast-inner bg-white border border-brand-border rounded-xl p-4 shadow-xl flex items-start gap-3 w-full">
-      <svg id="toast-icon-error" class="w-6 h-6 text-red-500 hidden flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-      <svg id="toast-icon-success" class="w-6 h-6 text-green-500 hidden flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-      <div>
-        <h4 id="toast-title" class="text-brand-navy font-bold text-sm">Notification</h4>
-        <p id="toast-message" class="text-brand-text text-sm mt-1"></p>
-      </div>
-      <button type="button" id="toast-close" class="text-brand-text-muted hover:text-brand-navy transition-colors ml-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-      </button>
-    </div>
-  </div>
-
-</Layout>
+  </body>
+</html>

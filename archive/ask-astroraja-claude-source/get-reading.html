@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Get Your Reading — Ask Astro Raja</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&family=Cinzel:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold: #C8941A;
+  --gold-light: #E8B84B;
+  --gold-pale: #FBF3E2;
+  --gold-faint: #FDF8EE;
+  --ink: #1A1108;
+  --ink-mid: #3D2F1A;
+  --ink-soft: #6B5A42;
+  --cream: #FEFAF3;
+  --cream-border: #EDE3CE;
+  --saffron: #D4560A;
+  --white: #FFFFFF;
+  --error: #C0392B;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(254,250,243,0.94);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--cream-border);
+  padding: 0 6%;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 68px;
+}
+.nav-logo {
+  font-family: 'Cinzel', serif; font-size: 17px; color: var(--ink);
+  letter-spacing: 0.04em; text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-logo span { color: var(--gold); font-size: 13px; }
+.nav-back {
+  font-size: 12px; font-weight: 400; letter-spacing: 0.07em;
+  color: var(--ink-soft); text-decoration: none; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+  transition: color 0.2s;
+}
+.nav-back:hover { color: var(--gold); }
+
+/* ── LAYOUT ── */
+.form-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  min-height: 100vh;
+  padding-top: 68px;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--ink);
+  padding: 48px 36px;
+  position: sticky; top: 68px;
+  height: calc(100vh - 68px);
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+.sidebar-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px; font-weight: 400; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(254,250,243,0.35);
+  margin-bottom: 32px;
+}
+.steps-nav { flex: 1; }
+.step-nav-item {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px 0; cursor: pointer; transition: opacity 0.2s;
+  border-bottom: 1px solid rgba(254,250,243,0.06);
+}
+.step-nav-item:last-child { border-bottom: none; }
+.step-nav-item.inactive { opacity: 0.35; pointer-events: none; }
+.step-nav-item.active { opacity: 1; }
+.step-nav-item.done { opacity: 0.7; }
+.step-nav-item.done:hover { opacity: 1; }
+
+.sni-dot {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(254,250,243,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: rgba(254,250,243,0.4);
+  font-weight: 500; transition: all 0.3s; margin-top: 2px;
+}
+.step-nav-item.active .sni-dot {
+  background: var(--gold); border-color: var(--gold); color: var(--white);
+}
+.step-nav-item.done .sni-dot {
+  background: rgba(200,148,26,0.2); border-color: rgba(200,148,26,0.5);
+  color: var(--gold-light); font-size: 13px;
+}
+.sni-text {}
+.sni-label {
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(254,250,243,0.3); margin-bottom: 4px;
+}
+.step-nav-item.active .sni-label { color: rgba(200,148,26,0.7); }
+.sni-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px; font-weight: 600; color: rgba(254,250,243,0.5);
+  line-height: 1.2;
+}
+.step-nav-item.active .sni-title { color: var(--cream); }
+.sni-desc {
+  font-size: 11px; color: rgba(254,250,243,0.25); margin-top: 3px; line-height: 1.5;
+}
+.step-nav-item.active .sni-desc { color: rgba(254,250,243,0.4); }
+
+/* user info preview in sidebar */
+.sidebar-user-preview {
+  margin-top: 32px; padding-top: 24px;
+  border-top: 1px solid rgba(254,250,243,0.08);
+}
+.sup-title {
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(254,250,243,0.25); margin-bottom: 14px;
+}
+.sup-field {
+  display: flex; justify-content: space-between;
+  padding: 7px 0; border-bottom: 1px solid rgba(254,250,243,0.05);
+}
+.sup-key { font-size: 11px; color: rgba(254,250,243,0.25); }
+.sup-val {
+  font-size: 11px; color: rgba(200,148,26,0.7);
+  font-family: 'Cormorant Garamond', serif; font-size: 13px;
+}
+
+/* ── MAIN FORM AREA ── */
+.form-main {
+  padding: 56px 6% 80px;
+  max-width: 720px;
+}
+
+/* ── STEP PANELS ── */
+.step-panel { display: none; }
+.step-panel.active {
+  display: block;
+  animation: slideIn 0.35s ease both;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.step-eyebrow {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.step-eyebrow::after { content: ''; flex: 0 0 28px; height: 1px; background: var(--cream-border); }
+.step-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 4vw, 48px); font-weight: 400;
+  line-height: 1.1; color: var(--ink); margin-bottom: 10px;
+}
+.step-heading em { font-style: italic; color: var(--gold); }
+.step-sub {
+  font-size: 14px; color: var(--ink-soft); line-height: 1.75;
+  margin-bottom: 40px; max-width: 520px;
+}
+
+/* ── FORM FIELDS ── */
+.field-group { margin-bottom: 28px; }
+.field-label {
+  display: block; font-size: 11px; font-weight: 500;
+  letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--ink-soft); margin-bottom: 10px;
+}
+.field-label span { color: var(--gold); }
+
+.field-input, .field-select {
+  width: 100%; padding: 14px 18px;
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 2px; font-family: 'DM Sans', sans-serif;
+  font-size: 15px; color: var(--ink);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none; -webkit-appearance: none;
+  outline: none;
+}
+.field-input:focus, .field-select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(200,148,26,0.08);
+}
+.field-input.error, .field-select.error { border-color: var(--error); }
+.field-hint { font-size: 11px; color: var(--ink-soft); margin-top: 7px; }
+.field-error { font-size: 11px; color: var(--error); margin-top: 6px; display: none; }
+.field-error.show { display: block; }
+
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: '▾'; position: absolute; right: 16px; top: 50%;
+  transform: translateY(-50%); color: var(--gold); pointer-events: none;
+  font-size: 13px;
+}
+
+.fields-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+}
+
+/* ── RAASI DROPDOWN options ── */
+.raasi-dropdown-note {
+  font-size: 11px; color: var(--ink-soft); margin-top: 7px;
+}
+
+/* ── MULTI-SELECT CHIPS ── */
+.chips-grid {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px;
+}
+.chip {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 100px; padding: 8px 16px;
+  font-size: 13px; color: var(--ink-soft);
+  cursor: pointer; transition: all 0.15s; user-select: none;
+}
+.chip:hover { border-color: var(--gold); color: var(--ink); }
+.chip.selected {
+  background: var(--gold); border-color: var(--gold);
+  color: var(--white); font-weight: 500;
+}
+.chips-select-all {
+  font-size: 11px; color: var(--gold); cursor: pointer;
+  margin-bottom: 12px; display: inline-flex; align-items: center; gap: 6px;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* ── SINGLE-SELECT CARDS ── */
+.option-cards {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+}
+.option-card {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 20px 20px;
+  cursor: pointer; transition: all 0.15s; user-select: none;
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.option-card:hover { border-color: var(--gold-light); }
+.option-card.selected {
+  border-color: var(--gold); background: var(--gold-faint);
+}
+.option-card-radio {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid var(--cream-border); flex-shrink: 0; margin-top: 2px;
+  transition: all 0.15s;
+}
+.option-card.selected .option-card-radio {
+  border-color: var(--gold);
+  background: radial-gradient(circle, var(--gold) 40%, transparent 40%);
+  border-width: 2px;
+}
+.option-card-text {}
+.option-card-label {
+  font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 2px;
+}
+.option-card.selected .option-card-label { color: var(--ink); }
+.option-card-sub { font-size: 11px; color: var(--ink-soft); line-height: 1.5; }
+
+/* ── PROGRESS BAR ── */
+.progress-bar-wrap {
+  margin-bottom: 40px;
+}
+.progress-bar-track {
+  height: 2px; background: var(--cream-border); border-radius: 2px; margin-bottom: 10px;
+}
+.progress-bar-fill {
+  height: 100%; background: var(--gold); border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.progress-bar-label {
+  font-size: 11px; color: var(--ink-soft); letter-spacing: 0.04em;
+  display: flex; justify-content: space-between;
+}
+.progress-bar-label span { color: var(--gold); font-weight: 500; }
+
+/* ── NAVIGATION BUTTONS ── */
+.form-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 44px; padding-top: 32px;
+  border-top: 1px solid var(--cream-border);
+}
+.btn-back {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--ink-soft);
+  background: none; border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  transition: color 0.2s; padding: 0;
+}
+.btn-back:hover { color: var(--gold); }
+.btn-back:disabled { opacity: 0.3; pointer-events: none; }
+.btn-next {
+  background: var(--ink); color: var(--white);
+  border: none; border-radius: 2px; padding: 14px 36px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500; letter-spacing: 0.07em;
+  text-transform: uppercase; cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  display: flex; align-items: center; gap: 10px;
+}
+.btn-next:hover { background: var(--gold); transform: translateY(-1px); }
+.btn-next:disabled { opacity: 0.5; pointer-events: none; }
+.btn-generate {
+  background: var(--gold); color: var(--white);
+  border: none; border-radius: 2px; padding: 16px 40px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500; letter-spacing: 0.07em;
+  text-transform: uppercase; cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  display: flex; align-items: center; gap: 10px;
+}
+.btn-generate:hover { background: #B07D0E; transform: translateY(-1px); }
+
+/* ── REVIEW PANEL ── */
+.review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+.review-card {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 20px 20px;
+}
+.review-card-label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--gold); margin-bottom: 8px;
+}
+.review-card-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px; font-weight: 600; color: var(--ink);
+}
+.review-card-sub { font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
+.review-answers {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 24px; margin-bottom: 16px;
+}
+.review-answer-title {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--gold); margin-bottom: 12px;
+}
+.review-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.review-tag {
+  background: var(--gold-faint); border: 1px solid var(--cream-border);
+  border-radius: 100px; padding: 4px 12px; font-size: 12px; color: var(--ink-mid);
+}
+.review-answer-single {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px; font-weight: 600; color: var(--ink);
+}
+
+.edit-link {
+  font-size: 11px; color: var(--gold); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px;
+  float: right; font-weight: 500;
+}
+
+/* ── DISCLAIMER BOX ── */
+.disclaimer-box {
+  background: var(--gold-faint); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 20px 22px; margin-top: 24px;
+  display: flex; gap: 14px;
+}
+.disclaimer-icon { color: var(--gold); font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+.disclaimer-text { font-size: 12px; color: var(--ink-soft); line-height: 1.7; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .form-layout { grid-template-columns: 1fr; }
+  .sidebar {
+    position: static; height: auto;
+    padding: 32px 5%; display: none;
+  }
+  .form-main { padding: 40px 5% 60px; max-width: 100%; }
+  .fields-row { grid-template-columns: 1fr; }
+  .option-cards { grid-template-columns: 1fr; }
+  .review-grid { grid-template-columns: 1fr; }
+}
+
+/* ── MOBILE PROGRESS (shown only on mobile) ── */
+.mobile-step-header {
+  display: none;
+  padding: 20px 5% 0;
+  background: var(--ink);
+}
+@media (max-width: 900px) {
+  .mobile-step-header { display: block; }
+}
+.msh-title { font-family: 'Cinzel', serif; font-size: 16px; color: var(--cream); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.msh-title span { color: var(--gold); font-size: 12px; }
+.msh-dots { display: flex; gap: 6px; padding-bottom: 20px; }
+.msh-dot {
+  height: 3px; border-radius: 3px; background: rgba(254,250,243,0.15);
+  flex: 1; transition: background 0.3s;
+}
+.msh-dot.done { background: rgba(200,148,26,0.5); }
+.msh-dot.active { background: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html"><span>✦</span> Ask Astro Raja</a>
+  <a href="index.html" class="nav-back">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M11 7H3M6 3.5L2.5 7 6 10.5"/>
+    </svg>
+    Back to Home
+  </a>
+</nav>
+
+<!-- MOBILE PROGRESS HEADER -->
+<div class="mobile-step-header">
+  <div class="msh-title"><span>✦</span> Ask Astro Raja</div>
+  <div class="msh-dots" id="mobileDots">
+    <div class="msh-dot active"></div>
+    <div class="msh-dot"></div>
+    <div class="msh-dot"></div>
+    <div class="msh-dot"></div>
+    <div class="msh-dot"></div>
+    <div class="msh-dot"></div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="form-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Your Reading Journey</div>
+
+    <div class="steps-nav">
+      <div class="step-nav-item active" id="nav-0" onclick="goToStep(0)">
+        <div class="sni-dot">1</div>
+        <div class="sni-text">
+          <div class="sni-label">Step 1</div>
+          <div class="sni-title">Your Details</div>
+          <div class="sni-desc">Name, Raasi, Lagnam, Nakshatra</div>
+        </div>
+      </div>
+      <div class="step-nav-item inactive" id="nav-1" onclick="goToStep(1)">
+        <div class="sni-dot">2</div>
+        <div class="sni-text">
+          <div class="sni-label">Step 2</div>
+          <div class="sni-title">Current Struggles</div>
+          <div class="sni-desc">What challenges are you facing now?</div>
+        </div>
+      </div>
+      <div class="step-nav-item inactive" id="nav-2" onclick="goToStep(2)">
+        <div class="sni-dot">3</div>
+        <div class="sni-text">
+          <div class="sni-label">Step 3</div>
+          <div class="sni-title">Daily Life</div>
+          <div class="sni-desc">What is your current lifestyle?</div>
+        </div>
+      </div>
+      <div class="step-nav-item inactive" id="nav-3" onclick="goToStep(3)">
+        <div class="sni-dot">4</div>
+        <div class="sni-text">
+          <div class="sni-label">Step 4</div>
+          <div class="sni-title">Life Goals</div>
+          <div class="sni-desc">What do you most want to achieve?</div>
+        </div>
+      </div>
+      <div class="step-nav-item inactive" id="nav-4" onclick="goToStep(4)">
+        <div class="sni-dot">5</div>
+        <div class="sni-text">
+          <div class="sni-label">Step 5</div>
+          <div class="sni-title">Spiritual Orientation</div>
+          <div class="sni-desc">Your relationship with spirituality</div>
+        </div>
+      </div>
+      <div class="step-nav-item inactive" id="nav-5" onclick="goToStep(5)">
+        <div class="sni-dot">6</div>
+        <div class="sni-text">
+          <div class="sni-label">Step 6</div>
+          <div class="sni-title">Review & Generate</div>
+          <div class="sni-desc">Confirm and get your report</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-user-preview" id="userPreview">
+      <div class="sup-title">Your Details So Far</div>
+      <div class="sup-field"><span class="sup-key">Name</span><span class="sup-val" id="prev-name">—</span></div>
+      <div class="sup-field"><span class="sup-key">Raasi</span><span class="sup-val" id="prev-raasi">—</span></div>
+      <div class="sup-field"><span class="sup-key">Lagnam</span><span class="sup-val" id="prev-lagnam">—</span></div>
+      <div class="sup-field"><span class="sup-key">Nakshatra</span><span class="sup-val" id="prev-nakshatra">—</span></div>
+    </div>
+  </aside>
+
+  <!-- FORM MAIN -->
+  <main class="form-main">
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progressFill" style="width:16.66%"></div>
+      </div>
+      <div class="progress-bar-label">
+        <span id="progressLabel">Step 1 of 6 — Your Details</span>
+        <span id="progressPct">17%</span>
+      </div>
+    </div>
+
+    <!-- ── STEP 1: DETAILS ── -->
+    <div class="step-panel active" id="step-0">
+      <div class="step-eyebrow">Step 1 of 6</div>
+      <h2 class="step-heading">Your cosmic <em>identity</em></h2>
+      <p class="step-sub">Enter your Vedic birth details. These three — Raasi, Lagnam, and Nakshatra — are the foundation of your entire reading.</p>
+
+      <div class="field-group">
+        <label class="field-label" for="name">Full Name <span>*</span></label>
+        <input class="field-input" type="text" id="name" placeholder="e.g. Priya Nandakumar" autocomplete="off"/>
+        <div class="field-error" id="name-error">Please enter your name.</div>
+      </div>
+
+      <div class="fields-row">
+        <div class="field-group">
+          <label class="field-label" for="raasi">Raasi (Moon Sign) <span>*</span></label>
+          <div class="select-wrap">
+            <select class="field-select" id="raasi">
+              <option value="">Select your Raasi</option>
+              <option value="Mesham">Mesham (மேஷம்) — Aries</option>
+              <option value="Rishabam">Rishabam (ரிஷபம்) — Taurus</option>
+              <option value="Midhunam">Midhunam (மிதுனம்) — Gemini</option>
+              <option value="Kadagam">Kadagam (கடகம்) — Cancer</option>
+              <option value="Simbha">Simbha (சிம்ஹம்) — Leo</option>
+              <option value="Kanni">Kanni (கன்னி) — Virgo</option>
+              <option value="Thulam">Thulam (துலாம்) — Libra</option>
+              <option value="Vrichigam">Vrichigam (விருச்சிகம்) — Scorpio</option>
+              <option value="Dhanusu">Dhanusu (தனுசு) — Sagittarius</option>
+              <option value="Magaram">Magaram (மகரம்) — Capricorn</option>
+              <option value="Kumbam">Kumbam (கும்பம்) — Aquarius</option>
+              <option value="Meenam">Meenam (மீனம்) — Pisces</option>
+            </select>
+          </div>
+          <div class="field-error" id="raasi-error">Please select your Raasi.</div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="lagnam">Lagnam (Ascendant) <span>*</span></label>
+          <div class="select-wrap">
+            <select class="field-select" id="lagnam">
+              <option value="">Select your Lagnam</option>
+              <option value="Mesham">Mesham (மேஷம்)</option>
+              <option value="Rishabam">Rishabam (ரிஷபம்)</option>
+              <option value="Midhunam">Midhunam (மிதுனம்)</option>
+              <option value="Kadagam">Kadagam (கடகம்)</option>
+              <option value="Simbha">Simbha (சிம்ஹம்)</option>
+              <option value="Kanni">Kanni (கன்னி)</option>
+              <option value="Thulam">Thulam (துலாம்)</option>
+              <option value="Vrichigam">Vrichigam (விருச்சிகம்)</option>
+              <option value="Dhanusu">Dhanusu (தனுசு)</option>
+              <option value="Magaram">Magaram (மகரம்)</option>
+              <option value="Kumbam">Kumbam (கும்பம்)</option>
+              <option value="Meenam">Meenam (மீனம்)</option>
+            </select>
+          </div>
+          <div class="field-error" id="lagnam-error">Please select your Lagnam.</div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="nakshatra">Nakshatra (Birth Star) <span>*</span></label>
+        <div class="select-wrap">
+          <select class="field-select" id="nakshatra">
+            <option value="">Select your Nakshatra</option>
+            <option value="Ashwini">Ashwini (அஸ்வினி)</option>
+            <option value="Bharani">Bharani (பரணி)</option>
+            <option value="Karthikai">Karthikai (கார்த்திகை)</option>
+            <option value="Rohini">Rohini (ரோகிணி)</option>
+            <option value="Mrigashira">Mrigashira (மிருகசீரிடம்)</option>
+            <option value="Ardra">Ardra / Thiruvadhirai (திருவாதிரை)</option>
+            <option value="Punarvasu">Punarvasu / Punarpoosam (புனர்பூசம்)</option>
+            <option value="Pushya">Pushya / Poosam (பூசம்)</option>
+            <option value="Ashlesha">Ashlesha / Ayilyam (ஆயில்யம்)</option>
+            <option value="Magha">Magha / Magam (மகம்)</option>
+            <option value="Purva Phalguni">Purva Phalguni / Pooram (பூரம்)</option>
+            <option value="Uttara Phalguni">Uttara Phalguni / Uthiram (உத்திரம்)</option>
+            <option value="Hasta">Hasta / Astham (அஸ்தம்)</option>
+            <option value="Chitra">Chitra / Chithirai (சித்திரை)</option>
+            <option value="Swathi">Swathi / Swati (சுவாதி)</option>
+            <option value="Vishakha">Vishakha / Visakam (விசாகம்)</option>
+            <option value="Anuradha">Anuradha / Anusham (அனுஷம்)</option>
+            <option value="Jyeshta">Jyeshta / Kettai (கேட்டை)</option>
+            <option value="Mula">Mula / Moolam (மூலம்)</option>
+            <option value="Purva Ashadha">Purva Ashadha / Pooradam (பூராடம்)</option>
+            <option value="Uttara Ashadha">Uttara Ashadha / Uthiradam (உத்திராடம்)</option>
+            <option value="Shravana">Shravana / Thiruvonam (திருவோணம்)</option>
+            <option value="Dhanishta">Dhanishta / Avittam (அவிட்டம்)</option>
+            <option value="Shatabhisha">Shatabhisha / Sadayam (சதயம்)</option>
+            <option value="Purva Bhadrapada">Purva Bhadrapada / Poorattadhi (பூரட்டாதி)</option>
+            <option value="Uttara Bhadrapada">Uttara Bhadrapada / Uthirattadhi (உத்திரட்டாதி)</option>
+            <option value="Revathi">Revathi (ரேவதி)</option>
+          </select>
+        </div>
+        <div class="field-hint">Tamil name shown in brackets. Select the one you know by either name.</div>
+        <div class="field-error" id="nakshatra-error">Please select your Nakshatra.</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="padam">Nakshatra Padam (optional)</label>
+        <div class="select-wrap">
+          <select class="field-select" id="padam">
+            <option value="">Select Padam (if known)</option>
+            <option value="1st Padam">1st Padam</option>
+            <option value="2nd Padam">2nd Padam</option>
+            <option value="3rd Padam">3rd Padam</option>
+            <option value="4th Padam">4th Padam</option>
+          </select>
+        </div>
+        <div class="field-hint">Each Nakshatra has 4 Padams (quarters). This adds further precision to your reading.</div>
+      </div>
+
+      <div class="form-nav">
+        <button class="btn-back" disabled>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 7H3M6 3.5L2.5 7 6 10.5"/></svg>
+          Back
+        </button>
+        <button class="btn-next" onclick="nextStep(0)">
+          Continue
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h8M8 3.5L11.5 7 8 10.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── STEP 2: STRUGGLES ── -->
+    <div class="step-panel" id="step-1">
+      <div class="step-eyebrow">Step 2 of 6</div>
+      <h2 class="step-heading">Current <em>struggles</em></h2>
+      <p class="step-sub">What challenges are you facing right now? Select all that apply — the more honest you are, the more precise your reading will be.</p>
+
+      <div class="chips-select-all" onclick="selectAll('struggles', struggleOptions)">✦ Select All</div>
+      <div class="chips-grid" id="struggles-chips"></div>
+      <div class="field-error" id="struggles-error" style="margin-top:12px;">Please select at least one option.</div>
+
+      <div class="form-nav">
+        <button class="btn-back" onclick="prevStep(1)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 7H3M6 3.5L2.5 7 6 10.5"/></svg>
+          Back
+        </button>
+        <button class="btn-next" onclick="nextStep(1)">
+          Continue
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h8M8 3.5L11.5 7 8 10.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── STEP 3: DAILY LIFE ── -->
+    <div class="step-panel" id="step-2">
+      <div class="step-eyebrow">Step 3 of 6</div>
+      <h2 class="step-heading">Your daily <em>life</em></h2>
+      <p class="step-sub">Which best describes your current daily rhythm and lifestyle? Choose the one that fits most closely.</p>
+
+      <div class="option-cards" id="dailylife-options"></div>
+      <div class="field-error" id="dailylife-error" style="margin-top:14px;">Please select one option.</div>
+
+      <div class="form-nav">
+        <button class="btn-back" onclick="prevStep(2)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 7H3M6 3.5L2.5 7 6 10.5"/></svg>
+          Back
+        </button>
+        <button class="btn-next" onclick="nextStep(2)">
+          Continue
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h8M8 3.5L11.5 7 8 10.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── STEP 4: GOALS ── -->
+    <div class="step-panel" id="step-3">
+      <div class="step-eyebrow">Step 4 of 6</div>
+      <h2 class="step-heading">Your life <em>goals</em></h2>
+      <p class="step-sub">What do you most want to achieve or experience in your life? Select all that resonate with you.</p>
+
+      <div class="chips-select-all" onclick="selectAll('goals', goalOptions)">✦ Select All</div>
+      <div class="chips-grid" id="goals-chips"></div>
+      <div class="field-error" id="goals-error" style="margin-top:12px;">Please select at least one option.</div>
+
+      <div class="form-nav">
+        <button class="btn-back" onclick="prevStep(3)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 7H3M6 3.5L2.5 7 6 10.5"/></svg>
+          Back
+        </button>
+        <button class="btn-next" onclick="nextStep(3)">
+          Continue
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h8M8 3.5L11.5 7 8 10.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── STEP 5: SPIRITUAL ── -->
+    <div class="step-panel" id="step-4">
+      <div class="step-eyebrow">Step 5 of 6</div>
+      <h2 class="step-heading">Your spiritual <em>orientation</em></h2>
+      <p class="step-sub">How would you describe your relationship with spirituality? This shapes the tone and recommendations in your report.</p>
+
+      <div class="option-cards" id="spiritual-options"></div>
+      <div class="field-error" id="spiritual-error" style="margin-top:14px;">Please select one option.</div>
+
+      <div class="form-nav">
+        <button class="btn-back" onclick="prevStep(4)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 7H3M6 3.5L2.5 7 6 10.5"/></svg>
+          Back
+        </button>
+        <button class="btn-next" onclick="nextStep(4)">
+          Review My Details
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h8M8 3.5L11.5 7 8 10.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── STEP 6: REVIEW ── -->
+    <div class="step-panel" id="step-5">
+      <div class="step-eyebrow">Step 6 of 6</div>
+      <h2 class="step-heading">Review your <em>details</em></h2>
+      <p class="step-sub">Check everything below before generating your report. You can go back to edit any section.</p>
+
+      <div class="review-grid" id="reviewGrid"></div>
+
+      <div class="review-answers" id="reviewQ1">
+        <div class="review-answer-title">
+          Current Struggles
+          <span class="edit-link" onclick="goToStep(1)">Edit</span>
+        </div>
+        <div class="review-tags" id="review-struggles"></div>
+      </div>
+
+      <div class="review-answers" id="reviewQ2">
+        <div class="review-answer-title">
+          Daily Life
+          <span class="edit-link" onclick="goToStep(2)">Edit</span>
+        </div>
+        <div class="review-answer-single" id="review-dailylife">—</div>
+      </div>
+
+      <div class="review-answers" id="reviewQ3">
+        <div class="review-answer-title">
+          Life Goals
+          <span class="edit-link" onclick="goToStep(3)">Edit</span>
+        </div>
+        <div class="review-tags" id="review-goals"></div>
+      </div>
+
+      <div class="review-answers" id="reviewQ4">
+        <div class="review-answer-title">
+          Spiritual Orientation
+          <span class="edit-link" onclick="goToStep(4)">Edit</span>
+        </div>
+        <div class="review-answer-single" id="review-spiritual">—</div>
+      </div>
+
+      <div class="disclaimer-box">
+        <div class="disclaimer-icon">✦</div>
+        <div class="disclaimer-text">Your details are used only to generate your report. We do not store your personal information or share it with any third parties. By clicking Generate, you confirm you are happy to proceed.</div>
+      </div>
+
+      <div class="form-nav">
+        <button class="btn-back" onclick="prevStep(5)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 7H3M6 3.5L2.5 7 6 10.5"/></svg>
+          Back
+        </button>
+        <button class="btn-generate" onclick="generateReport()">
+          ✦ &nbsp; Generate My Reading
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── DATA ──
+const struggleOptions = [
+  "Money / Debt / Income instability",
+  "Health anxiety / Fear",
+  "Relationship / Marriage stress",
+  "Family pressure / Guilt",
+  "Career confusion / No direction",
+  "Overthinking / Analysis paralysis",
+  "Anger / Frustration / Impatience",
+  "Lack of confidence / Self-doubt",
+  "Loneliness / Feeling misunderstood",
+  "Emotional overwhelm / Sensitivity",
+  "Commitment issues",
+  "Work-life imbalance",
+  "Feeling stuck / Life not moving"
+];
+
+const dailyLifeOptions = [
+  { label: "Hectic", sub: "No fixed pattern, always busy" },
+  { label: "Office job", sub: "Structured hours, 9–5 schedule" },
+  { label: "Work from home", sub: "Remote work, flexible hours" },
+  { label: "Entrepreneur / Own business", sub: "Running my own venture" },
+  { label: "Homemaker / Family-focused", sub: "Home and family is my primary role" },
+  { label: "Student", sub: "Currently studying" },
+  { label: "Multiple roles", sub: "Juggling everything at once" }
+];
+
+const goalOptions = [
+  "Financial stability / Independence",
+  "Better relationships / Marriage harmony",
+  "Career growth / Find purpose",
+  "Inner peace / Stop overthinking",
+  "Build confidence / Self-worth",
+  "Recognition / Be valued",
+  "Independence / Freedom",
+  "Health improvement",
+  "Build a business / Grow income",
+  "Spiritual growth"
+];
+
+const spiritualOptions = [
+  { label: "Hindu / Temple / Devotional", sub: "I practice or follow Hindu traditions" },
+  { label: "Spiritual but not religious", sub: "I believe in higher energy but not ritual" },
+  { label: "Practical — no spiritual angle", sub: "I prefer grounded, realistic guidance" },
+  { label: "Open to all / Mixed", sub: "I am open to any and all perspectives" }
+];
+
+// ── STATE ──
+let currentStep = 0;
+const totalSteps = 6;
+const formData = {
+  name: '', raasi: '', lagnam: '', nakshatra: '', padam: '',
+  struggles: [], dailyLife: '', goals: [], spiritual: ''
+};
+
+// ── INIT ──
+function init() {
+  // Pre-fill Raasi from URL param
+  const params = new URLSearchParams(window.location.search);
+  const raasi = params.get('raasi');
+  if (raasi) {
+    const sel = document.getElementById('raasi');
+    for (let o of sel.options) {
+      if (o.value === raasi) { sel.value = raasi; formData.raasi = raasi; break; }
+    }
+    updateSidebarPreview();
+  }
+
+  renderChips('struggles-chips', struggleOptions, 'struggles');
+  renderOptionCards('dailylife-options', dailyLifeOptions, 'dailyLife');
+  renderChips('goals-chips', goalOptions, 'goals');
+  renderOptionCards('spiritual-options', spiritualOptions, 'spiritual');
+}
+
+// ── RENDER CHIPS ──
+function renderChips(containerId, options, field) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  options.forEach(opt => {
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (formData[field].includes(opt) ? ' selected' : '');
+    chip.textContent = opt;
+    chip.onclick = () => toggleChip(chip, opt, field, containerId, options);
+    container.appendChild(chip);
+  });
+}
+
+function toggleChip(chip, value, field, containerId, options) {
+  const arr = formData[field];
+  const idx = arr.indexOf(value);
+  if (idx > -1) {
+    arr.splice(idx, 1);
+    chip.classList.remove('selected');
+  } else {
+    arr.push(value);
+    chip.classList.add('selected');
+  }
+}
+
+function selectAll(field, options) {
+  formData[field] = [...options];
+  const containerId = field === 'struggles' ? 'struggles-chips' : 'goals-chips';
+  renderChips(containerId, options, field);
+}
+
+// ── RENDER OPTION CARDS ──
+function renderOptionCards(containerId, options, field) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  options.forEach(opt => {
+    const card = document.createElement('div');
+    const label = typeof opt === 'string' ? opt : opt.label;
+    const sub = typeof opt === 'string' ? '' : opt.sub;
+    card.className = 'option-card' + (formData[field] === label ? ' selected' : '');
+    card.innerHTML = `
+      <div class="option-card-radio"></div>
+      <div class="option-card-text">
+        <div class="option-card-label">${label}</div>
+        ${sub ? `<div class="option-card-sub">${sub}</div>` : ''}
+      </div>`;
+    card.onclick = () => {
+      document.querySelectorAll(`#${containerId} .option-card`).forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      formData[field] = label;
+    };
+    container.appendChild(card);
+  });
+}
+
+// ── VALIDATION ──
+function validateStep(step) {
+  let valid = true;
+
+  const clearError = id => document.getElementById(id).classList.remove('show');
+  const showError  = id => { document.getElementById(id).classList.add('show'); valid = false; };
+
+  if (step === 0) {
+    clearError('name-error'); clearError('raasi-error');
+    clearError('lagnam-error'); clearError('nakshatra-error');
+    formData.name      = document.getElementById('name').value.trim();
+    formData.raasi     = document.getElementById('raasi').value;
+    formData.lagnam    = document.getElementById('lagnam').value;
+    formData.nakshatra = document.getElementById('nakshatra').value;
+    formData.padam     = document.getElementById('padam').value;
+    if (!formData.name)      { document.getElementById('name').classList.add('error');      showError('name-error'); }
+    if (!formData.raasi)     { document.getElementById('raasi').classList.add('error');     showError('raasi-error'); }
+    if (!formData.lagnam)    { document.getElementById('lagnam').classList.add('error');    showError('lagnam-error'); }
+    if (!formData.nakshatra) { document.getElementById('nakshatra').classList.add('error'); showError('nakshatra-error'); }
+    if (valid) {
+      ['name','raasi','lagnam','nakshatra'].forEach(id => document.getElementById(id).classList.remove('error'));
+      updateSidebarPreview();
+    }
+  } else if (step === 1) {
+    clearError('struggles-error');
+    if (formData.struggles.length === 0) showError('struggles-error');
+  } else if (step === 2) {
+    clearError('dailylife-error');
+    if (!formData.dailyLife) showError('dailylife-error');
+  } else if (step === 3) {
+    clearError('goals-error');
+    if (formData.goals.length === 0) showError('goals-error');
+  } else if (step === 4) {
+    clearError('spiritual-error');
+    if (!formData.spiritual) showError('spiritual-error');
+  }
+
+  return valid;
+}
+
+// ── NAVIGATION ──
+function nextStep(from) {
+  if (!validateStep(from)) return;
+  if (from < totalSteps - 1) {
+    if (from === totalSteps - 2) buildReview();
+    goToStep(from + 1);
+  }
+}
+
+function prevStep(from) {
+  if (from > 0) goToStep(from - 1);
+}
+
+function goToStep(step) {
+  // Hide current
+  document.getElementById('step-' + currentStep).classList.remove('active');
+  updateStepNav(currentStep, 'done');
+
+  currentStep = step;
+
+  // Show new
+  document.getElementById('step-' + currentStep).classList.add('active');
+  updateStepNav(currentStep, 'active');
+
+  // Unlock all up to this step
+  for (let i = 0; i < totalSteps; i++) {
+    const nav = document.getElementById('nav-' + i);
+    if (i < currentStep) { nav.className = 'step-nav-item done'; }
+    else if (i === currentStep) { nav.className = 'step-nav-item active'; }
+    else { nav.className = 'step-nav-item inactive'; }
+  }
+
+  updateProgress();
+  updateMobileDots();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateStepNav(step, state) {
+  const nav = document.getElementById('nav-' + step);
+  if (state === 'done') {
+    nav.className = 'step-nav-item done';
+    nav.querySelector('.sni-dot').textContent = '✓';
+  }
+}
+
+function updateProgress() {
+  const pct = Math.round(((currentStep + 1) / totalSteps) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+  const labels = [
+    'Step 1 of 6 — Your Details',
+    'Step 2 of 6 — Current Struggles',
+    'Step 3 of 6 — Daily Life',
+    'Step 4 of 6 — Life Goals',
+    'Step 5 of 6 — Spiritual Orientation',
+    'Step 6 of 6 — Review & Generate'
+  ];
+  document.getElementById('progressLabel').textContent = labels[currentStep];
+}
+
+function updateMobileDots() {
+  const dots = document.querySelectorAll('#mobileDots .msh-dot');
+  dots.forEach((d, i) => {
+    d.className = 'msh-dot';
+    if (i < currentStep) d.classList.add('done');
+    else if (i === currentStep) d.classList.add('active');
+  });
+}
+
+function updateSidebarPreview() {
+  document.getElementById('prev-name').textContent      = formData.name      || '—';
+  document.getElementById('prev-raasi').textContent     = formData.raasi     || '—';
+  document.getElementById('prev-lagnam').textContent    = formData.lagnam    || '—';
+  document.getElementById('prev-nakshatra').textContent = formData.nakshatra || '—';
+}
+
+// ── REVIEW ──
+function buildReview() {
+  const grid = document.getElementById('reviewGrid');
+  grid.innerHTML = `
+    <div class="review-card">
+      <div class="review-card-label">Name <span class="edit-link" onclick="goToStep(0)" style="float:right">Edit</span></div>
+      <div class="review-card-value">${formData.name}</div>
+    </div>
+    <div class="review-card">
+      <div class="review-card-label">Raasi</div>
+      <div class="review-card-value">${formData.raasi}</div>
+    </div>
+    <div class="review-card">
+      <div class="review-card-label">Lagnam</div>
+      <div class="review-card-value">${formData.lagnam}</div>
+    </div>
+    <div class="review-card">
+      <div class="review-card-label">Nakshatra</div>
+      <div class="review-card-value">${formData.nakshatra}</div>
+      ${formData.padam ? `<div class="review-card-sub">${formData.padam}</div>` : ''}
+    </div>
+  `;
+
+  // Struggles
+  const sDiv = document.getElementById('review-struggles');
+  sDiv.innerHTML = formData.struggles.map(s => `<span class="review-tag">${s}</span>`).join('');
+
+  // Daily life
+  document.getElementById('review-dailylife').textContent = formData.dailyLife;
+
+  // Goals
+  const gDiv = document.getElementById('review-goals');
+  gDiv.innerHTML = formData.goals.map(g => `<span class="review-tag">${g}</span>`).join('');
+
+  // Spiritual
+  document.getElementById('review-spiritual').textContent = formData.spiritual;
+}
+
+// ── GENERATE ──
+function generateReport() {
+  // Store in sessionStorage for report page
+  sessionStorage.setItem('astroRajaData', JSON.stringify(formData));
+
+  // Navigate to processing page
+  window.location.href = 'processing.html';
+}
+
+// ── LIVE SYNC ──
+document.getElementById('name').addEventListener('input', function() {
+  formData.name = this.value.trim();
+  document.getElementById('prev-name').textContent = formData.name || '—';
+});
+['raasi','lagnam','nakshatra'].forEach(id => {
+  document.getElementById(id).addEventListener('change', function() {
+    formData[id] = this.value;
+    document.getElementById('prev-' + id).textContent = this.value || '—';
+  });
+});
+
+// ── BOOT ──
+init();
+</script>
+</body>
+</html>

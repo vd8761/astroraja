@@ -1,10 +1,10 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../../layouts/Layout.astro';
 
 
 ---
 
-<Layout 
+<Layout basePath="/v1" 
   title="How It Works | Ask Astro Raja"
   description="Discover the 3-step process to getting complete clarity on your life path. Provide your stars, answer 4 questions about your current reality, and instantly download your personal Vedic report."
 >
@@ -113,7 +113,7 @@ import Layout from '../layouts/Layout.astro';
   <section class="py-20 px-4 bg-brand-light-bg text-center border-t border-brand-border">
     <div class="max-w-2xl mx-auto">
       <h2 class="text-3xl md:text-4xl font-bold text-brand-navy mb-6">Experience the process now.</h2>
-      <a href="/#form-section" class="inline-block px-10 py-5 rounded-full bg-brand-saffron text-white font-bold text-xl hover:scale-105 transition-transform shadow-lg">
+      <a href="/v1/#form-section" class="inline-block px-10 py-5 rounded-full bg-brand-saffron text-white font-bold text-xl hover:scale-105 transition-transform shadow-lg">
         Begin My Reading
       </a>
     </div>

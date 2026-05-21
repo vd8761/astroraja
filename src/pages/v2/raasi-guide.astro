@@ -1,0 +1,247 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const raasis = [
+  { sign: '♈', name: 'Mesham', tamil: 'மேஷம் · Aries', dates: 'Approx. Apr 13 – May 14', element: 'Fire', desc: 'Bold, pioneering, driven by action. Mesham natives are natural leaders with high energy and strong willpower. Can be impatient or impulsive.', traits: ['Courage', 'Initiative', 'Directness'] },
+  { sign: '♉', name: 'Rishabam', tamil: 'ரிஷபம் · Taurus', dates: 'Approx. May 14 – Jun 14', element: 'Earth', desc: 'Grounded, patient, and deeply connected to material comfort and beauty. Values stability and loyalty. Can be stubborn or possessive.', traits: ['Stability', 'Sensuality', 'Persistence'] },
+  { sign: '♊', name: 'Midhunam', tamil: 'மிதுனம் · Gemini', dates: 'Approx. Jun 14 – Jul 16', element: 'Air', desc: 'Quick-witted, communicative, intellectually curious. Thrives on variety and mental stimulation. Can be scattered or inconsistent.', traits: ['Communication', 'Adaptability', 'Curiosity'] },
+  { sign: '♋', name: 'Kadagam', tamil: 'கடகம் · Cancer', dates: 'Approx. Jul 16 – Aug 16', element: 'Water', desc: 'Deeply emotional, nurturing, family-oriented. Intuitive and protective of loved ones. Can be overly sensitive or clingy.', traits: ['Empathy', 'Protectiveness', 'Intuition'] },
+  { sign: '♌', name: 'Simbha', tamil: 'சிம்ஹம் · Leo', dates: 'Approx. Aug 16 – Sep 16', element: 'Fire', desc: 'Charismatic, confident, and drawn to leadership and recognition. Generous and warm-hearted. Can be prideful or domineering.', traits: ['Confidence', 'Generosity', 'Pride'] },
+  { sign: '♍', name: 'Kanni', tamil: 'கன்னி · Virgo', dates: 'Approx. Sep 16 – Oct 17', element: 'Earth', desc: 'Analytical, detail-oriented, service-minded. Seeks perfection and practical solutions. Can be overly critical or anxious.', traits: ['Precision', 'Service', 'Analysis'] },
+  { sign: '♎', name: 'Thulam', tamil: 'துலாம் · Libra', dates: 'Approx. Oct 17 – Nov 16', element: 'Air', desc: 'Balanced, diplomatic, aesthetically refined. Values harmony in relationships and environments. Can be indecisive or people-pleasing.', traits: ['Harmony', 'Fairness', 'Beauty'] },
+  { sign: '♏', name: 'Vrichigam', tamil: 'விருச்சிகம் · Scorpio', dates: 'Approx. Nov 16 – Dec 16', element: 'Water', desc: 'Intense, transformative, deeply perceptive. Seeks depth and truth in all things. Can be secretive or controlling.', traits: ['Intensity', 'Transformation', 'Depth'] },
+  { sign: '♐', name: 'Dhanusu', tamil: 'தனுசு · Sagittarius', dates: 'Approx. Dec 16 – Jan 14', element: 'Fire', desc: 'Philosophical, adventurous, truth-seeking. Optimistic and freedom-loving. Can be restless or overly blunt.', traits: ['Optimism', 'Philosophy', 'Adventure'] },
+  { sign: '♑', name: 'Magaram', tamil: 'மகரம் · Capricorn', dates: 'Approx. Jan 14 – Feb 12', element: 'Earth', desc: 'Disciplined, ambitious, strategic. Values structure and long-term achievement. Can be rigid or emotionally distant.', traits: ['Discipline', 'Ambition', 'Responsibility'] },
+  { sign: '♒', name: 'Kumbam', tamil: 'கும்பம் · Aquarius', dates: 'Approx. Feb 12 – Mar 13', element: 'Air', desc: 'Innovative, humanitarian, intellectually independent. Seeks progress and equality. Can be detached or unpredictable.', traits: ['Innovation', 'Independence', 'Idealism'] },
+  { sign: '♓', name: 'Meenam', tamil: 'மீனம் · Pisces', dates: 'Approx. Mar 13 – Apr 13', element: 'Water', desc: 'Compassionate, intuitive, spiritually inclined. Deeply empathetic and imaginative. Can be escapist or overly impressionable.', traits: ['Compassion', 'Imagination', 'Spirituality'] },
+];
+
+---
+
+<Layout basePath="/v2" title="Raasi Guide — Ask Astro Raja">
+  
+  <!-- PAGE HERO -->
+  <section class="py-24 px-4 bg-brand-light-bg relative overflow-hidden text-center">
+    <div class="max-w-4xl mx-auto relative z-10">
+      <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm">✦ Vedic Foundation</div>
+      <h1 class="text-5xl md:text-7xl font-bold leading-[1.1] mb-6 text-brand-navy">
+        Understanding <br />
+        <span class="text-brand-saffron italic">Raasi, Lagnam & Nakshatra</span>
+      </h1>
+      <p class="text-xl text-brand-text max-w-2xl mx-auto leading-relaxed">
+        The three pillars of your Vedic birth chart — and the foundation of every reading we generate. Here is what each one means, how they work together, and how to find yours.
+      </p>
+    </div>
+  </section>
+
+  <!-- RAASI INTRO -->
+  <section class="py-24 px-4 max-w-6xl mx-auto">
+    <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm">What is Raasi?</div>
+    <h2 class="text-4xl md:text-5xl font-bold text-brand-navy mb-12">Your Moon Sign —<br/><span class="text-brand-saffron italic">your inner world</span></h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+      <div>
+        <p class="text-brand-text-muted mb-6 leading-relaxed">In Vedic astrology, your <strong>Raasi</strong> (Moon Sign) is determined by where the Moon was positioned in the zodiac at the moment of your birth. Unlike Western astrology, which emphasizes the Sun Sign, Vedic astrology considers the Moon Sign to be the primary indicator of your emotional nature, mental tendencies, and subconscious patterns.</p>
+        <p class="text-brand-text-muted mb-8 leading-relaxed">Your Raasi governs how you feel, how you process emotions, how you relate to your family and home, and what brings you inner peace or distress. It is your emotional blueprint — the part of you that others may not see on the surface but that shapes every decision you make.</p>
+        
+        <div class="bg-brand-saffron/10 border-l-4 border-brand-saffron p-6 rounded-r-xl mb-8">
+          <h4 class="font-bold text-brand-navy text-xl mb-2">Why Raasi Matters</h4>
+          <p class="text-brand-text-muted text-sm leading-relaxed">Two people with the same Sun Sign (like Aries in Western astrology) can have very different Raasis — one might be Meenam (emotionally sensitive, intuitive) and the other Mesham (emotionally driven, impulsive). This distinction shapes how they experience life at a fundamental level.</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center justify-center">
+        <svg class="w-full max-w-sm h-auto text-brand-text" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="200" cy="200" r="180" stroke="#EDE3CE" stroke-width="1"/>
+          <circle cx="200" cy="200" r="140" stroke="#EDE3CE" stroke-width="1"/>
+          <circle cx="200" cy="200" r="100" stroke="#C8941A" stroke-width="1.5"/>
+          <!-- 12 divisions -->
+          <line x1="200" y1="20" x2="200" y2="380" stroke="#EDE3CE" stroke-width="0.5"/>
+          <line x1="20" y1="200" x2="380" y2="200" stroke="#EDE3CE" stroke-width="0.5"/>
+          <line x1="63" y1="63" x2="337" y2="337" stroke="#EDE3CE" stroke-width="0.5"/>
+          <line x1="337" y1="63" x2="63" y2="337" stroke="#EDE3CE" stroke-width="0.5"/>
+          <line x1="110" y1="35" x2="290" y2="365" stroke="#EDE3CE" stroke-width="0.5"/>
+          <line x1="290" y1="35" x2="110" y2="365" stroke="#EDE3CE" stroke-width="0.5"/>
+          <line x1="35" y1="110" x2="365" y2="290" stroke="#EDE3CE" stroke-width="0.5"/>
+          <line x1="365" y1="110" x2="35" y2="290" stroke="#EDE3CE" stroke-width="0.5"/>
+          <!-- Center circle -->
+          <circle cx="200" cy="200" r="8" fill="#C8941A"/>
+          <!-- Labels -->
+          <text x="200" y="55" font-family="Outfit, sans-serif" font-size="12" fill="currentColor" text-anchor="middle">Mesham</text>
+          <text x="315" y="115" font-family="Outfit, sans-serif" font-size="12" fill="currentColor" text-anchor="middle">Rishabam</text>
+          <text x="350" y="210" font-family="Outfit, sans-serif" font-size="12" fill="currentColor" text-anchor="middle">Midhunam</text>
+          <text x="315" y="295" font-family="Outfit, sans-serif" font-size="12" fill="currentColor" text-anchor="middle">Kadagam</text>
+          <text x="200" y="350" font-family="Outfit, sans-serif" font-size="12" fill="currentColor" text-anchor="middle">Simbha</text>
+          <text x="85" y="295" font-family="Outfit, sans-serif" font-size="12" fill="currentColor" text-anchor="middle">Kanni</text>
+          <text x="50" y="210" font-family="Outfit, sans-serif" font-size="12" fill="currentColor" text-anchor="middle">Thulam</text>
+          <text x="85" y="115" font-family="Outfit, sans-serif" font-size="12" fill="currentColor" text-anchor="middle">Vrichigam</text>
+          
+          <rect x="160" y="190" width="80" height="20" fill="rgba(255,255,255,0.8)" rx="4"></rect>
+          <text x="200" y="204" font-family="Lora, serif" font-size="14" fill="#C8941A" text-anchor="middle" font-weight="600">12 Raasis</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ALL 12 RAASIS -->
+  <section class="py-24 px-4 bg-slate-50 border-y border-brand-border">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm text-center">The Zodiac</div>
+      <h2 class="text-4xl font-bold text-brand-navy mb-4 text-center">All 12 <span class="text-brand-saffron italic">Raasis</span></h2>
+      <p class="text-center text-brand-text-muted mb-12 max-w-2xl mx-auto">Each Raasi has a distinct personality, element, and karmic theme. Find yours and click to begin your reading with it pre-filled.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {raasis.map(r => (
+          <div class="bg-white border border-brand-border rounded-2xl p-8 hover:border-brand-saffron transition-colors shadow-sm group">
+            <div class="flex justify-between items-start mb-6">
+              <span class="text-5xl opacity-80 group-hover:opacity-100 transition-opacity">{r.sign}</span>
+              <span class="bg-brand-saffron/10 text-brand-saffron-dark text-[10px] uppercase tracking-widest px-3 py-1 rounded-full">{r.element}</span>
+            </div>
+            <h3 class="text-2xl font-bold text-brand-navy mb-1">{r.name}</h3>
+            <p class="text-brand-text-muted text-sm mb-4">{r.tamil}</p>
+            <p class="text-brand-saffron-dark text-xs font-semibold mb-4">{r.dates}</p>
+            <p class="text-brand-text-muted text-sm leading-relaxed mb-6 h-24 overflow-hidden">{r.desc}</p>
+            <div class="flex gap-2 flex-wrap mt-auto">
+              {r.traits.map(t => (
+                <span class="bg-slate-50 border border-brand-border text-brand-text text-xs px-3 py-1 rounded-full">{t}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- LAGNAM -->
+  <section class="py-24 px-4 max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+      <div>
+        <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm">What is Lagnam?</div>
+        <h2 class="text-4xl md:text-5xl font-bold text-brand-navy mb-8">Your Ascendant —<br/><span class="text-brand-saffron italic">your outer expression</span></h2>
+        
+        <p class="text-brand-text-muted mb-4 leading-relaxed">If your Raasi is your inner world, your <strong>Lagnam</strong> (Ascendant) is your outer mask — the version of you that the world sees first. It governs your physical appearance, personality, how you approach challenges, and the lens through which you experience life.</p>
+        <p class="text-brand-text-muted mb-4 leading-relaxed">Your Lagnam is determined by which zodiac sign was rising on the eastern horizon at the exact moment and location of your birth. Unlike Raasi, which changes roughly every 2.5 days, the Lagnam changes every 2 hours — making it one of the most precise and personal indicators in Vedic astrology.</p>
+        <p class="text-brand-text-muted leading-relaxed">Two people with the same Raasi but different Lagnams will live very different lives. One might be extroverted and action-oriented (Mesham Lagnam), while the other is introspective and cautious (Magaram Lagnam) — even though both share the same emotional blueprint.</p>
+      </div>
+      
+      <div class="bg-brand-navy p-8 md:p-12 rounded-3xl text-white shadow-xl">
+        <h3 class="text-2xl font-bold mb-6 font-serif">Why Lagnam Matters</h3>
+        <ul class="space-y-6">
+          <li class="flex items-start gap-4">
+            <span class="text-brand-saffron mt-1">✦</span>
+            <span class="text-white/80 text-sm leading-relaxed">Your Lagnam determines the layout of your entire birth chart — which planets sit in which houses of your life (career, relationships, health, etc.).</span>
+          </li>
+          <li class="flex items-start gap-4">
+            <span class="text-brand-saffron mt-1">✦</span>
+            <span class="text-white/80 text-sm leading-relaxed">It shapes how you approach the world: boldly, cautiously, analytically, emotionally, diplomatically.</span>
+          </li>
+          <li class="flex items-start gap-4">
+            <span class="text-brand-saffron mt-1">✦</span>
+            <span class="text-white/80 text-sm leading-relaxed">Lagnam governs your physical constitution and vitality — your natural energy levels and health tendencies.</span>
+          </li>
+          <li class="flex items-start gap-4">
+            <span class="text-brand-saffron mt-1">✦</span>
+            <span class="text-white/80 text-sm leading-relaxed">Together with Raasi and Nakshatra, it creates your unique astrological fingerprint — no two charts are the same.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- NAKSHATRA -->
+  <section class="py-24 px-4 bg-brand-light-bg border-y border-brand-border">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm">What is Nakshatra?</div>
+          <h2 class="text-4xl md:text-5xl font-bold text-brand-navy mb-8">Your Birth Star —<br/><span class="text-brand-saffron italic">your karmic blueprint</span></h2>
+          
+          <p class="text-brand-text-muted mb-6 leading-relaxed">The zodiac is divided into 12 Raasis (Moon Signs), but in Vedic astrology, it is further divided into 27 <strong>Nakshatras</strong> (Lunar Mansions or Birth Stars). Each Nakshatra spans 13°20' of the zodiac and is ruled by a specific planetary deity and elemental energy.</p>
+          <p class="text-brand-text-muted mb-6 leading-relaxed">Your Nakshatra provides a much deeper, microscopic view of your personality than your Raasi alone. It reveals your core psychological drivers, your approach to relationships, and the specific karmic themes that will run through your life. If your Raasi is the "neighborhood" of your emotional world, your Nakshatra is the "exact street address."</p>
+          
+          <div class="bg-white border-l-4 border-brand-saffron p-6 rounded-r-xl shadow-sm">
+            <h4 class="font-bold text-brand-navy text-xl mb-2">The Pinpoint Accuracy of Nakshatras</h4>
+            <p class="text-brand-text-muted text-sm leading-relaxed">Consider two people born with the Moon in Mesham (Aries). The first is born under the Nakshatra of <strong>Ashwini</strong> (ruled by Ketu, symbolised by a horse's head) — they will be fast-moving, healing-oriented, and pioneering. The second is born under <strong>Bharani</strong> (ruled by Venus, symbolised by the yoni) — they will be intense, creative, and focused on transformation. Same Raasi, completely different life paths.</p>
+          </div>
+        </div>
+        
+        <div class="relative max-w-md mx-auto w-full">
+          <!-- Abstract representation of the 27 Nakshatras circling the zodiac -->
+          <div class="aspect-square rounded-full border-4 border-brand-saffron/20 flex items-center justify-center p-8 relative">
+            <div class="absolute inset-0 rounded-full border border-brand-saffron/10 scale-110"></div>
+            <div class="absolute inset-0 rounded-full border border-brand-saffron/10 scale-125"></div>
+            <div class="absolute inset-0 rounded-full border border-brand-navy/5 scale-90"></div>
+            
+            <div class="w-full h-full border-2 border-brand-navy rounded-full p-4 relative">
+              <div class="absolute inset-0 m-auto w-[2px] h-full bg-brand-saffron/10 rotate-[15deg]"></div>
+              <div class="absolute inset-0 m-auto w-[2px] h-full bg-brand-saffron/10 rotate-[45deg]"></div>
+              <div class="absolute inset-0 m-auto w-[2px] h-full bg-brand-saffron/10 rotate-[75deg]"></div>
+              <div class="absolute inset-0 m-auto w-[2px] h-full bg-brand-saffron/10 rotate-[105deg]"></div>
+              <div class="absolute inset-0 m-auto w-[2px] h-full bg-brand-saffron/10 rotate-[135deg]"></div>
+              <div class="absolute inset-0 m-auto w-[2px] h-full bg-brand-saffron/10 rotate-[165deg]"></div>
+              
+              <div class="w-full h-full border border-brand-saffron/30 rounded-full flex items-center justify-center relative bg-white shadow-inner">
+                <div class="w-24 h-24 bg-brand-navy rounded-full flex items-center justify-center shadow-2xl relative z-10">
+                  <div class="text-brand-saffron text-center">
+                    <div class="font-serif text-3xl mb-0.5">27</div>
+                    <div class="text-[8px] uppercase tracking-widest font-bold">Stars</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW TO FIND YOURS -->
+  <section class="py-24 px-4 max-w-4xl mx-auto text-center">
+    <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-4 text-sm">Preparation</div>
+    <h2 class="text-4xl font-bold text-brand-navy mb-8">How to find your<br/><span class="text-brand-saffron italic">Raasi, Lagnam & Nakshatra</span></h2>
+    
+    <p class="text-brand-text-muted mb-12 text-lg leading-relaxed">To get an accurate report, you must input your exact Vedic details. If you don't know them, follow these steps to generate them free online.</p>
+    
+    <div class="bg-white border border-brand-border rounded-2xl p-8 md:p-12 text-left shadow-sm mb-16">
+      <div class="flex flex-col md:flex-row gap-8 items-start mb-8 pb-8 border-b border-brand-border">
+        <div class="w-12 h-12 bg-brand-saffron/10 text-brand-saffron font-serif text-2xl font-bold rounded-full flex items-center justify-center flex-shrink-0">1</div>
+        <div>
+          <h3 class="text-xl font-bold text-brand-navy mb-2">Gather your birth details</h3>
+          <p class="text-brand-text-muted leading-relaxed">You will need your Date of Birth, Time of Birth (as exact as possible), and Place of Birth.</p>
+        </div>
+      </div>
+      
+      <div class="flex flex-col md:flex-row gap-8 items-start mb-8 pb-8 border-b border-brand-border">
+        <div class="w-12 h-12 bg-brand-saffron/10 text-brand-saffron font-serif text-2xl font-bold rounded-full flex items-center justify-center flex-shrink-0">2</div>
+        <div>
+          <h3 class="text-xl font-bold text-brand-navy mb-2">Use a free Vedic calculator</h3>
+          <p class="text-brand-text-muted leading-relaxed mb-4">Visit a reliable Vedic astrology calculator online. We recommend AstroSage.</p>
+          <a href="https://www.astrosage.com/kundli/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-brand-navy font-semibold hover:text-brand-saffron transition-colors">
+            Go to AstroSage Free Kundli 
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+          </a>
+        </div>
+      </div>
+      
+      <div class="flex flex-col md:flex-row gap-8 items-start">
+        <div class="w-12 h-12 bg-brand-saffron/10 text-brand-saffron font-serif text-2xl font-bold rounded-full flex items-center justify-center flex-shrink-0">3</div>
+        <div>
+          <h3 class="text-xl font-bold text-brand-navy mb-2">Note down your three details</h3>
+          <p class="text-brand-text-muted leading-relaxed">Look at the generated chart or details page. Find the <strong>Moon Sign (Raasi)</strong>, <strong>Ascendant (Lagnam)</strong>, and <strong>Birth Star (Nakshatra)</strong>. Write these three down, then return here to start your reading.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-brand-navy p-12 rounded-3xl relative overflow-hidden shadow-2xl group">
+      <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_white_0%,_transparent_100%)]"></div>
+      <div class="relative z-10">
+        <h3 class="text-3xl font-bold text-white mb-4">Know your details? <span class="text-brand-saffron italic">Begin your reading.</span></h3>
+        <p class="text-brand-saffron/80 mb-8 max-w-lg mx-auto">Enter your Raasi, Lagnam and Nakshatra — and see what they reveal.</p>
+        <a href="/v2/get-reading" class="inline-block px-10 py-4 bg-brand-saffron text-white rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-[0_4px_15px_rgba(245,158,11,0.3)]">
+          Begin My Reading — Free
+        </a>
+      </div>
+    </div>
+  </section>
+
+</Layout>

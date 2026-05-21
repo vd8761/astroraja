@@ -1,0 +1,348 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout basePath="/v2" title="Get Your Reading — Ask Astro Raja">
+  <div class="max-w-4xl mx-auto py-12 px-4" x-data="readingForm()">
+    
+    <!-- Progress Indicator -->
+    <div class="mb-12" x-show="step < 5">
+      <div class="flex items-center justify-between text-xs font-semibold text-brand-saffron-dark uppercase tracking-wider mb-3">
+        <span x-text="`Step ${step + 1} of 6 — ${stepLabels[step]}`"></span>
+        <span x-text="`${Math.round(((step + 1) / 6) * 100)}%`"></span>
+      </div>
+      <div class="h-2 bg-brand-border/50 rounded-full overflow-hidden">
+        <div class="h-full bg-brand-saffron transition-all duration-500 ease-out" :style="`width: ${((step + 1) / 6) * 100}%`"></div>
+      </div>
+    </div>
+
+    <!-- Step 1: Details -->
+    <div x-show="step === 0" x-transition.opacity.duration.300ms>
+      <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 1 of 6</div>
+      <h2 class="text-4xl font-bold text-brand-navy mb-4">Your cosmic <span class="text-brand-saffron italic">identity</span></h2>
+      <p class="text-brand-text-muted mb-8 leading-relaxed max-w-2xl">Enter your Vedic birth details. These three — Raasi, Lagnam, and Nakshatra — are the foundation of your entire reading.</p>
+
+      <div class="space-y-6">
+        <div>
+          <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Full Name <span class="text-brand-saffron">*</span></label>
+          <input type="text" x-model="formData.name" placeholder="e.g. Priya Nandakumar" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all" :class="{'border-red-500': errors.name}">
+          <p x-show="errors.name" class="text-red-500 text-xs mt-1">Please enter your name.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Raasi (Moon Sign) <span class="text-brand-saffron">*</span></label>
+            <select x-model="formData.raasi" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all appearance-none" :class="{'border-red-500': errors.raasi}">
+              <option value="">Select your Raasi</option>
+              <option value="Mesham">Mesham (மேஷம்) — Aries</option>
+              <option value="Rishabam">Rishabam (ரிஷபம்) — Taurus</option>
+              <option value="Midhunam">Midhunam (மிதுனம்) — Gemini</option>
+              <option value="Kadagam">Kadagam (கடகம்) — Cancer</option>
+              <option value="Simbha">Simbha (சிம்ஹம்) — Leo</option>
+              <option value="Kanni">Kanni (கன்னி) — Virgo</option>
+              <option value="Thulam">Thulam (துலாம்) — Libra</option>
+              <option value="Vrichigam">Vrichigam (விருச்சிகம்) — Scorpio</option>
+              <option value="Dhanusu">Dhanusu (தனுசு) — Sagittarius</option>
+              <option value="Magaram">Magaram (மகரம்) — Capricorn</option>
+              <option value="Kumbam">Kumbam (கும்பம்) — Aquarius</option>
+              <option value="Meenam">Meenam (மீனம்) — Pisces</option>
+            </select>
+            <p x-show="errors.raasi" class="text-red-500 text-xs mt-1">Please select your Raasi.</p>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Lagnam (Ascendant) <span class="text-brand-saffron">*</span></label>
+            <select x-model="formData.lagnam" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all appearance-none" :class="{'border-red-500': errors.lagnam}">
+              <option value="">Select your Lagnam</option>
+              <option value="Mesham">Mesham (மேஷம்)</option>
+              <option value="Rishabam">Rishabam (ரிஷபம்)</option>
+              <option value="Midhunam">Midhunam (மிதுனம்)</option>
+              <option value="Kadagam">Kadagam (கடகம்)</option>
+              <option value="Simbha">Simbha (சிம்ஹம்)</option>
+              <option value="Kanni">Kanni (கன்னி)</option>
+              <option value="Thulam">Thulam (துலாம்)</option>
+              <option value="Vrichigam">Vrichigam (விருச்சிகம்)</option>
+              <option value="Dhanusu">Dhanusu (தனுசு)</option>
+              <option value="Magaram">Magaram (மகரம்)</option>
+              <option value="Kumbam">Kumbam (கும்பம்)</option>
+              <option value="Meenam">Meenam (மீனம்)</option>
+            </select>
+            <p x-show="errors.lagnam" class="text-red-500 text-xs mt-1">Please select your Lagnam.</p>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Nakshatra (Birth Star) <span class="text-brand-saffron">*</span></label>
+          <select x-model="formData.nakshatra" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all appearance-none" :class="{'border-red-500': errors.nakshatra}">
+            <option value="">Select your Nakshatra</option>
+            <option value="Ashwini">Ashwini (அஸ்வினி)</option>
+            <option value="Bharani">Bharani (பரணி)</option>
+            <option value="Karthikai">Karthikai (கார்த்திகை)</option>
+            <option value="Rohini">Rohini (ரோகிணி)</option>
+            <option value="Mrigashira">Mrigashira (மிருகசீரிடம்)</option>
+            <option value="Ardra">Ardra / Thiruvadhirai (திருவாதிரை)</option>
+            <option value="Punarvasu">Punarvasu / Punarpoosam (புனர்பூசம்)</option>
+            <option value="Pushya">Pushya / Poosam (பூசம்)</option>
+            <option value="Ashlesha">Ashlesha / Ayilyam (ஆயில்யம்)</option>
+            <option value="Magha">Magha / Magam (மகம்)</option>
+            <option value="Purva Phalguni">Purva Phalguni / Pooram (பூரம்)</option>
+            <option value="Uttara Phalguni">Uttara Phalguni / Uthiram (உத்திரம்)</option>
+            <option value="Hasta">Hasta / Astham (அஸ்தம்)</option>
+            <option value="Chitra">Chitra / Chithirai (சித்திரை)</option>
+            <option value="Swathi">Swathi / Swati (சுவாதி)</option>
+            <option value="Vishakha">Vishakha / Visakam (விசாகம்)</option>
+            <option value="Anuradha">Anuradha / Anusham (அனுஷம்)</option>
+            <option value="Jyeshta">Jyeshta / Kettai (கேட்டை)</option>
+            <option value="Mula">Mula / Moolam (மூலம்)</option>
+            <option value="Purva Ashadha">Purva Ashadha / Pooradam (பூராடம்)</option>
+            <option value="Uttara Ashadha">Uttara Ashadha / Uthiradam (உத்திராடம்)</option>
+            <option value="Shravana">Shravana / Thiruvonam (திருவோணம்)</option>
+            <option value="Dhanishta">Dhanishta / Avittam (அவிட்டம்)</option>
+            <option value="Shatabhisha">Shatabhisha / Sadayam (சதயம்)</option>
+            <option value="Purva Bhadrapada">Purva Bhadrapada / Poorattadhi (பூரட்டாதி)</option>
+            <option value="Uttara Bhadrapada">Uttara Bhadrapada / Uthirattadhi (உத்திரட்டாதி)</option>
+            <option value="Revathi">Revathi (ரேவதி)</option>
+          </select>
+          <p class="text-brand-text-muted text-xs mt-2">Tamil name shown in brackets. Select the one you know by either name.</p>
+          <p x-show="errors.nakshatra" class="text-red-500 text-xs mt-1">Please select your Nakshatra.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Struggles -->
+    <div x-show="step === 1" x-transition.opacity.duration.300ms style="display: none;">
+      <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 2 of 6</div>
+      <h2 class="text-4xl font-bold text-brand-navy mb-4">Current <span class="text-brand-saffron italic">struggles</span></h2>
+      <p class="text-brand-text-muted mb-6 leading-relaxed max-w-2xl">What challenges are you facing right now? Select all that apply.</p>
+      
+      <div class="flex flex-wrap gap-3">
+        <template x-for="opt in struggleOpts" :key="opt">
+          <button type="button" @click="toggleArray('struggles', opt)" class="px-5 py-3 rounded-full border transition-all text-sm font-medium" :class="formData.struggles.includes(opt) ? 'bg-brand-saffron text-white border-brand-saffron' : 'bg-white border-brand-border text-brand-navy hover:border-brand-saffron'">
+            <span x-text="opt"></span>
+          </button>
+        </template>
+      </div>
+      <p x-show="errors.struggles" class="text-red-500 text-xs mt-3">Please select at least one option.</p>
+    </div>
+
+    <!-- Step 3: Daily Life -->
+    <div x-show="step === 2" x-transition.opacity.duration.300ms style="display: none;">
+      <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 3 of 6</div>
+      <h2 class="text-4xl font-bold text-brand-navy mb-4">Your daily <span class="text-brand-saffron italic">life</span></h2>
+      <p class="text-brand-text-muted mb-6 leading-relaxed max-w-2xl">Which best describes your current daily rhythm and lifestyle?</p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <template x-for="opt in dailyLifeOpts" :key="opt.label">
+          <div @click="formData.dailyLife = opt.label" class="p-5 rounded-xl border cursor-pointer transition-all flex items-start gap-4" :class="formData.dailyLife === opt.label ? 'bg-brand-saffron/5 border-brand-saffron' : 'bg-white border-brand-border hover:border-brand-saffron/50'">
+            <div class="w-5 h-5 rounded-full border-2 mt-0.5 flex-shrink-0 flex items-center justify-center transition-colors" :class="formData.dailyLife === opt.label ? 'border-brand-saffron' : 'border-brand-border'">
+              <div class="w-2.5 h-2.5 rounded-full bg-brand-saffron transition-transform" :class="formData.dailyLife === opt.label ? 'scale-100' : 'scale-0'"></div>
+            </div>
+            <div>
+              <div class="font-bold text-brand-navy text-base mb-1" x-text="opt.label"></div>
+              <div class="text-brand-text-muted text-xs leading-relaxed" x-text="opt.sub"></div>
+            </div>
+          </div>
+        </template>
+      </div>
+      <p x-show="errors.dailyLife" class="text-red-500 text-xs mt-3">Please select one option.</p>
+    </div>
+
+    <!-- Step 4: Goals -->
+    <div x-show="step === 3" x-transition.opacity.duration.300ms style="display: none;">
+      <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 4 of 6</div>
+      <h2 class="text-4xl font-bold text-brand-navy mb-4">Your life <span class="text-brand-saffron italic">goals</span></h2>
+      <p class="text-brand-text-muted mb-6 leading-relaxed max-w-2xl">What do you most want to achieve or experience in your life? Select all that apply.</p>
+      
+      <div class="flex flex-wrap gap-3">
+        <template x-for="opt in goalOpts" :key="opt">
+          <button type="button" @click="toggleArray('goals', opt)" class="px-5 py-3 rounded-full border transition-all text-sm font-medium" :class="formData.goals.includes(opt) ? 'bg-brand-saffron text-white border-brand-saffron' : 'bg-white border-brand-border text-brand-navy hover:border-brand-saffron'">
+            <span x-text="opt"></span>
+          </button>
+        </template>
+      </div>
+      <p x-show="errors.goals" class="text-red-500 text-xs mt-3">Please select at least one option.</p>
+    </div>
+
+    <!-- Step 5: Spiritual -->
+    <div x-show="step === 4" x-transition.opacity.duration.300ms style="display: none;">
+      <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 5 of 6</div>
+      <h2 class="text-4xl font-bold text-brand-navy mb-4">Your spiritual <span class="text-brand-saffron italic">orientation</span></h2>
+      <p class="text-brand-text-muted mb-6 leading-relaxed max-w-2xl">How would you describe your relationship with spirituality? This shapes the tone of your report.</p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <template x-for="opt in spiritualOpts" :key="opt.label">
+          <div @click="formData.spiritual = opt.label" class="p-5 rounded-xl border cursor-pointer transition-all flex items-start gap-4" :class="formData.spiritual === opt.label ? 'bg-brand-saffron/5 border-brand-saffron' : 'bg-white border-brand-border hover:border-brand-saffron/50'">
+            <div class="w-5 h-5 rounded-full border-2 mt-0.5 flex-shrink-0 flex items-center justify-center transition-colors" :class="formData.spiritual === opt.label ? 'border-brand-saffron' : 'border-brand-border'">
+              <div class="w-2.5 h-2.5 rounded-full bg-brand-saffron transition-transform" :class="formData.spiritual === opt.label ? 'scale-100' : 'scale-0'"></div>
+            </div>
+            <div>
+              <div class="font-bold text-brand-navy text-base mb-1" x-text="opt.label"></div>
+              <div class="text-brand-text-muted text-xs leading-relaxed" x-text="opt.sub"></div>
+            </div>
+          </div>
+        </template>
+      </div>
+      <p x-show="errors.spiritual" class="text-red-500 text-xs mt-3">Please select one option.</p>
+    </div>
+
+    <!-- Step 6: Review -->
+    <div x-show="step === 5" x-transition.opacity.duration.300ms style="display: none;">
+      <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 6 of 6</div>
+      <h2 class="text-4xl font-bold text-brand-navy mb-4">Review your <span class="text-brand-saffron italic">details</span></h2>
+      <p class="text-brand-text-muted mb-8 leading-relaxed max-w-2xl">Check everything below before generating your report. You can go back to edit any section.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="bg-white border border-brand-border rounded-xl p-4 shadow-sm relative">
+          <button @click="step = 0" class="absolute top-4 right-4 text-brand-saffron text-xs font-semibold hover:underline">Edit</button>
+          <div class="text-brand-saffron-dark text-[10px] tracking-widest uppercase mb-1">Name</div>
+          <div class="font-bold text-brand-navy text-lg" x-text="formData.name"></div>
+        </div>
+        <div class="bg-white border border-brand-border rounded-xl p-4 shadow-sm relative">
+          <button @click="step = 0" class="absolute top-4 right-4 text-brand-saffron text-xs font-semibold hover:underline">Edit</button>
+          <div class="text-brand-saffron-dark text-[10px] tracking-widest uppercase mb-1">Raasi / Lagnam / Star</div>
+          <div class="font-bold text-brand-navy text-base" x-text="`${formData.raasi} / ${formData.lagnam}`"></div>
+          <div class="text-brand-text-muted text-sm mt-1" x-text="formData.nakshatra"></div>
+        </div>
+      </div>
+
+      <div class="space-y-4 mb-8">
+        <div class="bg-white border border-brand-border rounded-xl p-6 shadow-sm relative">
+          <button @click="step = 1" class="absolute top-6 right-6 text-brand-saffron text-xs font-semibold hover:underline">Edit</button>
+          <div class="text-brand-saffron-dark text-[10px] tracking-widest uppercase mb-4">Current Struggles</div>
+          <div class="flex flex-wrap gap-2">
+            <template x-for="s in formData.struggles" :key="s">
+              <span class="bg-brand-saffron/10 text-brand-navy text-xs px-3 py-1.5 rounded-full border border-brand-saffron/20" x-text="s"></span>
+            </template>
+          </div>
+        </div>
+        <div class="bg-white border border-brand-border rounded-xl p-6 shadow-sm relative">
+          <button @click="step = 2" class="absolute top-6 right-6 text-brand-saffron text-xs font-semibold hover:underline">Edit</button>
+          <div class="text-brand-saffron-dark text-[10px] tracking-widest uppercase mb-2">Daily Life</div>
+          <div class="font-bold text-brand-navy" x-text="formData.dailyLife"></div>
+        </div>
+        <div class="bg-white border border-brand-border rounded-xl p-6 shadow-sm relative">
+          <button @click="step = 3" class="absolute top-6 right-6 text-brand-saffron text-xs font-semibold hover:underline">Edit</button>
+          <div class="text-brand-saffron-dark text-[10px] tracking-widest uppercase mb-4">Life Goals</div>
+          <div class="flex flex-wrap gap-2">
+            <template x-for="g in formData.goals" :key="g">
+              <span class="bg-brand-saffron/10 text-brand-navy text-xs px-3 py-1.5 rounded-full border border-brand-saffron/20" x-text="g"></span>
+            </template>
+          </div>
+        </div>
+        <div class="bg-white border border-brand-border rounded-xl p-6 shadow-sm relative">
+          <button @click="step = 4" class="absolute top-6 right-6 text-brand-saffron text-xs font-semibold hover:underline">Edit</button>
+          <div class="text-brand-saffron-dark text-[10px] tracking-widest uppercase mb-2">Spiritual Orientation</div>
+          <div class="font-bold text-brand-navy" x-text="formData.spiritual"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="mt-12 pt-8 border-t border-brand-border flex items-center justify-between">
+      <button @click="prevStep" x-show="step > 0" class="text-brand-text hover:text-brand-saffron font-semibold flex items-center gap-2 transition-colors">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        Back
+      </button>
+      <div x-show="step === 0"></div> <!-- Spacer for flex-between -->
+
+      <button @click="nextStep" x-show="step < 5" class="px-8 py-3.5 bg-brand-navy text-white rounded-xl font-bold hover:bg-brand-saffron transition-colors shadow-lg flex items-center gap-2">
+        Continue
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+
+      <button @click="submit" x-show="step === 5" class="px-8 py-4 bg-brand-saffron text-white rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-[0_4px_15px_rgba(245,158,11,0.3)] flex items-center gap-2">
+        ✦ Generate My Reading
+      </button>
+    </div>
+
+  </div>
+</Layout>
+
+<script>
+import Alpine from 'alpinejs';
+
+document.addEventListener('alpine:init', () => {
+  Alpine.data('readingForm', () => ({
+    step: 0,
+    stepLabels: ['Your Details', 'Current Struggles', 'Daily Life', 'Life Goals', 'Spiritual Orientation'],
+    formData: {
+      name: '', raasi: '', lagnam: '', nakshatra: '',
+      struggles: [], dailyLife: '', goals: [], spiritual: ''
+    },
+    errors: {
+      name: false, raasi: false, lagnam: false, nakshatra: false,
+      struggles: false, dailyLife: false, goals: false, spiritual: false
+    },
+    struggleOpts: ["Money / Debt", "Health anxiety", "Relationship stress", "Family pressure", "Career confusion", "Overthinking", "Lack of confidence", "Loneliness"],
+    dailyLifeOpts: [
+      { label: "Hectic", sub: "No fixed pattern, always busy" },
+      { label: "Office job", sub: "Structured hours, 9–5 schedule" },
+      { label: "Work from home", sub: "Remote work, flexible hours" },
+      { label: "Entrepreneur", sub: "Running my own venture" },
+      { label: "Student", sub: "Currently studying" }
+    ],
+    goalOpts: ["Financial stability", "Better relationships", "Career growth", "Inner peace", "Build confidence", "Recognition", "Independence", "Health improvement", "Spiritual growth"],
+    spiritualOpts: [
+      { label: "Hindu / Devotional", sub: "I practice or follow Hindu traditions" },
+      { label: "Spiritual but not religious", sub: "I believe in higher energy but not ritual" },
+      { label: "Practical only", sub: "I prefer grounded, realistic guidance" },
+      { label: "Open to all", sub: "I am open to any and all perspectives" }
+    ],
+
+    init() {
+      // Pre-fill Raasi from URL param if exists
+      const params = new URLSearchParams(window.location.search);
+      const r = params.get('raasi');
+      if (r) this.formData.raasi = r;
+    },
+
+    toggleArray(field, val) {
+      const idx = this.formData[field].indexOf(val);
+      if (idx > -1) this.formData[field].splice(idx, 1);
+      else this.formData[field].push(val);
+    },
+
+    validateStep() {
+      let valid = true;
+      if (this.step === 0) {
+        this.errors.name = !this.formData.name.trim();
+        this.errors.raasi = !this.formData.raasi;
+        this.errors.lagnam = !this.formData.lagnam;
+        this.errors.nakshatra = !this.formData.nakshatra;
+        if (this.errors.name || this.errors.raasi || this.errors.lagnam || this.errors.nakshatra) valid = false;
+      } else if (this.step === 1) {
+        this.errors.struggles = this.formData.struggles.length === 0;
+        if (this.errors.struggles) valid = false;
+      } else if (this.step === 2) {
+        this.errors.dailyLife = !this.formData.dailyLife;
+        if (this.errors.dailyLife) valid = false;
+      } else if (this.step === 3) {
+        this.errors.goals = this.formData.goals.length === 0;
+        if (this.errors.goals) valid = false;
+      } else if (this.step === 4) {
+        this.errors.spiritual = !this.formData.spiritual;
+        if (this.errors.spiritual) valid = false;
+      }
+      return valid;
+    },
+
+    nextStep() {
+      if (this.validateStep() && this.step < 5) {
+        this.step++;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    },
+
+    prevStep() {
+      if (this.step > 0) {
+        this.step--;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    },
+
+    submit() {
+      alert("Report generation logic would trigger here. Data: " + JSON.stringify(this.formData));
+    }
+  }));
+});
+</script>

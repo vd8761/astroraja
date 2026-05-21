@@ -1,0 +1,541 @@
+---
+// Version 3 (Original Claude HTML)
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ask Astro Raja — Vedic Guidance Powered by AI</title>
+<link rel="stylesheet" href="/shared.css"/>
+<style>
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: grid; grid-template-columns: 1fr 1fr;
+  padding-top: 68px; position: relative; overflow: hidden;
+}
+.hero-left {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 80px 6% 80px 8%; position: relative; z-index: 2;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--gold-faint); border: 1px solid var(--cream-border);
+  border-radius: 100px; padding: 5px 16px;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.09em;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 28px; width: fit-content;
+}
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(52px, 6vw, 84px);
+  font-weight: 300; line-height: 1.06; color: var(--ink); margin-bottom: 28px;
+}
+.hero-title em { font-style: italic; color: var(--gold); }
+.hero-sub {
+  font-size: 15px; font-weight: 300; color: var(--ink-soft);
+  max-width: 420px; line-height: 1.85; margin-bottom: 44px;
+}
+.hero-actions { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.hero-stats {
+  display: flex; gap: 32px; margin-top: 52px;
+  padding-top: 32px; border-top: 1px solid var(--cream-border);
+}
+.stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px; font-weight: 600; color: var(--ink); line-height: 1;
+}
+.stat-label { font-size: 11px; color: var(--ink-soft); margin-top: 4px; letter-spacing: 0.03em; }
+
+/* ── HERO RIGHT ── */
+.hero-right {
+  position: relative; overflow: hidden;
+  background: linear-gradient(140deg, #FBF3E2 0%, #F3E4C4 100%);
+}
+.hero-bg-mandala {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 580px; height: 580px; opacity: 0.055;
+}
+/* Three image slots */
+.img-main {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 290px; height: 400px; object-fit: cover; object-position: top center;
+  border-radius: 3px; box-shadow: var(--shadow-gold); z-index: 2;
+}
+.img-top-right {
+  position: absolute; top: 10%; right: 7%;
+  width: 140px; height: 175px; object-fit: cover; object-position: top center;
+  border-radius: 3px; box-shadow: var(--shadow-soft); z-index: 3;
+}
+.img-bottom-left {
+  position: absolute; bottom: 10%; left: 7%;
+  width: 125px; height: 155px; object-fit: cover; object-position: top center;
+  border-radius: 3px; box-shadow: var(--shadow-soft); z-index: 3;
+}
+.hero-floating-card {
+  position: absolute; bottom: 10%; right: 5%; z-index: 4;
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 14px 18px;
+  box-shadow: var(--shadow-soft); min-width: 170px;
+}
+.hfc-label { font-size: 10px; color: var(--ink-soft); letter-spacing: 0.07em; text-transform: uppercase; }
+.hfc-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px; font-weight: 600; color: var(--gold); margin-top: 3px;
+}
+.hfc-stars { color: var(--gold-light); font-size: 11px; margin-top: 4px; letter-spacing: 2px; }
+
+/* ── HOW IT WORKS PREVIEW ── */
+.steps-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 2px; background: var(--cream-border);
+  border: 1px solid var(--cream-border); border-radius: 3px; overflow: hidden;
+}
+.step-card {
+  background: var(--white); padding: 44px 32px; position: relative;
+  transition: background 0.2s;
+}
+.step-card:hover { background: var(--gold-faint); }
+.step-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px; font-weight: 300; color: var(--gold-pale);
+  line-height: 1; margin-bottom: 16px; display: block;
+}
+.step-icon {
+  width: 42px; height: 42px; background: var(--gold-faint);
+  border: 1px solid var(--cream-border); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; margin-bottom: 18px;
+}
+.step-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 600; color: var(--ink); margin-bottom: 10px;
+}
+.step-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.8; margin-bottom: 24px; }
+.section-readmore-row {
+  margin-top: 40px; display: flex; align-items: center; justify-content: flex-end;
+}
+
+/* ── TESTIMONIALS ── */
+.testimonials-section {
+  padding: 96px 6%;
+  background: var(--gold-faint);
+  border-top: 1px solid var(--cream-border);
+  border-bottom: 1px solid var(--cream-border);
+}
+.testimonials-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 20px; margin-top: 56px;
+}
+.testimonial-card {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 32px 28px; position: relative;
+}
+.t-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px; font-weight: 300; color: var(--gold-pale);
+  position: absolute; top: 14px; left: 20px; line-height: 1;
+}
+.t-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px; font-style: italic; color: var(--ink-mid);
+  line-height: 1.75; margin: 28px 0 24px;
+}
+.t-person { display: flex; align-items: center; gap: 12px; }
+.t-avatar {
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 2px solid var(--cream-border); overflow: hidden; flex-shrink: 0;
+  background: var(--gold-pale);
+}
+.t-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.t-name { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 600; color: var(--ink); }
+.t-detail { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+.t-raasi { font-size: 10px; color: var(--gold); margin-top: 2px; font-weight: 500; }
+
+/* ── RAASI PREVIEW ── */
+.raasi-dark {
+  padding: 80px 6%;
+  background: var(--ink);
+}
+.raasi-grid {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;
+  margin-top: 44px;
+}
+.raasi-chip {
+  background: rgba(254,250,243,0.04);
+  border: 1px solid rgba(254,250,243,0.09);
+  border-radius: 3px; padding: 14px 10px;
+  text-align: center; cursor: pointer; transition: all 0.2s;
+  text-decoration: none;
+}
+.raasi-chip:hover {
+  background: rgba(200,148,26,0.14);
+  border-color: rgba(200,148,26,0.35);
+}
+.raasi-symbol { font-size: 20px; margin-bottom: 5px; }
+.raasi-name { font-size: 11px; color: rgba(254,250,243,0.65); }
+.raasi-tamil { font-size: 9px; color: rgba(200,148,26,0.65); margin-top: 2px; }
+.raasi-readmore-row {
+  margin-top: 36px; display: flex; justify-content: flex-end;
+}
+.readmore-light {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.07em;
+  color: rgba(254,250,243,0.5); text-decoration: none; text-transform: uppercase;
+  border-bottom: 1px solid rgba(254,250,243,0.15);
+  padding-bottom: 3px; transition: color 0.2s, border-color 0.2s;
+}
+.readmore-light:hover { color: var(--gold); border-bottom-color: var(--gold); }
+.readmore-light svg { transition: transform 0.2s; }
+.readmore-light:hover svg { transform: translateX(4px); }
+
+/* ── ABOUT PREVIEW ── */
+.about-preview {
+  padding: 96px 6%;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+.about-img-stack { position: relative; height: 480px; }
+.ab-img-1 {
+  position: absolute; top: 0; left: 0;
+  width: 64%; height: 360px;
+  object-fit: cover; object-position: top center;
+  border-radius: 3px; box-shadow: var(--shadow-gold);
+}
+.ab-img-2 {
+  position: absolute; bottom: 0; right: 0;
+  width: 52%; height: 270px;
+  object-fit: cover; object-position: top center;
+  border-radius: 3px; box-shadow: var(--shadow-soft);
+  border: 4px solid var(--cream);
+}
+.about-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-style: italic; font-weight: 300;
+  color: var(--ink-mid); line-height: 1.6;
+  border-left: 2px solid var(--gold);
+  padding-left: 24px; margin: 32px 0;
+}
+.about-body { font-size: 14px; color: var(--ink-soft); line-height: 1.85; margin-bottom: 24px; }
+
+/* ── FAQ PREVIEW ── */
+.faq-preview {
+  padding: 96px 6%;
+  background: var(--white);
+  border-top: 1px solid var(--cream-border);
+}
+.faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 56px; }
+.faq-item {
+  border: 1px solid var(--cream-border); border-radius: 3px;
+  padding: 28px 28px; background: var(--cream);
+  cursor: pointer; transition: all 0.2s;
+}
+.faq-item:hover { border-color: var(--gold); background: var(--gold-faint); }
+.faq-q {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px; font-weight: 600; color: var(--ink); margin-bottom: 10px;
+}
+.faq-a { font-size: 13px; color: var(--ink-soft); line-height: 1.75; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero-right { min-height: 400px; }
+  .hero-left { padding: 64px 5%; }
+  .steps-grid { grid-template-columns: 1fr; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .raasi-grid { grid-template-columns: repeat(4, 1fr); }
+  .about-preview { grid-template-columns: 1fr; }
+  .about-img-stack { height: 300px; margin-bottom: 20px; }
+  .faq-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .raasi-grid { grid-template-columns: repeat(3, 1fr); }
+  .hero-stats { flex-wrap: wrap; gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/v3/index"><span>✦</span> Ask Astro Raja</a>
+  <ul class="nav-links">
+    <li><a href="/v3/how-it-works">How It Works</a></li>
+    <li><a href="/v3/raasi-guide">Raasi Guide</a></li>
+    <li><a href="/v3/about">About</a></li>
+    <li><a href="/v3/faq">FAQ</a></li>
+  </ul>
+  <a href="/v3/get-reading" class="nav-cta">Get My Reading</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-badge fade-up">✦ &nbsp; Vedic · AI-Powered · Personal</div>
+    <h1 class="hero-title fade-up d1">
+      Your Stars<br/>Know Your<br/><em>Path.</em>
+    </h1>
+    <p class="hero-sub fade-up d2">Share your Raasi, Lagnam and Nakshatra. In minutes, receive a deeply personal guidance report — rooted in authentic Vedic astrology, powered by AI.</p>
+    <div class="hero-actions fade-up d3">
+      <a href="/v3/get-reading" class="btn-primary">Begin Your Reading</a>
+      <a href="/v3/how-it-works" class="readmore-link">
+        See how it works
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7.5h9M8 3.5l4 4-4 4"/></svg>
+      </a>
+    </div>
+    <div class="hero-stats fade-up d4">
+      <div><div class="stat-num">12K+</div><div class="stat-label">Readings Generated</div></div>
+      <div><div class="stat-num">27</div><div class="stat-label">Nakshatras Covered</div></div>
+      <div><div class="stat-num">4 min</div><div class="stat-label">Average Time</div></div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <svg class="hero-bg-mandala" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="200" cy="200" r="190" stroke="#C8941A" stroke-width="0.6"/>
+      <circle cx="200" cy="200" r="150" stroke="#C8941A" stroke-width="0.6"/>
+      <circle cx="200" cy="200" r="110" stroke="#C8941A" stroke-width="0.6"/>
+      <circle cx="200" cy="200" r="70" stroke="#C8941A" stroke-width="0.6"/>
+      <circle cx="200" cy="200" r="30" stroke="#C8941A" stroke-width="1"/>
+      <g stroke="#C8941A" stroke-width="0.5">
+        <line x1="200" y1="10" x2="200" y2="390"/>
+        <line x1="10" y1="200" x2="390" y2="200"/>
+        <line x1="55" y1="55" x2="345" y2="345"/>
+        <line x1="345" y1="55" x2="55" y2="345"/>
+      </g>
+      <polygon points="200,80 220,190 340,200 220,210 200,320 180,210 60,200 180,190" fill="none" stroke="#C8941A" stroke-width="0.5"/>
+    </svg>
+    <!-- Indian origin images: Unsplash specific photo IDs of South Asian / Indian people -->
+    <img class="img-main"
+      src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=580&h=800&fit=crop&crop=top"
+      alt="Indian woman portrait"
+      onerror="this.src='https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=580&h=800&fit=crop&crop=top'"/>
+    <img class="img-top-right"
+      src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=280&h=350&fit=crop&crop=top"
+      alt="Indian man portrait"
+      onerror="this.style.display='none'"/>
+    <img class="img-bottom-left"
+      src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=250&h=310&fit=crop&crop=top"
+      alt="Indian woman portrait"
+      onerror="this.style.display='none'"/>
+    <div class="hero-floating-card">
+      <div class="hfc-label">Latest Reading</div>
+      <div class="hfc-value">Meenam · Revathi</div>
+      <div class="hfc-stars">★★★★★</div>
+    </div>
+  </div>
+</section>
+
+<div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+<!-- HOW IT WORKS PREVIEW -->
+<section class="section">
+  <div class="section-label">The Process</div>
+  <h2 class="section-title">Three steps to your<br/><em>personal reading</em></h2>
+  <p class="section-sub">No waiting. No back-and-forth. Just your details and a report that speaks to your exact life situation right now.</p>
+  <div class="steps-grid">
+    <div class="step-card">
+      <span class="step-num">01</span>
+      <div class="step-icon">☽</div>
+      <h3 class="step-title">Share Your Cosmic Identity</h3>
+      <p class="step-desc">Enter your Raasi, Lagnam, and Nakshatra — the three pillars of your Vedic birth chart. These form the soul of your personalised reading.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">02</span>
+      <div class="step-icon">◎</div>
+      <h3 class="step-title">Answer Four Guided Questions</h3>
+      <p class="step-desc">Tell us your current struggles, daily rhythm, life goals, and spiritual orientation. Simple inputs that give our AI the context to speak to your life — not a generic horoscope.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">03</span>
+      <div class="step-icon">↓</div>
+      <h3 class="step-title">Download Your Full Report</h3>
+      <p class="step-desc">Within minutes, receive a full Vedic guidance report. Download as PDF or Word, share with family, and revisit whenever you need clarity.</p>
+    </div>
+  </div>
+  <div class="section-readmore-row">
+    <a href="/v3/how-it-works" class="readmore-link">
+      Read the full process
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7.5h9M8 3.5l4 4-4 4"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section">
+  <div class="section-label">Voices</div>
+  <h2 class="section-title">What our readers <em>say</em></h2>
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="t-quote">"</div>
+      <p class="t-text">I was confused about switching from IT to starting my own business. The report mapped my Lagnam's stance on risk beautifully — it gave me the confidence I had been waiting for.</p>
+      <div class="t-person">
+        <div class="t-avatar">
+          <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=96&h=96&fit=crop&crop=top" alt="Karthik"/>
+        </div>
+        <div>
+          <div class="t-name">Karthik S.</div>
+          <div class="t-detail">Software Engineer, Chennai</div>
+          <div class="t-raasi">Simbha · Uthiram</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"</div>
+      <p class="t-text">As a mother, I was worried about my daughter's direction. This report gave us something real to discuss — it connected astrology with practical, grounded steps forward.</p>
+      <div class="t-person">
+        <div class="t-avatar">
+          <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=96&h=96&fit=crop&crop=top" alt="Meenakshi"/>
+        </div>
+        <div>
+          <div class="t-name">Meenakshi R.</div>
+          <div class="t-detail">Homemaker, Coimbatore</div>
+          <div class="t-raasi">Thulam · Swathi</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"</div>
+      <p class="t-text">The section on my Nakshatra and commitment patterns was exact. I shared it with my partner and it opened a conversation we had never been able to have before.</p>
+      <div class="t-person">
+        <div class="t-avatar">
+          <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=96&h=96&fit=crop&crop=top" alt="Priya"/>
+        </div>
+        <div>
+          <div class="t-name">Priya N.</div>
+          <div class="t-detail">Student, Madurai</div>
+          <div class="t-raasi">Meenam · Revathi</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT PREVIEW -->
+<section class="about-preview">
+  <div class="about-img-stack">
+    <img class="ab-img-1"
+      src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=560&h=720&fit=crop&crop=top"
+      alt="Astro Raja"/>
+    <img class="ab-img-2"
+      src="https://images.unsplash.com/photo-1621592484082-4b9d2a36e3b6?w=420&h=540&fit=crop&crop=top"
+      alt="Consultation setting"/>
+  </div>
+  <div>
+    <div class="section-label">About</div>
+    <h2 class="section-title">Vedic wisdom,<br/><em>reimagined</em></h2>
+    <blockquote class="about-quote">
+      "Astrology does not define your fate. It reveals the terrain — and you choose the path."
+    </blockquote>
+    <p class="about-body">Ask Astro Raja was built for the Tamil Nadu community — students, parents, working professionals — who seek clarity on career, relationships, and life direction through the lens of authentic Vedic astrology.</p>
+    <p class="about-body">Unlike generic horoscope apps, every report here is generated using your exact Raasi, Lagnam, and Nakshatra combination, woven together with your personal context today.</p>
+    <a href="/v3/about" class="readmore-link" style="margin-top:8px;">
+      Our full story
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7.5h9M8 3.5l4 4-4 4"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- RAASI PREVIEW -->
+<section class="raasi-dark">
+  <div class="section-label" style="color:rgba(200,148,26,0.7);">All 12 Signs</div>
+  <h2 class="section-title" style="color:var(--cream); font-weight:300;">Which Raasi are <em style="color:var(--gold-light)">you?</em></h2>
+  <p style="font-size:14px; color:rgba(254,250,243,0.45); margin-top:8px;">Click your Raasi to begin with it pre-filled.</p>
+  <div class="raasi-grid">
+    <a class="raasi-chip" href="/v3/get-reading?raasi=Mesham"><div class="raasi-symbol">♈</div><div class="raasi-name">Mesham</div><div class="raasi-tamil">மேஷம்</div></a>
+    <a class="raasi-chip" href="/v3/get-reading?raasi=Rishabam"><div class="raasi-symbol">♉</div><div class="raasi-name">Rishabam</div><div class="raasi-tamil">ரிஷபம்</div></a>
+    <a class="raasi-chip" href="/v3/get-reading?raasi=Midhunam"><div class="raasi-symbol">♊</div><div class="raasi-name">Midhunam</div><div class="raasi-tamil">மிதுனம்</div></a>
+    <a class="raasi-chip" href="/v3/get-reading?raasi=Kadagam"><div class="raasi-symbol">♋</div><div class="raasi-name">Kadagam</div><div class="raasi-tamil">கடகம்</div></a>
+    <a class="raasi-chip" href="/v3/get-reading?raasi=Simbha"><div class="raasi-symbol">♌</div><div class="raasi-name">Simbha</div><div class="raasi-tamil">சிம்ஹம்</div></a>
+    <a class="raasi-chip" href="/v3/get-reading?raasi=Kanni"><div class="raasi-symbol">♍</div><div class="raasi-name">Kanni</div><div class="raasi-tamil">கன்னி</div></a>
+    <a class="raasi-chip" href="/v3/get-reading?raasi=Thulam"><div class="raasi-symbol">♎</div><div class="raasi-name">Thulam</div><div class="raasi-tamil">துலாம்</div></a>
+    <a class="raasi-chip" href="/v3/get-reading?raasi=Vrichigam"><div class="raasi-symbol">♏</div><div class="raasi-name">Vrichigam</div><div class="raasi-tamil">விருச்சிகம்</div></a>
+    <a class="raasi-chip" href="/v3/get-reading?raasi=Dhanusu"><div class="raasi-symbol">♐</div><div class="raasi-name">Dhanusu</div><div class="raasi-tamil">தனுசு</div></a>
+    <a class="raasi-chip" href="/v3/get-reading?raasi=Magaram"><div class="raasi-symbol">♑</div><div class="raasi-name">Magaram</div><div class="raasi-tamil">மகரம்</div></a>
+    <a class="raasi-chip" href="/v3/get-reading?raasi=Kumbam"><div class="raasi-symbol">♒</div><div class="raasi-name">Kumbam</div><div class="raasi-tamil">கும்பம்</div></a>
+    <a class="raasi-chip" href="/v3/get-reading?raasi=Meenam"><div class="raasi-symbol">♓</div><div class="raasi-name">Meenam</div><div class="raasi-tamil">மீனம்</div></a>
+  </div>
+  <div class="raasi-readmore-row">
+    <a href="/v3/raasi-guide" class="readmore-light">
+      Full Raasi Guide
+      <svg width="14" height="14" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7.5h9M8 3.5l4 4-4 4"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- FAQ PREVIEW -->
+<section class="faq-preview">
+  <div class="section-label">Common Questions</div>
+  <h2 class="section-title">You might be <em>wondering</em></h2>
+  <p class="section-sub">A few things people ask before their first reading.</p>
+  <div class="faq-grid">
+    <div class="faq-item">
+      <div class="faq-q">Do I need my exact birth time?</div>
+      <div class="faq-a">No. If you know your Raasi, Lagnam, and Nakshatra from a previous reading or family records, that is all we need. Birth time helps but is not required here.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is this a real astrology reading?</div>
+      <div class="faq-a">Yes — the report is generated using authentic Vedic astrology principles applied to your specific Raasi, Lagnam and Nakshatra. No generic templates.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How do I download my report?</div>
+      <div class="faq-a">Once generated, you can download your report as a PDF or a Word document in one click. No account needed.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is my information private?</div>
+      <div class="faq-a">Your inputs are used only to generate your report. We do not store personal data or share it with any third parties.</div>
+    </div>
+  </div>
+  <div class="section-readmore-row" style="margin-top:36px;">
+    <a href="/v3/faq" class="readmore-link">
+      All frequently asked questions
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7.5h9M8 3.5l4 4-4 4"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section class="cta-banner">
+  <h2 class="cta-title">Your Nakshatra has<br/>something to <em>tell you.</em></h2>
+  <p class="cta-sub">Answer eight questions. Get a full Vedic guidance report in minutes.</p>
+  <a href="/v3/get-reading" class="btn-primary" style="padding:17px 46px; font-size:14px;">Begin My Reading — Free</a>
+  <p class="cta-note">No account required &nbsp;·&nbsp; Download instantly &nbsp;·&nbsp; Tamil names supported</p>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand"><span>✦</span> Ask Astro Raja</div>
+      <p class="footer-tagline">AI-powered Vedic astrology guidance for Tamil Nadu and beyond. Rooted in authentic tradition, delivered with modern clarity.</p>
+      <div class="footer-socials">
+        <a class="footer-social-link" href="#">in</a>
+        <a class="footer-social-link" href="#">ig</a>
+        <a class="footer-social-link" href="#">yt</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Navigate</div>
+      <a href="/v3/index">Home</a>
+      <a href="/v3/how-it-works">How It Works</a>
+      <a href="/v3/raasi-guide">Raasi Guide</a>
+      <a href="/v3/about">About</a>
+      <a href="/v3/faq">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Tool</div>
+      <a href="/v3/get-reading">Get Your Reading</a>
+      <a href="/v3/privacy">Privacy Policy</a>
+      <a href="/v3/terms">Terms of Use</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Disclaimer</div>
+      <p class="footer-disclaimer">Reports are for personal guidance and reflection only. Not a substitute for professional medical, legal, or financial advice.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Ask Astro Raja · ask-astro-raja.com</span>
+    <span>Made with care for Tamil Nadu</span>
+  </div>
+</footer>
+</body>
+</html>

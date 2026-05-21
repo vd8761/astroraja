@@ -1,0 +1,593 @@
+---
+// Version 3 (Original Claude HTML)
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Raasi Guide — Ask Astro Raja</title>
+<link rel="stylesheet" href="/shared.css"/>
+<style>
+/* ── RAASI INTRO ── */
+.raasi-intro-section { padding: 96px 6%; }
+.raasi-intro-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 72px;
+  align-items: start; margin-top: 56px;
+}
+.raasi-diagram {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 48px;
+  box-shadow: var(--shadow-soft);
+}
+.raasi-chart-svg {
+  width: 100%; height: auto;
+}
+.raasi-intro-body { font-size: 14px; color: var(--ink-soft); line-height: 1.9; margin-bottom: 18px; }
+.raasi-intro-highlight {
+  background: var(--gold-faint); border-left: 3px solid var(--gold);
+  padding: 20px 24px; border-radius: 3px; margin: 28px 0;
+}
+.raasi-intro-highlight-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 8px;
+}
+.raasi-intro-highlight-text { font-size: 13px; color: var(--ink-soft); line-height: 1.75; }
+
+/* ── ALL 12 RAASIS ── */
+.all-raasis-section {
+  padding: 96px 6%;
+  background: var(--gold-faint);
+  border-top: 1px solid var(--cream-border);
+  border-bottom: 1px solid var(--cream-border);
+}
+.raasi-cards-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 20px; margin-top: 56px;
+}
+.raasi-card {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 32px 28px;
+  transition: all 0.2s; cursor: pointer; text-decoration: none; display: block;
+}
+.raasi-card:hover { box-shadow: var(--shadow-soft); border-color: var(--gold); }
+.rc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.rc-symbol { font-size: 38px; }
+.rc-tag {
+  background: var(--gold-faint); border: 1px solid var(--cream-border);
+  border-radius: 100px; padding: 3px 11px;
+  font-size: 10px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em;
+}
+.rc-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; font-weight: 600; color: var(--ink); margin-bottom: 4px;
+}
+.rc-tamil { font-size: 14px; color: var(--ink-soft); margin-bottom: 16px; }
+.rc-dates { font-size: 11px; color: var(--gold); margin-bottom: 18px; letter-spacing: 0.04em; }
+.rc-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.75; margin-bottom: 16px; }
+.rc-traits { display: flex; flex-wrap: wrap; gap: 6px; }
+.rc-trait {
+  background: var(--gold-faint); border: 1px solid var(--cream-border);
+  border-radius: 100px; padding: 3px 10px; font-size: 10px; color: var(--ink-mid);
+}
+
+/* ── LAGNAM SECTION ── */
+.lagnam-section { padding: 96px 6%; }
+.lagnam-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
+  align-items: start; margin-top: 56px;
+}
+.lagnam-desc { font-size: 14px; color: var(--ink-soft); line-height: 1.9; margin-bottom: 18px; }
+.lagnam-importance {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 32px;
+}
+.lagnam-imp-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 600; color: var(--ink); margin-bottom: 18px;
+}
+.lagnam-points { list-style: none; }
+.lagnam-points li {
+  display: flex; align-items: flex-start; gap: 14px;
+  font-size: 13px; color: var(--ink-soft); line-height: 1.75;
+  padding: 14px 0; border-bottom: 1px solid var(--cream-border);
+}
+.lagnam-points li:last-child { border-bottom: none; }
+.lagnam-points li::before {
+  content: '✦'; color: var(--gold); font-size: 10px; margin-top: 3px; flex-shrink: 0;
+}
+
+/* ── NAKSHATRA SECTION ── */
+.nakshatra-section {
+  padding: 96px 6%;
+  background: var(--ink);
+}
+.nakshatra-intro {
+  max-width: 680px; margin-bottom: 56px;
+}
+.nak-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  background: rgba(254,250,243,0.08); border: 1px solid rgba(254,250,243,0.08);
+  border-radius: 3px; overflow: hidden;
+}
+.nak-card {
+  background: rgba(254,250,243,0.03);
+  border: 1px solid rgba(254,250,243,0.08);
+  padding: 24px 20px;
+  transition: all 0.2s;
+}
+.nak-card:hover {
+  background: rgba(200,148,26,0.12);
+  border-color: rgba(200,148,26,0.3);
+}
+.nak-num {
+  font-size: 10px; color: rgba(200,148,26,0.6);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px;
+}
+.nak-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 600; color: var(--cream); margin-bottom: 5px;
+}
+.nak-tamil { font-size: 12px; color: rgba(254,250,243,0.4); margin-bottom: 12px; }
+.nak-ruler { font-size: 11px; color: rgba(200,148,26,0.7); margin-bottom: 10px; }
+.nak-essence { font-size: 12px; color: rgba(254,250,243,0.5); line-height: 1.7; }
+
+/* ── KNOWING YOUR DETAILS ── */
+.know-details-section {
+  padding: 96px 6%;
+  border-top: 1px solid var(--cream-border);
+}
+.know-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
+  margin-top: 56px;
+}
+.know-card {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 36px 32px;
+}
+.know-icon { font-size: 32px; margin-bottom: 18px; display: block; }
+.know-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px; font-weight: 600; color: var(--ink); margin-bottom: 12px;
+}
+.know-body { font-size: 13px; color: var(--ink-soft); line-height: 1.8; margin-bottom: 14px; }
+.know-steps {
+  list-style: none; padding-left: 0; margin-top: 16px;
+}
+.know-steps li {
+  font-size: 12px; color: var(--ink-soft); line-height: 1.7;
+  padding-left: 20px; position: relative; margin-bottom: 8px;
+}
+.know-steps li::before {
+  content: '→'; position: absolute; left: 0; color: var(--gold);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .raasi-intro-grid { grid-template-columns: 1fr; }
+  .raasi-cards-grid { grid-template-columns: 1fr 1fr; }
+  .lagnam-grid { grid-template-columns: 1fr; }
+  .nak-grid { grid-template-columns: 1fr 1fr; }
+  .know-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .raasi-cards-grid { grid-template-columns: 1fr; }
+  .nak-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/v3/index"><span>✦</span> Ask Astro Raja</a>
+  <ul class="nav-links">
+    <li><a href="/v3/how-it-works">How It Works</a></li>
+    <li><a href="/v3/raasi-guide" class="active">Raasi Guide</a></li>
+    <li><a href="/v3/about">About</a></li>
+    <li><a href="/v3/faq">FAQ</a></li>
+  </ul>
+  <a href="/v3/get-reading" class="nav-cta">Get My Reading</a>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <svg class="page-hero-bg" viewBox="0 0 400 400" fill="none">
+    <circle cx="200" cy="200" r="190" stroke="#C8941A" stroke-width="0.6"/>
+    <circle cx="200" cy="200" r="130" stroke="#C8941A" stroke-width="0.6"/>
+    <circle cx="200" cy="200" r="70" stroke="#C8941A" stroke-width="0.6"/>
+    <polygon points="200,80 220,190 340,200 220,210 200,320 180,210 60,200 180,190" fill="none" stroke="#C8941A" stroke-width="0.5"/>
+  </svg>
+  <div class="page-hero-inner">
+    <div class="page-hero-eyebrow">✦ &nbsp; Vedic Foundation</div>
+    <h1 class="page-hero-title">Understanding<br/><em>Raasi, Lagnam & Nakshatra</em></h1>
+    <p class="page-hero-sub">The three pillars of your Vedic birth chart — and the foundation of every reading we generate. Here is what each one means, how they work together, and how to find yours.</p>
+  </div>
+</section>
+
+<!-- RAASI INTRO -->
+<section class="raasi-intro-section">
+  <div class="section-label">What is Raasi?</div>
+  <h2 class="section-title">Your Moon Sign —<br/>your <em>inner world</em></h2>
+  <div class="raasi-intro-grid">
+    <div>
+      <p class="raasi-intro-body">In Vedic astrology, your <strong>Raasi</strong> (Moon Sign) is determined by where the Moon was positioned in the zodiac at the moment of your birth. Unlike Western astrology, which emphasizes the Sun Sign, Vedic astrology considers the Moon Sign to be the primary indicator of your emotional nature, mental tendencies, and subconscious patterns.</p>
+      <p class="raasi-intro-body">Your Raasi governs how you feel, how you process emotions, how you relate to your family and home, and what brings you inner peace or distress. It is your emotional blueprint — the part of you that others may not see on the surface but that shapes every decision you make.</p>
+      <div class="raasi-intro-highlight">
+        <div class="raasi-intro-highlight-title">Why Raasi Matters</div>
+        <p class="raasi-intro-highlight-text">Two people with the same Sun Sign (like Aries in Western astrology) can have very different Raasis — one might be Meenam (emotionally sensitive, intuitive) and the other Mesham (emotionally driven, impulsive). This distinction shapes how they experience life at a fundamental level.</p>
+      </div>
+      <p class="raasi-intro-body">There are 12 Raasis in the Vedic zodiac, each with its own elemental nature, ruling planet, and karmic themes. Scroll down to explore all 12.</p>
+    </div>
+    <div class="raasi-diagram">
+      <svg class="raasi-chart-svg" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="200" cy="200" r="180" stroke="#EDE3CE" stroke-width="1"/>
+        <circle cx="200" cy="200" r="140" stroke="#EDE3CE" stroke-width="1"/>
+        <circle cx="200" cy="200" r="100" stroke="#C8941A" stroke-width="1.5"/>
+        <!-- 12 divisions -->
+        <line x1="200" y1="20" x2="200" y2="380" stroke="#EDE3CE" stroke-width="0.5"/>
+        <line x1="20" y1="200" x2="380" y2="200" stroke="#EDE3CE" stroke-width="0.5"/>
+        <line x1="63" y1="63" x2="337" y2="337" stroke="#EDE3CE" stroke-width="0.5"/>
+        <line x1="337" y1="63" x2="63" y2="337" stroke="#EDE3CE" stroke-width="0.5"/>
+        <line x1="110" y1="35" x2="290" y2="365" stroke="#EDE3CE" stroke-width="0.5"/>
+        <line x1="290" y1="35" x2="110" y2="365" stroke="#EDE3CE" stroke-width="0.5"/>
+        <line x1="35" y1="110" x2="365" y2="290" stroke="#EDE3CE" stroke-width="0.5"/>
+        <line x1="365" y1="110" x2="35" y2="290" stroke="#EDE3CE" stroke-width="0.5"/>
+        <!-- Center circle -->
+        <circle cx="200" cy="200" r="8" fill="#C8941A"/>
+        <!-- Labels -->
+        <text x="200" y="55" font-family="DM Sans" font-size="11" fill="#6B5A42" text-anchor="middle">Mesham</text>
+        <text x="315" y="115" font-family="DM Sans" font-size="11" fill="#6B5A42" text-anchor="middle">Rishabam</text>
+        <text x="350" y="210" font-family="DM Sans" font-size="11" fill="#6B5A42" text-anchor="middle">Midhunam</text>
+        <text x="315" y="295" font-family="DM Sans" font-size="11" fill="#6B5A42" text-anchor="middle">Kadagam</text>
+        <text x="200" y="350" font-family="DM Sans" font-size="11" fill="#6B5A42" text-anchor="middle">Simbha</text>
+        <text x="85" y="295" font-family="DM Sans" font-size="11" fill="#6B5A42" text-anchor="middle">Kanni</text>
+        <text x="50" y="210" font-family="DM Sans" font-size="11" fill="#6B5A42" text-anchor="middle">Thulam</text>
+        <text x="85" y="115" font-family="DM Sans" font-size="11" fill="#6B5A42" text-anchor="middle">Vrichigam</text>
+        <text x="200" y="200" font-family="Cormorant Garamond" font-size="13" fill="#C8941A" text-anchor="middle" font-weight="600">12 Raasis</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ALL 12 RAASIS -->
+<section class="all-raasis-section">
+  <div class="section-label">The Zodiac</div>
+  <h2 class="section-title">All 12 <em>Raasis</em></h2>
+  <p class="section-sub">Each Raasi has a distinct personality, element, and karmic theme. Find yours and click to begin your reading with it pre-filled.</p>
+  <div class="raasi-cards-grid">
+    <a class="raasi-card" href="/v3/get-reading?raasi=Mesham">
+      <div class="rc-header">
+        <div class="rc-symbol">♈</div>
+        <div class="rc-tag">Fire</div>
+      </div>
+      <div class="rc-name">Mesham</div>
+      <div class="rc-tamil">மேஷம் · Aries</div>
+      <div class="rc-dates">Approx. Apr 13 – May 14</div>
+      <p class="rc-desc">Bold, pioneering, driven by action. Mesham natives are natural leaders with high energy and strong willpower. Can be impatient or impulsive.</p>
+      <div class="rc-traits">
+        <span class="rc-trait">Courage</span>
+        <span class="rc-trait">Initiative</span>
+        <span class="rc-trait">Directness</span>
+      </div>
+    </a>
+
+    <a class="raasi-card" href="/v3/get-reading?raasi=Rishabam">
+      <div class="rc-header">
+        <div class="rc-symbol">♉</div>
+        <div class="rc-tag">Earth</div>
+      </div>
+      <div class="rc-name">Rishabam</div>
+      <div class="rc-tamil">ரிஷபம் · Taurus</div>
+      <div class="rc-dates">Approx. May 14 – Jun 14</div>
+      <p class="rc-desc">Grounded, patient, and deeply connected to material comfort and beauty. Values stability and loyalty. Can be stubborn or possessive.</p>
+      <div class="rc-traits">
+        <span class="rc-trait">Stability</span>
+        <span class="rc-trait">Sensuality</span>
+        <span class="rc-trait">Persistence</span>
+      </div>
+    </a>
+
+    <a class="raasi-card" href="/v3/get-reading?raasi=Midhunam">
+      <div class="rc-header">
+        <div class="rc-symbol">♊</div>
+        <div class="rc-tag">Air</div>
+      </div>
+      <div class="rc-name">Midhunam</div>
+      <div class="rc-tamil">மிதுனம் · Gemini</div>
+      <div class="rc-dates">Approx. Jun 14 – Jul 16</div>
+      <p class="rc-desc">Quick-witted, communicative, intellectually curious. Thrives on variety and mental stimulation. Can be scattered or inconsistent.</p>
+      <div class="rc-traits">
+        <span class="rc-trait">Communication</span>
+        <span class="rc-trait">Adaptability</span>
+        <span class="rc-trait">Curiosity</span>
+      </div>
+    </a>
+
+    <a class="raasi-card" href="/v3/get-reading?raasi=Kadagam">
+      <div class="rc-header">
+        <div class="rc-symbol">♋</div>
+        <div class="rc-tag">Water</div>
+      </div>
+      <div class="rc-name">Kadagam</div>
+      <div class="rc-tamil">கடகம் · Cancer</div>
+      <div class="rc-dates">Approx. Jul 16 – Aug 16</div>
+      <p class="rc-desc">Deeply emotional, nurturing, family-oriented. Intuitive and protective of loved ones. Can be overly sensitive or clingy.</p>
+      <div class="rc-traits">
+        <span class="rc-trait">Empathy</span>
+        <span class="rc-trait">Protectiveness</span>
+        <span class="rc-trait">Intuition</span>
+      </div>
+    </a>
+
+    <a class="raasi-card" href="/v3/get-reading?raasi=Simbha">
+      <div class="rc-header">
+        <div class="rc-symbol">♌</div>
+        <div class="rc-tag">Fire</div>
+      </div>
+      <div class="rc-name">Simbha</div>
+      <div class="rc-tamil">சிம்ஹம் · Leo</div>
+      <div class="rc-dates">Approx. Aug 16 – Sep 16</div>
+      <p class="rc-desc">Charismatic, confident, and drawn to leadership and recognition. Generous and warm-hearted. Can be prideful or domineering.</p>
+      <div class="rc-traits">
+        <span class="rc-trait">Confidence</span>
+        <span class="rc-trait">Generosity</span>
+        <span class="rc-trait">Pride</span>
+      </div>
+    </a>
+
+    <a class="raasi-card" href="/v3/get-reading?raasi=Kanni">
+      <div class="rc-header">
+        <div class="rc-symbol">♍</div>
+        <div class="rc-tag">Earth</div>
+      </div>
+      <div class="rc-name">Kanni</div>
+      <div class="rc-tamil">கன்னி · Virgo</div>
+      <div class="rc-dates">Approx. Sep 16 – Oct 17</div>
+      <p class="rc-desc">Analytical, detail-oriented, service-minded. Seeks perfection and practical solutions. Can be overly critical or anxious.</p>
+      <div class="rc-traits">
+        <span class="rc-trait">Precision</span>
+        <span class="rc-trait">Service</span>
+        <span class="rc-trait">Analysis</span>
+      </div>
+    </a>
+
+    <a class="raasi-card" href="/v3/get-reading?raasi=Thulam">
+      <div class="rc-header">
+        <div class="rc-symbol">♎</div>
+        <div class="rc-tag">Air</div>
+      </div>
+      <div class="rc-name">Thulam</div>
+      <div class="rc-tamil">துலாம் · Libra</div>
+      <div class="rc-dates">Approx. Oct 17 – Nov 16</div>
+      <p class="rc-desc">Balanced, diplomatic, aesthetically refined. Values harmony in relationships and environments. Can be indecisive or people-pleasing.</p>
+      <div class="rc-traits">
+        <span class="rc-trait">Harmony</span>
+        <span class="rc-trait">Fairness</span>
+        <span class="rc-trait">Beauty</span>
+      </div>
+    </a>
+
+    <a class="raasi-card" href="/v3/get-reading?raasi=Vrichigam">
+      <div class="rc-header">
+        <div class="rc-symbol">♏</div>
+        <div class="rc-tag">Water</div>
+      </div>
+      <div class="rc-name">Vrichigam</div>
+      <div class="rc-tamil">விருச்சிகம் · Scorpio</div>
+      <div class="rc-dates">Approx. Nov 16 – Dec 16</div>
+      <p class="rc-desc">Intense, transformative, deeply perceptive. Seeks depth and truth in all things. Can be secretive or controlling.</p>
+      <div class="rc-traits">
+        <span class="rc-trait">Intensity</span>
+        <span class="rc-trait">Transformation</span>
+        <span class="rc-trait">Depth</span>
+      </div>
+    </a>
+
+    <a class="raasi-card" href="/v3/get-reading?raasi=Dhanusu">
+      <div class="rc-header">
+        <div class="rc-symbol">♐</div>
+        <div class="rc-tag">Fire</div>
+      </div>
+      <div class="rc-name">Dhanusu</div>
+      <div class="rc-tamil">தனுசு · Sagittarius</div>
+      <div class="rc-dates">Approx. Dec 16 – Jan 14</div>
+      <p class="rc-desc">Philosophical, adventurous, truth-seeking. Optimistic and freedom-loving. Can be restless or overly blunt.</p>
+      <div class="rc-traits">
+        <span class="rc-trait">Optimism</span>
+        <span class="rc-trait">Philosophy</span>
+        <span class="rc-trait">Adventure</span>
+      </div>
+    </a>
+
+    <a class="raasi-card" href="/v3/get-reading?raasi=Magaram">
+      <div class="rc-header">
+        <div class="rc-symbol">♑</div>
+        <div class="rc-tag">Earth</div>
+      </div>
+      <div class="rc-name">Magaram</div>
+      <div class="rc-tamil">மகரம் · Capricorn</div>
+      <div class="rc-dates">Approx. Jan 14 – Feb 12</div>
+      <p class="rc-desc">Disciplined, ambitious, strategic. Values structure and long-term achievement. Can be rigid or emotionally distant.</p>
+      <div class="rc-traits">
+        <span class="rc-trait">Discipline</span>
+        <span class="rc-trait">Ambition</span>
+        <span class="rc-trait">Responsibility</span>
+      </div>
+    </a>
+
+    <a class="raasi-card" href="/v3/get-reading?raasi=Kumbam">
+      <div class="rc-header">
+        <div class="rc-symbol">♒</div>
+        <div class="rc-tag">Air</div>
+      </div>
+      <div class="rc-name">Kumbam</div>
+      <div class="rc-tamil">கும்பம் · Aquarius</div>
+      <div class="rc-dates">Approx. Feb 12 – Mar 13</div>
+      <p class="rc-desc">Innovative, humanitarian, intellectually independent. Seeks progress and equality. Can be detached or unpredictable.</p>
+      <div class="rc-traits">
+        <span class="rc-trait">Innovation</span>
+        <span class="rc-trait">Independence</span>
+        <span class="rc-trait">Idealism</span>
+      </div>
+    </a>
+
+    <a class="raasi-card" href="/v3/get-reading?raasi=Meenam">
+      <div class="rc-header">
+        <div class="rc-symbol">♓</div>
+        <div class="rc-tag">Water</div>
+      </div>
+      <div class="rc-name">Meenam</div>
+      <div class="rc-tamil">மீனம் · Pisces</div>
+      <div class="rc-dates">Approx. Mar 13 – Apr 13</div>
+      <p class="rc-desc">Compassionate, intuitive, spiritually inclined. Deeply empathetic and imaginative. Can be escapist or overly impressionable.</p>
+      <div class="rc-traits">
+        <span class="rc-trait">Compassion</span>
+        <span class="rc-trait">Imagination</span>
+        <span class="rc-trait">Spirituality</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- LAGNAM -->
+<section class="lagnam-section">
+  <div class="section-label">What is Lagnam?</div>
+  <h2 class="section-title">Your Ascendant —<br/>your <em>outer expression</em></h2>
+  <div class="lagnam-grid">
+    <div>
+      <p class="lagnam-desc">If your Raasi is your inner world, your <strong>Lagnam</strong> (Ascendant) is your outer mask — the version of you that the world sees first. It governs your physical appearance, personality, how you approach challenges, and the lens through which you experience life.</p>
+      <p class="lagnam-desc">Your Lagnam is determined by which zodiac sign was rising on the eastern horizon at the exact moment and location of your birth. Unlike Raasi, which changes roughly every 2.5 days, the Lagnam changes every 2 hours — making it one of the most precise and personal indicators in Vedic astrology.</p>
+      <p class="lagnam-desc">Two people with the same Raasi but different Lagnams will live very different lives. One might be extroverted and action-oriented (Mesham Lagnam), while the other is introspective and cautious (Magaram Lagnam) — even though both share the same emotional blueprint.</p>
+    </div>
+    <div class="lagnam-importance">
+      <div class="lagnam-imp-title">Why Lagnam Matters</div>
+      <ul class="lagnam-points">
+        <li>Your Lagnam determines the layout of your entire birth chart — which planets sit in which houses of your life (career, relationships, health, etc.).</li>
+        <li>It shapes how you approach the world: boldly, cautiously, analytically, emotionally, diplomatically.</li>
+        <li>Lagnam governs your physical constitution and vitality — your natural energy levels and health tendencies.</li>
+        <li>Together with Raasi and Nakshatra, it creates your unique astrological fingerprint — no two charts are the same.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- NAKSHATRA -->
+<section class="nakshatra-section">
+  <div class="nakshatra-intro">
+    <div class="section-label" style="color:rgba(200,148,26,0.7);">What is Nakshatra?</div>
+    <h2 class="section-title" style="color:var(--cream); font-weight:300;">Your Birth Star —<br/>your <em style="color:var(--gold-light)">karmic blueprint</em></h2>
+    <p style="font-size:14px; color:rgba(254,250,243,0.5); line-height:1.9; margin-top:16px;">While Raasi and Lagnam are broad strokes, your <strong>Nakshatra</strong> is the fine detail. The 27 Nakshatras divide the zodiac into precise lunar mansions, each ruled by a specific deity and planet. Your Nakshatra reveals your soul's purpose, your deepest nature, and the karmic themes you are here to work through in this lifetime.</p>
+    <p style="font-size:14px; color:rgba(254,250,243,0.5); line-height:1.9; margin-top:14px;">Ask Astro Raja uses your Nakshatra as the foundation of every reading — it is the most specific and powerful part of your Vedic chart.</p>
+  </div>
+  <div class="nak-grid">
+    <div class="nak-card"><div class="nak-num">Nakshatra 01</div><div class="nak-name">Ashwini</div><div class="nak-tamil">அஸ்வினி</div><div class="nak-ruler">Ruled by Ketu</div><p class="nak-essence">Swift, healing energy. Natural initiators with a restless drive to start new things.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 02</div><div class="nak-name">Bharani</div><div class="nak-tamil">பரணி</div><div class="nak-ruler">Ruled by Venus</div><p class="nak-essence">Transformative power. Carries heavy burdens, deeply creative, associated with birth and death.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 03</div><div class="nak-name">Karthikai</div><div class="nak-tamil">கார்த்திகை</div><div class="nak-ruler">Ruled by Sun</div><p class="nak-essence">Purifying flame. Cutting through illusion, direct, fiercely protective.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 04</div><div class="nak-name">Rohini</div><div class="nak-tamil">ரோகிணி</div><div class="nak-ruler">Ruled by Moon</div><p class="nak-essence">Fertile, sensual, growth-oriented. Deeply attractive and magnetic personality.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 05</div><div class="nak-name">Mrigashira</div><div class="nak-tamil">மிருகசீரிடம்</div><div class="nak-ruler">Ruled by Mars</div><p class="nak-essence">The searching deer. Curious, restless, always seeking something just out of reach.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 06</div><div class="nak-name">Ardra</div><div class="nak-tamil">திருவாதிரை</div><div class="nak-ruler">Ruled by Rahu</div><p class="nak-essence">The storm. Intense transformation, destruction before renewal.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 07</div><div class="nak-name">Punarvasu</div><div class="nak-tamil">புனர்பூசம்</div><div class="nak-ruler">Ruled by Jupiter</div><p class="nak-essence">Return of the light. Resilience, optimism, the ability to bounce back.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 08</div><div class="nak-name">Pushya</div><div class="nak-tamil">பூசம்</div><div class="nak-ruler">Ruled by Saturn</div><p class="nak-essence">Nourishing. Supportive, disciplined, deeply devoted to family and tradition.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 09</div><div class="nak-name">Ashlesha</div><div class="nak-tamil">ஆயில்யம்</div><div class="nak-ruler">Ruled by Mercury</div><p class="nak-essence">Serpent energy. Hypnotic, secretive, deeply perceptive.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 10</div><div class="nak-name">Magha</div><div class="nak-tamil">மகம்</div><div class="nak-ruler">Ruled by Ketu</div><p class="nak-essence">Royal lineage. Pride, duty, respect for ancestors and tradition.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 11</div><div class="nak-name">Purva Phalguni</div><div class="nak-tamil">பூரம்</div><div class="nak-ruler">Ruled by Venus</div><p class="nak-essence">Pleasure-seeking. Artistic, sensual, enjoys life's comforts.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 12</div><div class="nak-name">Uttara Phalguni</div><div class="nak-tamil">உத்திரம்</div><div class="nak-ruler">Ruled by Sun</div><p class="nak-essence">Generous leadership. Warm, reliable, takes responsibility for others.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 13</div><div class="nak-name">Hasta</div><div class="nak-tamil">அஸ்தம்</div><div class="nak-ruler">Ruled by Moon</div><p class="nak-essence">Skilled hands. Dexterity, craftsmanship, control over the material world.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 14</div><div class="nak-name">Chitra</div><div class="nak-tamil">சித்திரை</div><div class="nak-ruler">Ruled by Mars</div><p class="nak-essence">The jewel. Beauty, design, perfecting form and appearance.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 15</div><div class="nak-name">Swathi</div><div class="nak-tamil">சுவாதி</div><div class="nak-ruler">Ruled by Rahu</div><p class="nak-essence">The sword. Independence, flexibility, moves like the wind.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 16</div><div class="nak-name">Vishakha</div><div class="nak-tamil">விசாகம்</div><div class="nak-ruler">Ruled by Jupiter</div><p class="nak-essence">Goal-focused. Ambitious, determined, willing to work for long-term rewards.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 17</div><div class="nak-name">Anuradha</div><div class="nak-tamil">அனுஷம்</div><div class="nak-ruler">Ruled by Saturn</div><p class="nak-essence">Devoted friendship. Loyal, cooperative, thrives in partnerships.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 18</div><div class="nak-name">Jyeshta</div><div class="nak-tamil">கேட்டை</div><div class="nak-ruler">Ruled by Mercury</div><p class="nak-essence">The eldest. Authority, protection, can be controlling or possessive.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 19</div><div class="nak-name">Mula</div><div class="nak-tamil">மூலம்</div><div class="nak-ruler">Ruled by Ketu</div><p class="nak-essence">The root. Deep investigation, uproots the false, seeks truth.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 20</div><div class="nak-name">Purva Ashadha</div><div class="nak-tamil">பூராடம்</div><div class="nak-ruler">Ruled by Venus</div><p class="nak-essence">Invincible. Confident, unconquerable spirit, victory-oriented.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 21</div><div class="nak-name">Uttara Ashadha</div><div class="nak-tamil">உத்திராடம்</div><div class="nak-ruler">Ruled by Sun</div><p class="nak-essence">Righteous victory. Patient, principled, ultimate success through integrity.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 22</div><div class="nak-name">Shravana</div><div class="nak-tamil">திருவோணம்</div><div class="nak-ruler">Ruled by Moon</div><p class="nak-essence">The listener. Learning, absorbing knowledge, wise through observation.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 23</div><div class="nak-name">Dhanishta</div><div class="nak-tamil">அவிட்டம்</div><div class="nak-ruler">Ruled by Mars</div><p class="nak-essence">Wealth and rhythm. Musical, prosperous, synchronized with cosmic timing.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 24</div><div class="nak-name">Shatabhisha</div><div class="nak-tamil">சதயம்</div><div class="nak-ruler">Ruled by Rahu</div><p class="nak-essence">A hundred healers. Mystery, healing, solitary pursuits.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 25</div><div class="nak-name">Purva Bhadrapada</div><div class="nak-tamil">பூரட்டாதி</div><div class="nak-ruler">Ruled by Jupiter</div><p class="nak-essence">The burning pair. Intense, transformative, purification through fire.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 26</div><div class="nak-name">Uttara Bhadrapada</div><div class="nak-tamil">உத்திரட்டாதி</div><div class="nak-ruler">Ruled by Saturn</div><p class="nak-essence">The cosmic serpent. Deep wisdom, grounded spirituality, patient endurance.</p></div>
+    <div class="nak-card"><div class="nak-num">Nakshatra 27</div><div class="nak-name">Revathi</div><div class="nak-tamil">ரேவதி</div><div class="nak-ruler">Ruled by Mercury</div><p class="nak-essence">The shepherd. Nourishing, guiding, completing cycles, compassionate.</p></div>
+  </div>
+</section>
+
+<!-- HOW TO KNOW YOUR DETAILS -->
+<section class="know-details-section">
+  <div class="section-label">Finding Your Details</div>
+  <h2 class="section-title">How to find your<br/><em>Raasi, Lagnam & Nakshatra</em></h2>
+  <p class="section-sub">If you already know them from a previous reading or family records, you're ready to begin. If not, here are your options.</p>
+  <div class="know-grid">
+    <div class="know-card">
+      <span class="know-icon">📜</span>
+      <h3 class="know-title">Check Family Records</h3>
+      <p class="know-body">In Tamil Nadu, many families keep a written record of birth details (Janam Patrika) created by an astrologer at the time of birth. Ask your parents or elders — they may have this document.</p>
+    </div>
+    <div class="know-card">
+      <span class="know-icon">⏰</span>
+      <h3 class="know-title">Use a Vedic Calculator</h3>
+      <p class="know-body">If you know your exact birth time, date, and location, you can use a free online Vedic astrology calculator to find your Raasi, Lagnam, and Nakshatra. Search for "Vedic birth chart calculator" and enter your details.</p>
+      <ul class="know-steps">
+        <li>Enter your date of birth</li>
+        <li>Enter exact time of birth (if known)</li>
+        <li>Enter place of birth (city)</li>
+        <li>Select "South Indian" or "Vedic" chart style</li>
+        <li>Look for Raasi (Moon Sign), Lagnam (Ascendant), and Nakshatra (Birth Star)</li>
+      </ul>
+    </div>
+    <div class="know-card">
+      <span class="know-icon">🏛️</span>
+      <h3 class="know-title">Consult a Local Astrologer</h3>
+      <p class="know-body">If birth time is unknown, a Vedic astrologer can help determine your Raasi and Nakshatra through rectification methods or by asking a few key life event questions.</p>
+    </div>
+    <div class="know-card">
+      <span class="know-icon">❓</span>
+      <h3 class="know-title">What If I Don't Know?</h3>
+      <p class="know-body">If you absolutely cannot find your Raasi, Lagnam, or Nakshatra, you can still try our tool by selecting "I Don't Know" in the form — but the reading will be less precise. We strongly recommend finding these details first for the best experience.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-banner">
+  <h2 class="cta-title">Know your details?<br/><em>Begin your reading.</em></h2>
+  <p class="cta-sub">Enter your Raasi, Lagnam and Nakshatra — and see what they reveal.</p>
+  <a href="/v3/get-reading" class="btn-primary" style="padding:17px 46px; font-size:14px;">Begin My Reading — Free</a>
+  <p class="cta-note">No account required &nbsp;·&nbsp; Download instantly &nbsp;·&nbsp; Tamil names supported</p>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand"><span>✦</span> Ask Astro Raja</div>
+      <p class="footer-tagline">AI-powered Vedic astrology guidance for Tamil Nadu and beyond. Rooted in authentic tradition, delivered with modern clarity.</p>
+      <div class="footer-socials">
+        <a class="footer-social-link" href="#">in</a>
+        <a class="footer-social-link" href="#">ig</a>
+        <a class="footer-social-link" href="#">yt</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Navigate</div>
+      <a href="/v3/index">Home</a>
+      <a href="/v3/how-it-works">How It Works</a>
+      <a href="/v3/raasi-guide">Raasi Guide</a>
+      <a href="/v3/about">About</a>
+      <a href="/v3/faq">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Tool</div>
+      <a href="/v3/get-reading">Get Your Reading</a>
+      <a href="/v3/privacy">Privacy Policy</a>
+      <a href="/v3/terms">Terms of Use</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Disclaimer</div>
+      <p class="footer-disclaimer">Reports are for personal guidance and reflection only. Not a substitute for professional medical, legal, or financial advice.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Ask Astro Raja · ask-astro-raja.com</span>
+    <span>Made with care for Tamil Nadu</span>
+  </div>
+</footer>
+</body>
+</html>

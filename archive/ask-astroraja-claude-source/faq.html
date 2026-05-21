@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FAQ — Ask Astro Raja</title>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+/* ── FAQ SECTIONS ── */
+.faq-section { padding: 96px 6%; }
+.faq-categories {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin-top: 56px; margin-bottom: 64px;
+}
+.faq-cat-btn {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 20px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+  color: var(--ink-soft); cursor: pointer; transition: all 0.2s;
+  text-align: center;
+}
+.faq-cat-btn:hover, .faq-cat-btn.active {
+  background: var(--gold); color: var(--white); border-color: var(--gold);
+}
+
+.faq-list { max-width: 860px; margin: 0 auto; }
+.faq-item {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; margin-bottom: 16px; overflow: hidden;
+  transition: all 0.2s;
+}
+.faq-item:hover { border-color: var(--gold); }
+.faq-q-wrap {
+  padding: 24px 28px; cursor: pointer; display: flex;
+  justify-content: space-between; align-items: center;
+}
+.faq-q {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 600; color: var(--ink);
+  flex: 1;
+}
+.faq-toggle {
+  width: 28px; height: 28px; flex-shrink: 0;
+  background: var(--gold-faint); border: 1px solid var(--cream-border);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: var(--gold); transition: all 0.2s;
+}
+.faq-item.open .faq-toggle { transform: rotate(45deg); background: var(--gold); color: var(--white); }
+.faq-a-wrap {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.faq-item.open .faq-a-wrap { max-height: 600px; }
+.faq-a {
+  padding: 0 28px 28px;
+  font-size: 14px; color: var(--ink-soft); line-height: 1.85;
+}
+.faq-a p { margin-bottom: 14px; }
+.faq-a p:last-child { margin-bottom: 0; }
+.faq-a strong { color: var(--ink); font-weight: 500; }
+
+/* ── STILL HAVE QUESTIONS ── */
+.contact-cta-section {
+  padding: 96px 6%;
+  background: var(--gold-faint);
+  border-top: 1px solid var(--cream-border);
+  border-bottom: 1px solid var(--cream-border);
+  text-align: center;
+}
+.contact-cta-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 4.5vw, 56px); font-weight: 300;
+  line-height: 1.12; color: var(--ink); margin-bottom: 16px;
+}
+.contact-cta-title em { font-style: italic; color: var(--gold); }
+.contact-cta-sub { font-size: 15px; color: var(--ink-soft); margin-bottom: 36px; line-height: 1.7; }
+.contact-methods {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  max-width: 780px; margin: 0 auto;
+}
+.contact-card {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 32px 24px; text-align: center;
+}
+.contact-icon { font-size: 28px; margin-bottom: 14px; display: block; }
+.contact-method-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px; font-weight: 600; color: var(--ink); margin-bottom: 10px;
+}
+.contact-method-text { font-size: 13px; color: var(--ink-soft); line-height: 1.7; }
+.contact-link {
+  display: inline-block; margin-top: 14px;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+  color: var(--gold); text-decoration: none; text-transform: uppercase;
+  border-bottom: 1px solid var(--gold); padding-bottom: 2px;
+  transition: color 0.2s;
+}
+.contact-link:hover { color: var(--ink); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .faq-categories { grid-template-columns: repeat(2, 1fr); }
+  .contact-methods { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .faq-categories { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><span>✦</span> Ask Astro Raja</a>
+  <ul class="nav-links">
+    <li><a href="how-it-works.html">How It Works</a></li>
+    <li><a href="raasi-guide.html">Raasi Guide</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="faq.html" class="active">FAQ</a></li>
+  </ul>
+  <a href="get-reading.html" class="nav-cta">Get My Reading</a>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <svg class="page-hero-bg" viewBox="0 0 400 400" fill="none">
+    <circle cx="200" cy="200" r="190" stroke="#C8941A" stroke-width="0.6"/>
+    <circle cx="200" cy="200" r="130" stroke="#C8941A" stroke-width="0.6"/>
+    <circle cx="200" cy="200" r="70" stroke="#C8941A" stroke-width="0.6"/>
+    <polygon points="200,80 220,190 340,200 220,210 200,320 180,210 60,200 180,190" fill="none" stroke="#C8941A" stroke-width="0.5"/>
+  </svg>
+  <div class="page-hero-inner">
+    <div class="page-hero-eyebrow">✦ &nbsp; Common Questions</div>
+    <h1 class="page-hero-title">Everything you<br/>need to <em>know</em></h1>
+    <p class="page-hero-sub">Answers to the most common questions about Ask Astro Raja, Vedic astrology readings, privacy, downloads, and what the reports contain.</p>
+  </div>
+</section>
+
+<!-- FAQ SECTION -->
+<section class="faq-section">
+  <div class="section-label">All Questions</div>
+  <h2 class="section-title">Frequently asked <em>questions</em></h2>
+
+  <div class="faq-categories">
+    <button class="faq-cat-btn active" onclick="filterFAQ('all')">All Questions</button>
+    <button class="faq-cat-btn" onclick="filterFAQ('basics')">The Basics</button>
+    <button class="faq-cat-btn" onclick="filterFAQ('reading')">Your Reading</button>
+    <button class="faq-cat-btn" onclick="filterFAQ('privacy')">Privacy & Use</button>
+  </div>
+
+  <div class="faq-list">
+    <!-- BASICS -->
+    <div class="faq-item" data-category="basics">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">What is Ask Astro Raja?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>Ask Astro Raja is an AI-powered Vedic astrology tool built for Tamil Nadu families, students, and professionals. You enter your Raasi (Moon Sign), Lagnam (Ascendant), and Nakshatra (Birth Star), answer four simple questions about your life, and receive a full personalized guidance report in minutes.</p>
+          <p>Unlike generic horoscope apps, every report is generated fresh using authentic Vedic astrology principles applied to your unique birth chart combination and your current life situation.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="basics">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">Do I need my exact birth time?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>No. If you already know your Raasi, Lagnam, and Nakshatra from a previous reading or family records, that is all we need. You do not need to know your exact birth time.</p>
+          <p>However, if you want to <strong>calculate</strong> your Raasi, Lagnam, and Nakshatra for the first time, you will need your exact birth time. A Vedic astrology calculator (available free online) or a local astrologer can help you determine these details.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="basics">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">Is this real astrology or just AI-generated text?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>Both. The AI has been guided by a deeply crafted Vedic astrology system built by our founder, Astro Raja, who has 20 years of practice in traditional Vedic astrology.</p>
+          <p>The AI applies <strong>real Vedic astrology principles</strong> — Nakshatra characteristics, Raasi and Lagnam interactions, planetary rulerships, and Dasha timings — to your specific inputs. What would take a human astrologer an hour to compose by hand, the AI produces in under a minute.</p>
+          <p>This is not a generic horoscope app. Every report is unique to your exact combination of Raasi, Lagnam, Nakshatra, and current life context.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="basics">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">Is this the same as a Western horoscope?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>No. Western astrology uses the Sun Sign (based on your birth date) as the primary indicator. Vedic astrology uses the <strong>Moon Sign (Raasi)</strong> and the <strong>Ascendant (Lagnam)</strong> as the core framework, along with your <strong>Nakshatra (Birth Star)</strong>, which is far more precise.</p>
+          <p>Even if you know your Western Sun Sign (like Aries or Leo), your Vedic Raasi may be completely different. The two systems use different zodiacs and focus on different planetary influences.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="basics">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">How long does it take to get my report?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>The entire process takes about 4 to 5 minutes:</p>
+          <p><strong>Step 1:</strong> Enter your name, Raasi, Lagnam, and Nakshatra (60 seconds)</p>
+          <p><strong>Step 2:</strong> Answer four intake questions about your current life (90 seconds)</p>
+          <p><strong>Step 3:</strong> AI generates your full report (30 to 60 seconds)</p>
+          <p><strong>Step 4:</strong> Read and download your report (instant)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- READING -->
+    <div class="faq-item" data-category="reading">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">What does the report contain?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>Every report includes the following sections:</p>
+          <p><strong>1. Core Strengths & Shadow Traits:</strong> Your natural gifts and the patterns that hold you back, based on your Nakshatra.</p>
+          <p><strong>2. Nakshatra Character Analysis:</strong> A deep reading of your birth star — its ruling deity, planet, and what it reveals about your karmic purpose.</p>
+          <p><strong>3. Career & Life Path Guidance:</strong> Specific to your current struggles and goals. Students, professionals, and entrepreneurs each receive tailored advice.</p>
+          <p><strong>4. Relationship & Emotional Patterns:</strong> How your Raasi and Lagnam shape your attachment style, communication, and needs in relationships.</p>
+          <p><strong>5. Spiritual Remedies & Practices:</strong> Matched to your spiritual orientation — devotional users get temple recommendations, practical users get grounded habits.</p>
+          <p><strong>6. Monthly Focus & Action Steps:</strong> Concrete guidance for the next 30 to 90 days based on your current Dasha period and life goals.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="reading">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">Will the report predict my future?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>No. Ask Astro Raja does not make predictions about specific events (like "you will get married in 2026" or "you will lose money next month"). This is by design.</p>
+          <p>The report offers <strong>guidance and reflection</strong> — helping you understand your natural strengths, your emotional patterns, your karmic themes, and where your energy is best directed based on your Vedic chart and current life context.</p>
+          <p>Think of it as a mirror, not a fortune teller. It reveals the terrain, but you choose the path.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="reading">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">Can I get a new reading every month?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>Yes. Your Raasi, Lagnam, and Nakshatra do not change, but your life situation does. If your struggles, goals, or daily life have shifted since your last reading, you can generate a new report with updated answers to the four intake questions.</p>
+          <p>Some people return once a year. Some return every few months. Some return when a major life transition happens (graduation, job change, relationship shift). The tool is available whenever you need clarity.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="reading">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">Is the report in English or Tamil?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>Currently, all reports are generated in <strong>English</strong>. However, Tamil names for Raasi, Lagnam, and Nakshatra are fully supported in the input form, and the report will display your details with both English and Tamil names.</p>
+          <p>A Tamil-language version of the report is planned for a future update.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="reading">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">Can I share my report with my family or astrologer?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>Absolutely. Once you download your report as a PDF or Word document, it is yours to keep, print, share via WhatsApp, email, or show to a family astrologer or counsellor. There are no restrictions on how you use your report after downloading.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRIVACY -->
+    <div class="faq-item" data-category="privacy">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">Is my information private?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>Yes. Your inputs — name, birth details, and personal answers — are used <strong>only</strong> to generate your report. We do not store your personal data, build user profiles, or share your information with any third parties.</p>
+          <p>Once your report is generated and downloaded, we do not retain your inputs on our servers. Your reading is yours alone.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="privacy">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">Do I need to create an account?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>No. Ask Astro Raja does not require an account, login, or email address. You enter your details, generate your report, and download it immediately. That's it.</p>
+          <p>This is intentional — we want the tool to be as frictionless and private as possible.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="privacy">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">How do I download my report?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>Once your report is generated and displayed in your browser, you will see two download buttons at the top of the page:</p>
+          <p><strong>Download as PDF:</strong> A beautifully formatted, print-ready PDF file. Best for sharing, printing, or reading on mobile.</p>
+          <p><strong>Download as Word:</strong> A fully editable .docx file you can open in Microsoft Word or Google Docs. Best for adding personal notes or editing for your own use.</p>
+          <p>Both formats contain the full report content.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="privacy">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">Is this tool free?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>Yes. Ask Astro Raja is currently free to use. There are no hidden charges, no per-report fees, and no premium tiers. Generate your report, download it, and keep it — at no cost.</p>
+          <p>We may introduce optional paid features in the future (like deeper Dasha analysis or personalized follow-up sessions), but the core tool will always remain free.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MISC -->
+    <div class="faq-item" data-category="reading">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">What if I don't know my Raasi, Lagnam, or Nakshatra?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>If you do not know these details, you have three options:</p>
+          <p><strong>1. Check family records:</strong> Many Tamil families keep a written birth chart (Janam Patrika) created by an astrologer at the time of birth. Ask your parents or elders.</p>
+          <p><strong>2. Use a Vedic calculator:</strong> If you know your exact birth time, date, and location, you can use a free online Vedic astrology calculator to find your Raasi, Lagnam, and Nakshatra. Search for "Vedic birth chart calculator."</p>
+          <p><strong>3. Consult a local astrologer:</strong> If birth time is unknown, a Vedic astrologer can help determine your details through rectification methods.</p>
+          <p>For best results, we strongly recommend finding these details before using the tool. A reading without them will be far less precise.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="basics">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">Can I use this for my child or family member?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>Yes. Many parents use Ask Astro Raja to generate reports for their children, especially students facing career decisions after Class 12 or college graduation.</p>
+          <p>Simply enter your child's name, Raasi, Lagnam, and Nakshatra, and answer the four intake questions <strong>from their perspective</strong> (their struggles, their daily life, their goals). The report will be tailored to them.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="reading">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">What if I disagree with something in my report?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>That's okay. Vedic astrology is not about absolute truth — it is about patterns, tendencies, and reflections. Some parts of your report may resonate deeply. Other parts may feel off or not applicable to your life right now.</p>
+          <p>Take what resonates. Leave what doesn't. If you feel the report missed something important, consider whether your four intake answers fully captured your current situation. You can always generate a new report with different answers.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="basics">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">Is there a limit to how many reports I can generate?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>No. You can generate as many reports as you like — for yourself, for family members, or with updated intake answers when your life situation changes.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-category="privacy">
+      <div class="faq-q-wrap" onclick="toggleFAQ(this)">
+        <div class="faq-q">Can I delete my report after downloading it?</div>
+        <div class="faq-toggle">+</div>
+      </div>
+      <div class="faq-a-wrap">
+        <div class="faq-a">
+          <p>Your report is not stored on our servers after it is generated and downloaded. Once you close your browser, the report is gone from our system. If you want to keep it, make sure to download it before closing the page.</p>
+          <p>The downloaded PDF or Word file is stored locally on your device, and you can delete it at any time just like any other file.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- STILL HAVE QUESTIONS -->
+<section class="contact-cta-section">
+  <div class="section-label">Get in Touch</div>
+  <h2 class="contact-cta-title">Still have <em>questions?</em></h2>
+  <p class="contact-cta-sub">If your question wasn't answered here, we're happy to help. Reach out via email, WhatsApp, or the contact form.</p>
+  <div class="contact-methods">
+    <div class="contact-card">
+      <span class="contact-icon">✉️</span>
+      <h3 class="contact-method-title">Email Us</h3>
+      <p class="contact-method-text">Get a response within 24 hours on weekdays.</p>
+      <a href="mailto:hello@ask-astro-raja.com" class="contact-link">Send Email</a>
+    </div>
+    <div class="contact-card">
+      <span class="contact-icon">💬</span>
+      <h3 class="contact-method-title">WhatsApp</h3>
+      <p class="contact-method-text">Message us directly for quick questions or support.</p>
+      <a href="https://wa.me/919876543210" class="contact-link">Message on WhatsApp</a>
+    </div>
+    <div class="contact-card">
+      <span class="contact-icon">📄</span>
+      <h3 class="contact-method-title">Contact Form</h3>
+      <p class="contact-method-text">Fill out a form and we'll get back to you soon.</p>
+      <a href="contact.html" class="contact-link">Go to Form</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-banner">
+  <h2 class="cta-title">Ready to begin?<br/><em>Get your reading.</em></h2>
+  <p class="cta-sub">Your Raasi, Lagnam and Nakshatra have a story. Let us help you read it.</p>
+  <a href="get-reading.html" class="btn-primary" style="padding:17px 46px; font-size:14px;">Begin My Reading — Free</a>
+  <p class="cta-note">No account required &nbsp;·&nbsp; Download instantly &nbsp;·&nbsp; Tamil names supported</p>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand"><span>✦</span> Ask Astro Raja</div>
+      <p class="footer-tagline">AI-powered Vedic astrology guidance for Tamil Nadu and beyond. Rooted in authentic tradition, delivered with modern clarity.</p>
+      <div class="footer-socials">
+        <a class="footer-social-link" href="#">in</a>
+        <a class="footer-social-link" href="#">ig</a>
+        <a class="footer-social-link" href="#">yt</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Navigate</div>
+      <a href="index.html">Home</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="raasi-guide.html">Raasi Guide</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Tool</div>
+      <a href="get-reading.html">Get Your Reading</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Use</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Disclaimer</div>
+      <p class="footer-disclaimer">Reports are for personal guidance and reflection only. Not a substitute for professional medical, legal, or financial advice.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Ask Astro Raja · ask-astro-raja.com</span>
+    <span>Made with care for Tamil Nadu</span>
+  </div>
+</footer>
+
+<script>
+function toggleFAQ(elem) {
+  const item = elem.parentElement;
+  const isOpen = item.classList.contains('open');
+  
+  // Close all others
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  
+  // Toggle current
+  if (!isOpen) item.classList.add('open');
+}
+
+function filterFAQ(category) {
+  const items = document.querySelectorAll('.faq-item');
+  const buttons = document.querySelectorAll('.faq-cat-btn');
+  
+  buttons.forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  items.forEach(item => {
+    if (category === 'all' || item.dataset.category === category) {
+      item.style.display = 'block';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+</script>
+</body>
+</html>

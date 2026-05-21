@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>How It Works — Ask Astro Raja</title>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+/* ── FULL PROCESS ── */
+.process-section { padding: 96px 6%; }
+.process-step-block {
+  display: grid; grid-template-columns: 80px 1fr; gap: 48px;
+  padding: 56px 0; border-bottom: 1px solid var(--cream-border);
+  align-items: start;
+}
+.process-step-block:last-child { border-bottom: none; }
+.psb-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 80px; font-weight: 300;
+  color: var(--gold-pale); line-height: 1; text-align: right;
+}
+.psb-content {}
+.psb-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 12px;
+}
+.psb-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 3.5vw, 42px); font-weight: 600;
+  color: var(--ink); margin-bottom: 18px; line-height: 1.15;
+}
+.psb-body { font-size: 14px; color: var(--ink-soft); line-height: 1.9; margin-bottom: 16px; }
+
+/* ── INPUT PREVIEW ── */
+.input-fields-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+  margin: 28px 0;
+}
+.input-field-mock {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 14px 18px;
+}
+.ifm-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 6px; }
+.ifm-value { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--ink); }
+.ifm-sub { font-size: 11px; color: var(--ink-soft); margin-top: 3px; }
+
+/* ── QUESTIONS DISPLAY ── */
+.questions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 28px 0; }
+.q-card {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; padding: 24px;
+}
+.q-number {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.1em;
+  color: var(--gold); text-transform: uppercase; margin-bottom: 10px;
+}
+.q-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 12px; }
+.q-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.q-chip {
+  background: var(--gold-faint); border: 1px solid var(--cream-border);
+  border-radius: 100px; padding: 4px 12px;
+  font-size: 11px; color: var(--ink-mid);
+}
+.q-chip.selected {
+  background: var(--gold); color: var(--white); border-color: var(--gold);
+}
+.q-type-badge {
+  display: inline-block;
+  background: var(--cream); border: 1px solid var(--cream-border);
+  border-radius: 100px; padding: 2px 10px;
+  font-size: 10px; color: var(--ink-soft); margin-bottom: 12px;
+}
+
+/* ── REPORT ANATOMY ── */
+.report-anatomy {
+  padding: 96px 6%;
+  background: var(--gold-faint);
+  border-top: 1px solid var(--cream-border);
+  border-bottom: 1px solid var(--cream-border);
+}
+.report-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; margin-top: 56px; }
+.report-mock {
+  background: var(--white); border: 1px solid var(--cream-border);
+  border-radius: 3px; overflow: hidden; box-shadow: var(--shadow-gold);
+}
+.report-mock-header {
+  background: var(--ink); padding: 24px 28px;
+  border-bottom: 3px solid var(--gold);
+}
+.rmh-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(254,250,243,0.4); margin-bottom: 6px; }
+.rmh-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--cream); }
+.rmh-meta { font-size: 12px; color: rgba(254,250,243,0.45); margin-top: 5px; }
+.report-mock-body { padding: 0; }
+.rmb-section {
+  padding: 20px 28px; border-bottom: 1px solid var(--cream-border);
+}
+.rmb-section:last-child { border-bottom: none; }
+.rmb-section-label {
+  font-size: 9px; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+}
+.rmb-section-text { font-size: 12px; color: var(--ink-soft); line-height: 1.7; }
+.rmb-blur { filter: blur(3px); user-select: none; }
+.rmb-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.rmb-tag {
+  background: var(--gold-faint); border: 1px solid var(--cream-border);
+  border-radius: 100px; padding: 3px 10px; font-size: 10px; color: var(--ink-mid);
+}
+
+.report-sections-list { list-style: none; }
+.report-section-item {
+  display: flex; align-items: flex-start; gap: 18px;
+  padding: 20px 0; border-bottom: 1px solid var(--cream-border);
+}
+.report-section-item:last-child { border-bottom: none; }
+.rsi-icon {
+  width: 38px; height: 38px; flex-shrink: 0;
+  background: var(--gold-faint); border: 1px solid var(--cream-border);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+}
+.rsi-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 5px; }
+.rsi-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.7; }
+
+/* ── DOWNLOAD ── */
+.download-section { padding: 96px 6%; }
+.download-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 56px; }
+.download-card {
+  border: 1px solid var(--cream-border); border-radius: 3px;
+  padding: 40px 32px; background: var(--white);
+  display: flex; flex-direction: column;
+}
+.download-icon { font-size: 36px; margin-bottom: 18px; }
+.download-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: var(--ink); margin-bottom: 12px; }
+.download-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.8; margin-bottom: 24px; flex: 1; }
+.download-best-for {
+  font-size: 11px; color: var(--gold); font-weight: 500;
+  letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px;
+}
+.download-uses { font-size: 12px; color: var(--ink-soft); line-height: 1.7; }
+
+/* ── TIME ── */
+.timeline-section {
+  padding: 96px 6%;
+  background: var(--ink);
+}
+.timeline {
+  display: flex; gap: 0; margin-top: 56px;
+  position: relative;
+}
+.timeline::before {
+  content: '';
+  position: absolute; top: 28px; left: 0; right: 0; height: 1px;
+  background: rgba(254,250,243,0.1);
+}
+.timeline-step {
+  flex: 1; text-align: center; padding: 0 16px; position: relative;
+}
+.tl-dot {
+  width: 56px; height: 56px;
+  background: rgba(200,148,26,0.15); border: 1px solid rgba(200,148,26,0.35);
+  border-radius: 50%; margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 600; color: var(--gold);
+  position: relative; z-index: 1;
+}
+.tl-time { font-size: 11px; color: rgba(200,148,26,0.7); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.tl-label { font-size: 12px; color: rgba(254,250,243,0.5); line-height: 1.6; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .process-step-block { grid-template-columns: 1fr; gap: 16px; }
+  .psb-num { font-size: 48px; text-align: left; }
+  .input-fields-grid { grid-template-columns: 1fr; }
+  .questions-grid { grid-template-columns: 1fr; }
+  .report-layout { grid-template-columns: 1fr; }
+  .download-options { grid-template-columns: 1fr; }
+  .timeline { flex-direction: column; gap: 32px; }
+  .timeline::before { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><span>✦</span> Ask Astro Raja</a>
+  <ul class="nav-links">
+    <li><a href="how-it-works.html" class="active">How It Works</a></li>
+    <li><a href="raasi-guide.html">Raasi Guide</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+  </ul>
+  <a href="get-reading.html" class="nav-cta">Get My Reading</a>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <svg class="page-hero-bg" viewBox="0 0 400 400" fill="none">
+    <circle cx="200" cy="200" r="190" stroke="#C8941A" stroke-width="0.6"/>
+    <circle cx="200" cy="200" r="130" stroke="#C8941A" stroke-width="0.6"/>
+    <circle cx="200" cy="200" r="70" stroke="#C8941A" stroke-width="0.6"/>
+    <polygon points="200,80 220,190 340,200 220,210 200,320 180,210 60,200 180,190" fill="none" stroke="#C8941A" stroke-width="0.5"/>
+  </svg>
+  <div class="page-hero-inner">
+    <div class="page-hero-eyebrow">✦ &nbsp; The Process</div>
+    <h1 class="page-hero-title">From your details<br/>to your <em>report</em></h1>
+    <p class="page-hero-sub">Eight inputs. One AI engine. A full Vedic guidance report in under five minutes. Here is exactly what happens at each step — and why each question matters.</p>
+  </div>
+</section>
+
+<!-- FULL PROCESS -->
+<section class="process-section">
+  <div class="section-label">Step by Step</div>
+  <h2 class="section-title">The full <em>process</em></h2>
+
+  <!-- STEP 1 -->
+  <div class="process-step-block">
+    <div class="psb-num">01</div>
+    <div class="psb-content">
+      <div class="psb-label">Your Cosmic Identity</div>
+      <h3 class="psb-title">Enter Your Name, Raasi, Lagnam & Nakshatra</h3>
+      <p class="psb-body">These four fields are the foundation of your entire reading. In Vedic astrology, your Raasi (Moon Sign) governs your emotional nature and inner world. Your Lagnam (Ascendant) reveals how you approach the world outwardly — your personality, physicality, and first impressions. Your Nakshatra (Birth Star) is the most precise indicator of all — a 27-fold division of the zodiac that reveals your core character, karmic tendencies, and life themes with remarkable accuracy.</p>
+      <p class="psb-body">You do not need your exact birth time to use this tool. If you already know your Raasi, Lagnam, and Nakshatra from a previous reading or family record, simply enter them. If you do not, our Raasi Guide page can help you find them.</p>
+      <div class="input-fields-grid">
+        <div class="input-field-mock">
+          <div class="ifm-label">Name</div>
+          <div class="ifm-value">Priya Nandakumar</div>
+        </div>
+        <div class="input-field-mock">
+          <div class="ifm-label">Raasi (Moon Sign)</div>
+          <div class="ifm-value">Meenam</div>
+          <div class="ifm-sub">மீனம்</div>
+        </div>
+        <div class="input-field-mock">
+          <div class="ifm-label">Lagnam (Ascendant)</div>
+          <div class="ifm-value">Thulam</div>
+          <div class="ifm-sub">துலாம்</div>
+        </div>
+        <div class="input-field-mock">
+          <div class="ifm-label">Nakshatra (Birth Star)</div>
+          <div class="ifm-value">Revathi</div>
+          <div class="ifm-sub">4th Padam</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="process-step-block">
+    <div class="psb-num">02</div>
+    <div class="psb-content">
+      <div class="psb-label">Four Intake Questions</div>
+      <h3 class="psb-title">Tell Us About Your Life Right Now</h3>
+      <p class="psb-body">The same Raasi and Nakshatra can manifest very differently depending on where you are in life. A student asking about career direction needs different guidance than a 40-year-old professional feeling stuck, even if they share the same birth star. These four questions let the AI understand your actual context — not a generic snapshot.</p>
+      <div class="questions-grid">
+        <div class="q-card">
+          <div class="q-number">Question 1</div>
+          <div class="q-title">Current Struggles</div>
+          <div class="q-type-badge">Multi-select</div>
+          <div class="q-chips">
+            <span class="q-chip selected">Career confusion</span>
+            <span class="q-chip selected">Overthinking</span>
+            <span class="q-chip">Money / Debt</span>
+            <span class="q-chip">Relationship stress</span>
+            <span class="q-chip">Lack of confidence</span>
+          </div>
+        </div>
+        <div class="q-card">
+          <div class="q-number">Question 2</div>
+          <div class="q-title">Daily Life</div>
+          <div class="q-type-badge">Single-select</div>
+          <div class="q-chips">
+            <span class="q-chip">Hectic</span>
+            <span class="q-chip selected">Student</span>
+            <span class="q-chip">Office job</span>
+            <span class="q-chip">Work from home</span>
+            <span class="q-chip">Entrepreneur</span>
+          </div>
+        </div>
+        <div class="q-card">
+          <div class="q-number">Question 3</div>
+          <div class="q-title">Biggest Life Goals</div>
+          <div class="q-type-badge">Multi-select</div>
+          <div class="q-chips">
+            <span class="q-chip selected">Career growth</span>
+            <span class="q-chip selected">Inner peace</span>
+            <span class="q-chip">Financial stability</span>
+            <span class="q-chip">Build confidence</span>
+          </div>
+        </div>
+        <div class="q-card">
+          <div class="q-number">Question 4</div>
+          <div class="q-title">Spiritual Orientation</div>
+          <div class="q-type-badge">Single-select</div>
+          <div class="q-chips">
+            <span class="q-chip selected">Hindu / Devotional</span>
+            <span class="q-chip">Spiritual, not religious</span>
+            <span class="q-chip">Practical only</span>
+            <span class="q-chip">Open to all</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="process-step-block">
+    <div class="psb-num">03</div>
+    <div class="psb-content">
+      <div class="psb-label">AI Generation</div>
+      <h3 class="psb-title">Your Inputs Meet the Vedic Engine</h3>
+      <p class="psb-body">All eight inputs — your name, Raasi, Lagnam, Nakshatra, and four answers — are sent together to our AI engine. The engine has been trained on a deeply crafted Vedic astrology system built by our founder over months of study. It applies authentic Vedic principles to your specific combination, not a generalised horoscope.</p>
+      <p class="psb-body">This process takes approximately 30 to 60 seconds. During this time, the AI is composing a structured, multi-section report that would take a human astrologer an hour or more to produce by hand.</p>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="process-step-block">
+    <div class="psb-num">04</div>
+    <div class="psb-content">
+      <div class="psb-label">Your Report</div>
+      <h3 class="psb-title">Read, Save & Download</h3>
+      <p class="psb-body">Your report is displayed immediately in your browser — no account, no login required. Read it in full, then download it as a PDF to keep, print, or share with family. Or download as a Word document if you want to make personal notes alongside the guidance.</p>
+    </div>
+  </div>
+</section>
+
+<!-- REPORT ANATOMY -->
+<section class="report-anatomy">
+  <div class="section-label">Inside the Report</div>
+  <h2 class="section-title">What your report <em>contains</em></h2>
+  <div class="report-layout">
+    <div class="report-mock">
+      <div class="report-mock-header">
+        <div class="rmh-label">Personal Vedic Report</div>
+        <div class="rmh-name">Priya Nandakumar</div>
+        <div class="rmh-meta">Meenam · Thulam Lagnam · Revathi Nakshatra</div>
+      </div>
+      <div class="report-mock-body">
+        <div class="rmb-section">
+          <div class="rmb-section-label">Core Strengths</div>
+          <div class="rmb-tags">
+            <span class="rmb-tag">Deep empathy</span>
+            <span class="rmb-tag">Intuitive thinking</span>
+            <span class="rmb-tag">Creative vision</span>
+            <span class="rmb-tag">Spiritual depth</span>
+          </div>
+        </div>
+        <div class="rmb-section">
+          <div class="rmb-section-label">Nakshatra Character</div>
+          <div class="rmb-section-text">Your Revathi Nakshatra, ruled by Pushan — the divine shepherd — gives you a natural pull towards guiding and nurturing others...</div>
+        </div>
+        <div class="rmb-section">
+          <div class="rmb-section-label">Career Guidance</div>
+          <div class="rmb-section-text rmb-blur">The next 14 months carry a powerful shift for Meenam Raasi. This window is particularly suited to establishing roots in creative or helping professions. Your Lagnam lord Venus is transiting into a favourable position...</div>
+        </div>
+        <div class="rmb-section">
+          <div class="rmb-section-label">Spiritual Remedies</div>
+          <div class="rmb-section-text rmb-blur">Given your devotional orientation and Revathi Nakshatra, the following practices align naturally with your energy...</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <ul class="report-sections-list">
+        <li class="report-section-item">
+          <div class="rsi-icon">⚡</div>
+          <div>
+            <div class="rsi-title">Core Strengths & Shadow Traits</div>
+            <div class="rsi-desc">Your Nakshatra's natural gifts — and the shadow patterns that tend to hold people with your combination back. Knowing both is what makes this actionable.</div>
+          </div>
+        </li>
+        <li class="report-section-item">
+          <div class="rsi-icon">☽</div>
+          <div>
+            <div class="rsi-title">Nakshatra Character Analysis</div>
+            <div class="rsi-desc">A deep reading of your birth star — its ruling deity, planet, elemental nature, and what it reveals about your karmic purpose and natural way of being in the world.</div>
+          </div>
+        </li>
+        <li class="report-section-item">
+          <div class="rsi-icon">◎</div>
+          <div>
+            <div class="rsi-title">Career & Life Path Guidance</div>
+            <div class="rsi-desc">Specific to your struggle selections and daily life. Students get different guidance than entrepreneurs. Each path recommendation is grounded in your Lagnam's approach to ambition and effort.</div>
+          </div>
+        </li>
+        <li class="report-section-item">
+          <div class="rsi-icon">♡</div>
+          <div>
+            <div class="rsi-title">Relationship & Emotional Patterns</div>
+            <div class="rsi-desc">How your Raasi and Lagnam interact in close relationships — your attachment style, communication tendencies, and what you need from a partner or family dynamic.</div>
+          </div>
+        </li>
+        <li class="report-section-item">
+          <div class="rsi-icon">🌿</div>
+          <div>
+            <div class="rsi-title">Spiritual Remedies & Practices</div>
+            <div class="rsi-desc">Matched to your spiritual orientation. Devotional users receive temple and prayer recommendations. Practical users receive grounded daily habits. No one-size-fits-all rituals.</div>
+          </div>
+        </li>
+        <li class="report-section-item">
+          <div class="rsi-icon">→</div>
+          <div>
+            <div class="rsi-title">Monthly Focus & Action Steps</div>
+            <div class="rsi-desc">Concrete guidance for the next 30 to 90 days — broken into specific areas to focus on, actions to take, and patterns to watch out for based on your current Dasha period.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD OPTIONS -->
+<section class="download-section">
+  <div class="section-label">Export Options</div>
+  <h2 class="section-title">Download as <em>PDF or Word</em></h2>
+  <p class="section-sub">Once your report is generated, choose the format that works best for how you plan to use it.</p>
+  <div class="download-options">
+    <div class="download-card">
+      <div class="download-icon">📄</div>
+      <div class="download-title">PDF Download</div>
+      <p class="download-desc">A beautifully formatted, print-ready PDF with full branding and report structure. Looks polished whether read on a phone, a tablet, or printed on paper.</p>
+      <div class="download-best-for">Best for</div>
+      <div class="download-uses">Sharing with parents or family · Printing and keeping · Reading on mobile · Sending via WhatsApp</div>
+    </div>
+    <div class="download-card">
+      <div class="download-icon">📝</div>
+      <div class="download-title">Word Document</div>
+      <p class="download-desc">A fully editable .docx file you can open in Microsoft Word, Google Docs, or any word processor. Add your own notes, highlight sections, or edit the report for personal use.</p>
+      <div class="download-best-for">Best for</div>
+      <div class="download-uses">Adding personal notes · Sharing with a counsellor · Referencing over time · Editing for your own journal</div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section class="timeline-section">
+  <div class="section-label" style="color:rgba(200,148,26,0.7);">Time to Complete</div>
+  <h2 class="section-title" style="color:var(--cream); font-weight:300; margin-bottom:0;">Done in under <em style="color:var(--gold-light)">five minutes</em></h2>
+  <div class="timeline">
+    <div class="timeline-step">
+      <div class="tl-dot">01</div>
+      <div class="tl-time">~60 sec</div>
+      <div class="tl-label">Enter name, Raasi, Lagnam & Nakshatra</div>
+    </div>
+    <div class="timeline-step">
+      <div class="tl-dot">02</div>
+      <div class="tl-time">~90 sec</div>
+      <div class="tl-label">Answer 4 intake questions</div>
+    </div>
+    <div class="timeline-step">
+      <div class="tl-dot">03</div>
+      <div class="tl-time">~60 sec</div>
+      <div class="tl-label">AI generates your full report</div>
+    </div>
+    <div class="timeline-step">
+      <div class="tl-dot">04</div>
+      <div class="tl-time">Instant</div>
+      <div class="tl-label">Read and download your report</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-banner">
+  <h2 class="cta-title">Ready to begin?<br/>It takes <em>five minutes.</em></h2>
+  <p class="cta-sub">Your Raasi, Lagnam and Nakshatra are waiting to speak.</p>
+  <a href="get-reading.html" class="btn-primary" style="padding:17px 46px; font-size:14px;">Begin My Reading — Free</a>
+  <p class="cta-note">No account required &nbsp;·&nbsp; Download instantly &nbsp;·&nbsp; Tamil names supported</p>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand"><span>✦</span> Ask Astro Raja</div>
+      <p class="footer-tagline">AI-powered Vedic astrology guidance for Tamil Nadu and beyond. Rooted in authentic tradition, delivered with modern clarity.</p>
+      <div class="footer-socials">
+        <a class="footer-social-link" href="#">in</a>
+        <a class="footer-social-link" href="#">ig</a>
+        <a class="footer-social-link" href="#">yt</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Navigate</div>
+      <a href="index.html">Home</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="raasi-guide.html">Raasi Guide</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Tool</div>
+      <a href="get-reading.html">Get Your Reading</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Use</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Disclaimer</div>
+      <p class="footer-disclaimer">Reports are for personal guidance and reflection only. Not a substitute for professional medical, legal, or financial advice.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Ask Astro Raja · ask-astro-raja.com</span>
+    <span>Made with care for Tamil Nadu</span>
+  </div>
+</footer>
+</body>
+</html>
