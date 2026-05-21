@@ -41,7 +41,7 @@ Spiritual Orientation: ${data.spiritual || 'Not specified'}
 
     // The SKILL.md actually asks for output in .docx format by default, but we'll 
     // ask Claude to output plain text markdown so we can easily save it as a .txt file.
-    const systemPrompt = skillTemplate + "\n\nCRITICAL INSTRUCTION: Output the final report as raw Markdown text (do not attempt to generate a binary docx file), structured exactly as the 14 sections define.";
+    const systemPrompt = skillTemplate + "\n\nCRITICAL INSTRUCTION: Output the final report as raw Markdown text. You MUST complete the entire report from Section 1 to Section 14. Keep each section concise and punchy so that the full report easily fits within token limits (aim for ~3000 words total). Do NOT cut off the end of the report.";
 
     const msg = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
