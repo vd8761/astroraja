@@ -495,7 +495,7 @@ document.addEventListener('alpine:init', () => {
 </head>
 <body>
     <button onclick="window.print()" style="padding: 10px 20px; background: #f59e0b; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; font-size: 16px; font-weight: bold;">🖨️ Click Here to Save as PDF</button>
-    \${parsedMarkdown}
+    ${parsedMarkdown}
 </body>
 </html>`;
 
@@ -503,7 +503,7 @@ document.addEventListener('alpine:init', () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `AstroRaja_Life_Report_\${filenameSafeName}.html`;
+      a.download = `AstroRaja_Life_Report_${filenameSafeName}.html`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -539,15 +539,13 @@ document.addEventListener('alpine:init', () => {
         
         clearInterval(interval);
         
-        const data = await response.json();
+        const result = await response.json();
         
-        if (!response.ok) {
-           alert('Error generating report: ' + (data.error || 'Unknown error'));
-           this.isGenerating = false;
-           return;
+        if (!response.ok || result.error) {
+          throw new Error(typeof result.error === 'string' ? result.error : (result.message || 'Unknown error'));
         }
         
-        this.reportText = data.report;
+        this.reportText = result.report;
         
         // Trigger file download automatically
         this.downloadReport();
@@ -557,9 +555,9 @@ document.addEventListener('alpine:init', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
         clearInterval(interval);
-        console.error(err);
-        alert('A network error occurred while generating your report. Please check your connection and API key.');
         this.isGenerating = false;
+        const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
+        alert(`Error generating report: ${errorMessage}`);
       }
     }
   }));
