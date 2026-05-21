@@ -44,7 +44,7 @@ Spiritual Orientation: ${data.spiritual || 'Not specified'}
     const systemPrompt = skillTemplate + "\n\nCRITICAL INSTRUCTION: Output the final report as raw Markdown text (do not attempt to generate a binary docx file), structured exactly as the 14 sections define.";
 
     const msg = await anthropic.messages.create({
-      model: "claude-3-opus-20240229",
+      model: "claude-sonnet-4-6",
       max_tokens: 8192,
       temperature: 0.7,
       system: systemPrompt,
