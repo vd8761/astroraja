@@ -19,7 +19,7 @@ import Layout from '../layouts/Layout.astro';
     <!-- Step 1: Details -->
     <div x-show="step === 0 && !isComplete" x-transition.opacity.duration.300ms>
       <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 1 of 6</div>
-      <h2 class="text-4xl font-bold text-brand-navy mb-4">Your cosmic <span class="text-brand-saffron italic">identity</span></h2>
+      <h2 class="text-4xl font-bold text-brand-navy mb-4">Your base <span class="text-brand-saffron italic">parameters</span></h2>
       <p class="text-brand-text-muted mb-8 leading-relaxed max-w-2xl">Enter your Vedic birth details. These three — Raasi, Lagnam, and Nakshatra — are the foundation of your entire reading.</p>
 
       <div class="space-y-6">
@@ -246,7 +246,7 @@ import Layout from '../layouts/Layout.astro';
       <p class="text-xl text-brand-text mb-8">Thank you, <span class="font-bold text-brand-saffron-dark" x-text="formData.name"></span>. We have successfully received your details.</p>
       <div class="max-w-lg mx-auto bg-slate-50 border border-brand-border rounded-2xl p-8 shadow-sm">
         <p class="text-brand-text font-medium leading-relaxed mb-4">
-          Your cosmic pattern analysis is currently being queued. We will process your personalized <span class="text-brand-navy font-bold">Life Transformation Report</span> and get in touch with you shortly.
+          Your behavioral pattern analysis is currently being queued. We will process your personalized <span class="text-brand-navy font-bold">Life Transformation Report</span> and get in touch with you shortly.
         </p>
         <p class="text-sm text-brand-text-muted">
           Your exact behavioral blueprint takes time to decode. We do not generate generic responses.
@@ -279,7 +279,7 @@ import Layout from '../layouts/Layout.astro';
     <div x-show="isGenerating" class="fixed inset-0 z-50 flex items-center justify-center bg-brand-navy/95 backdrop-blur-sm transition-opacity" style="display: none;">
       <div class="text-center px-6 max-w-md w-full">
         <div class="w-24 h-24 mx-auto mb-8 relative">
-          <!-- Animated cosmic rings -->
+          <!-- Animated data rings -->
           <div class="absolute inset-0 rounded-full border-2 border-brand-saffron/20 animate-ping" style="animation-duration: 2s;"></div>
           <div class="absolute inset-2 rounded-full border border-brand-saffron/40 animate-spin" style="animation-duration: 3s;"></div>
           <div class="absolute inset-4 rounded-full border border-brand-saffron/60 animate-spin" style="animation-direction: reverse; animation-duration: 4s;"></div>
@@ -337,6 +337,16 @@ document.addEventListener('alpine:init', () => {
       const params = new URLSearchParams(window.location.search);
       const r = params.get('raasi');
       if (r) this.formData.raasi = r;
+      
+      // Clear errors dynamically when user types/selects
+      this.$watch('formData.name', (val) => { if(val.trim()) this.errors.name = false; });
+      this.$watch('formData.raasi', (val) => { if(val) this.errors.raasi = false; });
+      this.$watch('formData.lagnam', (val) => { if(val) this.errors.lagnam = false; });
+      this.$watch('formData.nakshatra', (val) => { if(val) this.errors.nakshatra = false; });
+      this.$watch('formData.struggles', (val) => { if(val.length > 0) this.errors.struggles = false; });
+      this.$watch('formData.dailyLife', (val) => { if(val) this.errors.dailyLife = false; });
+      this.$watch('formData.goals', (val) => { if(val.length > 0) this.errors.goals = false; });
+      this.$watch('formData.spiritual', (val) => { if(val) this.errors.spiritual = false; });
     },
 
     toggleArray(field, val) {
@@ -391,7 +401,7 @@ document.addEventListener('alpine:init', () => {
       this.loadingMessage = 'Analyzing your Raasi and Lagnam combination...';
       
       setTimeout(() => {
-        this.loadingMessage = 'Mapping Nakshatra karmic themes...';
+        this.loadingMessage = 'Mapping Nakshatra behavioral themes...';
       }, 1500);
       
       setTimeout(() => {

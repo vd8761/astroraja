@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { 
-  title = "PatternBreak | Decode Your Behavioral Blueprint",
+  title = "Ask Astro Raja | Decode Your Behavioral Blueprint",
   description = "We don't read your stars. We read your patterns. And we give you the system to rewrite them.",
   image = "/images/hero_moon_zodiac_1779193351110.png",
   basePath = ""
@@ -22,9 +22,11 @@ const getReadingLink = `${basePath}/#form-section`;
 const sampleLink = `${basePath}/sample-report`;
 const howItWorksLink = `${basePath}/how-it-works`;
 const manifestoLink = `${basePath}/manifesto`;
-const relationshipLink = `${basePath}/relationships`;
-const careerLink = `${basePath}/career`;
-const caseStudiesLink = `${basePath}/case-studies`;
+const stuckFeelingLink = `${basePath}/the-stuck-feeling`;
+const innerWarLink = `${basePath}/the-inner-war`;
+const relationshipPainLink = `${basePath}/relationship-pain`;
+const moneyCareerLink = `${basePath}/money-career-confusion`;
+const invisibleSufferingLink = `${basePath}/invisible-suffering`;
 const raasiGuideLink = `${basePath}/raasi-guide`;
 const faqLink = `${basePath}/faq`;
 const aboutLink = `${basePath}/about`;
@@ -90,6 +92,21 @@ const isActive = (path) => {
         </a>
         
         <nav class="hidden md:flex items-center gap-6 font-medium text-sm lg:text-base">
+          <div class="relative group py-2">
+            <button class="flex items-center gap-1 text-brand-text hover:text-brand-saffron transition-colors cursor-pointer">
+              The Patterns
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4.5l3 3 3-3"/></svg>
+            </button>
+            <div class="absolute top-full left-0 mt-0 pt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <div class="bg-white border border-brand-border rounded-xl shadow-lg p-2 flex flex-col">
+                <a href={stuckFeelingLink} class="px-4 py-2 text-sm text-brand-text hover:bg-slate-50 hover:text-brand-saffron rounded-lg transition-colors">The Stuck Feeling</a>
+                <a href={innerWarLink} class="px-4 py-2 text-sm text-brand-text hover:bg-slate-50 hover:text-brand-saffron rounded-lg transition-colors">The Inner War</a>
+                <a href={relationshipPainLink} class="px-4 py-2 text-sm text-brand-text hover:bg-slate-50 hover:text-brand-saffron rounded-lg transition-colors">Relationship Pain</a>
+                <a href={moneyCareerLink} class="px-4 py-2 text-sm text-brand-text hover:bg-slate-50 hover:text-brand-saffron rounded-lg transition-colors">Money & Career</a>
+                <a href={invisibleSufferingLink} class="px-4 py-2 text-sm text-brand-text hover:bg-slate-50 hover:text-brand-saffron rounded-lg transition-colors">The Invisible Suffering</a>
+              </div>
+            </div>
+          </div>
           <a href={howItWorksLink} class={`transition-colors ${isActive(howItWorksLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>How It Works</a>
           <a href={raasiGuideLink} class={`transition-colors ${isActive(raasiGuideLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>Raasi Guide</a>
           <a href={aboutLink} class={`transition-colors ${isActive(aboutLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>About</a>
@@ -109,7 +126,17 @@ const isActive = (path) => {
       </div>
       
       <!-- Mobile Menu Dropdown -->
-      <div id="mobile-menu" class="hidden md:hidden absolute top-20 left-0 w-full bg-white border-b border-brand-border shadow-xl py-4 px-6 flex flex-col gap-4">
+      <div id="mobile-menu" class="hidden md:hidden absolute top-20 left-0 w-full bg-white border-b border-brand-border shadow-xl py-4 px-6 flex flex-col gap-4 max-h-[calc(100vh-5rem)] overflow-y-auto">
+        <div class="py-2 border-b border-brand-border/30">
+          <span class="font-bold text-brand-navy block mb-3 uppercase tracking-widest text-xs">The Patterns</span>
+          <div class="pl-4 flex flex-col gap-3">
+            <a href={stuckFeelingLink} class="mobile-link text-sm text-brand-text hover:text-brand-saffron">The Stuck Feeling</a>
+            <a href={innerWarLink} class="mobile-link text-sm text-brand-text hover:text-brand-saffron">The Inner War</a>
+            <a href={relationshipPainLink} class="mobile-link text-sm text-brand-text hover:text-brand-saffron">Relationship Pain</a>
+            <a href={moneyCareerLink} class="mobile-link text-sm text-brand-text hover:text-brand-saffron">Money & Career</a>
+            <a href={invisibleSufferingLink} class="mobile-link text-sm text-brand-text hover:text-brand-saffron">The Invisible Suffering</a>
+          </div>
+        </div>
         <a href={howItWorksLink} class={`mobile-link font-medium py-2 border-b border-brand-border/30 ${isActive(howItWorksLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>How It Works</a>
         <a href={raasiGuideLink} class={`mobile-link font-medium py-2 border-b border-brand-border/30 ${isActive(raasiGuideLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>Raasi Guide</a>
         <a href={aboutLink} class={`mobile-link font-medium py-2 border-b border-brand-border/30 ${isActive(aboutLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>About</a>
@@ -160,20 +187,33 @@ const isActive = (path) => {
         </div>
         
         <div class="col-span-1 md:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-8">
+          <!-- COLUMN 3: Categories -->
+          <div>
+            <h4 class="text-brand-navy font-bold mb-6 text-sm tracking-widest uppercase">The Patterns</h4>
+            <ul class="space-y-4">
+              <li>
+                <a href={stuckFeelingLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors text-sm">The Stuck Feeling</a>
+              </li>
+              <li>
+                <a href={innerWarLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors text-sm">The Inner War</a>
+              </li>
+              <li>
+                <a href={relationshipPainLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors text-sm">Relationship Pain</a>
+              </li>
+              <li>
+                <a href={moneyCareerLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors text-sm">Money & Career Confusion</a>
+              </li>
+              <li>
+                <a href={invisibleSufferingLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors text-sm">The Invisible Suffering</a>
+              </li>
+            </ul>
+          </div>
+
           <div>
           <h4 class="font-bold text-brand-navy mb-4">Diagnostics</h4>
           <ul class="space-y-3 text-sm">
             <li><a href={getReadingLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Get Your Reading</a></li>
-            <li><a href={caseStudiesLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Symptoms / Case Studies</a></li>
             <li><a href={manifestoLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">The Manifesto</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="font-bold text-brand-navy mb-4">Systems</h4>
-          <ul class="space-y-3 text-sm">
-            <li><a href={relationshipLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Relationship Dynamics</a></li>
-            <li><a href={careerLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Career & Wealth</a></li>
             <li><a href={howItWorksLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Methodology</a></li>
           </ul>
         </div>
