@@ -242,15 +242,16 @@ import Layout from '../layouts/Layout.astro';
       <div class="w-20 h-20 bg-green-50 text-green-600 border border-green-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
       </div>
-      <h2 class="text-4xl font-bold text-brand-navy mb-4">Request Received</h2>
-      <p class="text-xl text-brand-text mb-8">Thank you, <span class="font-bold text-brand-saffron-dark" x-text="formData.name"></span>. We have successfully received your details.</p>
+      <h2 class="text-4xl font-bold text-brand-navy mb-4">Report Generated!</h2>
+      <p class="text-xl text-brand-text mb-8">Thank you, <span class="font-bold text-brand-saffron-dark" x-text="formData.name"></span>. Your Life Transformation Report is ready.</p>
       <div class="max-w-lg mx-auto bg-slate-50 border border-brand-border rounded-2xl p-8 shadow-sm">
-        <p class="text-brand-text font-medium leading-relaxed mb-4">
-          Your behavioral pattern analysis is currently being queued. We will process your personalized <span class="text-brand-navy font-bold">Life Transformation Report</span> and get in touch with you shortly.
+        <p class="text-brand-text font-medium leading-relaxed mb-6">
+          Your behavioral blueprint has been successfully analyzed by Astro Raja AI.
         </p>
-        <p class="text-sm text-brand-text-muted">
-          Your exact behavioral blueprint takes time to decode. We do not generate generic responses.
-        </p>
+        <button @click="downloadReport" class="px-8 py-4 w-full bg-brand-saffron text-white rounded-xl font-bold hover:bg-brand-saffron-dark transition-colors shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Download Report (.txt)
+        </button>
       </div>
       <div class="mt-12">
         <a href="/" class="px-8 py-4 bg-brand-navy text-white rounded-xl font-bold hover:bg-brand-saffron transition-colors inline-block shadow-md hover:shadow-lg">Return to Home</a>
@@ -331,6 +332,7 @@ document.addEventListener('alpine:init', () => {
     isGenerating: false,
     isComplete: false,
     loadingMessage: 'Initializing...',
+    reportText: '',
     hasPaid: false,
     isPaying: false,
     
@@ -463,6 +465,20 @@ document.addEventListener('alpine:init', () => {
       }
     },
 
+    downloadReport() {
+      if (!this.reportText) return;
+      const blob = new Blob([this.reportText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const filenameSafeName = this.formData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'user';
+      a.download = `AstroRaja_Life_Report_${filenameSafeName}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    },
+
     async submit() {
       // Save data to localStorage for the report page to use
       localStorage.setItem('astroraja_user_data', JSON.stringify(this.formData));
@@ -500,17 +516,10 @@ document.addEventListener('alpine:init', () => {
            return;
         }
         
-        // Trigger file download
-        const blob = new Blob([data.report], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const filenameSafeName = this.formData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'user';
-        a.download = `AstroRaja_Life_Report_${filenameSafeName}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        this.reportText = data.report;
+        
+        // Trigger file download automatically
+        this.downloadReport();
         
         this.isGenerating = false;
         this.isComplete = true;

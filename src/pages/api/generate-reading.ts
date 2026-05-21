@@ -69,27 +69,19 @@ Spiritual Orientation: ${data.spiritual || 'Not specified'}
       }
     }
 
-    // --- Token Usage Logging (Date-wise, User-wise) ---
+    // --- Token Usage Logging ---
     try {
       const inputTokens = msg.usage.input_tokens;
       const outputTokens = msg.usage.output_tokens;
       const totalTokens = inputTokens + outputTokens;
       
-      const dateObj = new Date();
-      const dateStr = dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
-      const timeStr = dateObj.toISOString().split('T')[1].substring(0, 8); // HH:mm:ss
-
-      const logDir = path.join(process.cwd(), 'logs');
-      if (!fs.existsSync(logDir)) {
-        fs.mkdirSync(logDir, { recursive: true });
-      }
-
-      const logFile = path.join(logDir, `tokens_${dateStr}.log`);
-      const logEntry = `[${timeStr}] User: ${data.name || 'Unknown'} | Raasi: ${data.raasi || 'N/A'} | Input Tokens: ${inputTokens} | Output Tokens: ${outputTokens} | Total Tokens: ${totalTokens}\n`;
-
-      fs.appendFileSync(logFile, logEntry);
+      const logEntry = `[TOKEN USAGE] User: ${data.name || 'Unknown'} | Raasi: ${data.raasi || 'N/A'} | Input Tokens: ${inputTokens} | Output Tokens: ${outputTokens} | Total Tokens: ${totalTokens}`;
+      
+      // On Vercel, we must log to the console because the filesystem is read-only.
+      // You can view these logs securely in the Vercel Dashboard -> Logs tab.
+      console.log(logEntry);
     } catch (logErr) {
-      console.error("Failed to write token log:", logErr);
+      console.error("Failed to calculate tokens:", logErr);
     }
     // --------------------------------------------------
 
