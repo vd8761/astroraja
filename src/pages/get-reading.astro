@@ -1,12 +1,12 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout basePath="/v2" title="Get Your Reading — Ask Astro Raja">
+<Layout basePath="" title="Get Your Reading — Ask Astro Raja">
   <div class="max-w-4xl mx-auto py-12 px-4" x-data="readingForm()">
     
     <!-- Progress Indicator -->
-    <div class="mb-12" x-show="step < 5">
+    <div class="mb-12" x-show="step < 5 && !isComplete">
       <div class="flex items-center justify-between text-xs font-semibold text-brand-saffron-dark uppercase tracking-wider mb-3">
         <span x-text="`Step ${step + 1} of 6 — ${stepLabels[step]}`"></span>
         <span x-text="`${Math.round(((step + 1) / 6) * 100)}%`"></span>
@@ -17,7 +17,7 @@ import Layout from '../../layouts/Layout.astro';
     </div>
 
     <!-- Step 1: Details -->
-    <div x-show="step === 0" x-transition.opacity.duration.300ms>
+    <div x-show="step === 0 && !isComplete" x-transition.opacity.duration.300ms>
       <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 1 of 6</div>
       <h2 class="text-4xl font-bold text-brand-navy mb-4">Your cosmic <span class="text-brand-saffron italic">identity</span></h2>
       <p class="text-brand-text-muted mb-8 leading-relaxed max-w-2xl">Enter your Vedic birth details. These three — Raasi, Lagnam, and Nakshatra — are the foundation of your entire reading.</p>
@@ -109,7 +109,7 @@ import Layout from '../../layouts/Layout.astro';
     </div>
 
     <!-- Step 2: Struggles -->
-    <div x-show="step === 1" x-transition.opacity.duration.300ms style="display: none;">
+    <div x-show="step === 1 && !isComplete" x-transition.opacity.duration.300ms style="display: none;">
       <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 2 of 6</div>
       <h2 class="text-4xl font-bold text-brand-navy mb-4">Current <span class="text-brand-saffron italic">struggles</span></h2>
       <p class="text-brand-text-muted mb-6 leading-relaxed max-w-2xl">What challenges are you facing right now? Select all that apply.</p>
@@ -125,7 +125,7 @@ import Layout from '../../layouts/Layout.astro';
     </div>
 
     <!-- Step 3: Daily Life -->
-    <div x-show="step === 2" x-transition.opacity.duration.300ms style="display: none;">
+    <div x-show="step === 2 && !isComplete" x-transition.opacity.duration.300ms style="display: none;">
       <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 3 of 6</div>
       <h2 class="text-4xl font-bold text-brand-navy mb-4">Your daily <span class="text-brand-saffron italic">life</span></h2>
       <p class="text-brand-text-muted mb-6 leading-relaxed max-w-2xl">Which best describes your current daily rhythm and lifestyle?</p>
@@ -147,7 +147,7 @@ import Layout from '../../layouts/Layout.astro';
     </div>
 
     <!-- Step 4: Goals -->
-    <div x-show="step === 3" x-transition.opacity.duration.300ms style="display: none;">
+    <div x-show="step === 3 && !isComplete" x-transition.opacity.duration.300ms style="display: none;">
       <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 4 of 6</div>
       <h2 class="text-4xl font-bold text-brand-navy mb-4">Your life <span class="text-brand-saffron italic">goals</span></h2>
       <p class="text-brand-text-muted mb-6 leading-relaxed max-w-2xl">What do you most want to achieve or experience in your life? Select all that apply.</p>
@@ -163,7 +163,7 @@ import Layout from '../../layouts/Layout.astro';
     </div>
 
     <!-- Step 5: Spiritual -->
-    <div x-show="step === 4" x-transition.opacity.duration.300ms style="display: none;">
+    <div x-show="step === 4 && !isComplete" x-transition.opacity.duration.300ms style="display: none;">
       <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 5 of 6</div>
       <h2 class="text-4xl font-bold text-brand-navy mb-4">Your spiritual <span class="text-brand-saffron italic">orientation</span></h2>
       <p class="text-brand-text-muted mb-6 leading-relaxed max-w-2xl">How would you describe your relationship with spirituality? This shapes the tone of your report.</p>
@@ -185,7 +185,7 @@ import Layout from '../../layouts/Layout.astro';
     </div>
 
     <!-- Step 6: Review -->
-    <div x-show="step === 5" x-transition.opacity.duration.300ms style="display: none;">
+    <div x-show="step === 5 && !isComplete" x-transition.opacity.duration.300ms style="display: none;">
       <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 6 of 6</div>
       <h2 class="text-4xl font-bold text-brand-navy mb-4">Review your <span class="text-brand-saffron italic">details</span></h2>
       <p class="text-brand-text-muted mb-8 leading-relaxed max-w-2xl">Check everything below before generating your report. You can go back to edit any section.</p>
@@ -237,8 +237,28 @@ import Layout from '../../layouts/Layout.astro';
 
     </div>
 
+    <!-- Success State -->
+    <div x-show="isComplete" style="display: none;" class="py-16 text-center" x-transition.opacity.duration.500ms>
+      <div class="w-20 h-20 bg-green-50 text-green-600 border border-green-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+      </div>
+      <h2 class="text-4xl font-bold text-brand-navy mb-4">Request Received</h2>
+      <p class="text-xl text-brand-text mb-8">Thank you, <span class="font-bold text-brand-saffron-dark" x-text="formData.name"></span>. We have successfully received your details.</p>
+      <div class="max-w-lg mx-auto bg-slate-50 border border-brand-border rounded-2xl p-8 shadow-sm">
+        <p class="text-brand-text font-medium leading-relaxed mb-4">
+          Your cosmic pattern analysis is currently being queued. We will process your personalized <span class="text-brand-navy font-bold">Life Transformation Report</span> and get in touch with you shortly.
+        </p>
+        <p class="text-sm text-brand-text-muted">
+          Your exact behavioral blueprint takes time to decode. We do not generate generic responses.
+        </p>
+      </div>
+      <div class="mt-12">
+        <a href="/" class="px-8 py-4 bg-brand-navy text-white rounded-xl font-bold hover:bg-brand-saffron transition-colors inline-block shadow-md hover:shadow-lg">Return to Home</a>
+      </div>
+    </div>
+
     <!-- Navigation Buttons -->
-    <div class="mt-12 pt-8 border-t border-brand-border flex items-center justify-between">
+    <div class="mt-12 pt-8 border-t border-brand-border flex items-center justify-between" x-show="!isGenerating && !isComplete">
       <button @click="prevStep" x-show="step > 0" class="text-brand-text hover:text-brand-saffron font-semibold flex items-center gap-2 transition-colors">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
         Back
@@ -253,6 +273,25 @@ import Layout from '../../layouts/Layout.astro';
       <button @click="submit" x-show="step === 5" class="px-8 py-4 bg-brand-saffron text-white rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-[0_4px_15px_rgba(245,158,11,0.3)] flex items-center gap-2">
         ✦ Generate My Reading
       </button>
+    </div>
+
+    <!-- Full Screen Loading Overlay -->
+    <div x-show="isGenerating" class="fixed inset-0 z-50 flex items-center justify-center bg-brand-navy/95 backdrop-blur-sm transition-opacity" style="display: none;">
+      <div class="text-center px-6 max-w-md w-full">
+        <div class="w-24 h-24 mx-auto mb-8 relative">
+          <!-- Animated cosmic rings -->
+          <div class="absolute inset-0 rounded-full border-2 border-brand-saffron/20 animate-ping" style="animation-duration: 2s;"></div>
+          <div class="absolute inset-2 rounded-full border border-brand-saffron/40 animate-spin" style="animation-duration: 3s;"></div>
+          <div class="absolute inset-4 rounded-full border border-brand-saffron/60 animate-spin" style="animation-direction: reverse; animation-duration: 4s;"></div>
+          <!-- Center star -->
+          <div class="absolute inset-0 flex items-center justify-center text-brand-saffron text-4xl">✦</div>
+        </div>
+        <h3 class="text-2xl font-serif font-bold text-white mb-2">Connecting to Vedic Engine</h3>
+        <p class="text-brand-saffron/80 text-lg tracking-wide animate-pulse" x-text="loadingMessage"></p>
+        <div class="mt-10 h-1 bg-white/10 rounded-full overflow-hidden">
+          <div class="h-full bg-brand-saffron transition-all duration-[3000ms] ease-out" :style="isGenerating ? 'width: 100%' : 'width: 0%'"></div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -289,6 +328,10 @@ document.addEventListener('alpine:init', () => {
       { label: "Open to all", sub: "I am open to any and all perspectives" }
     ],
 
+    isGenerating: false,
+    isComplete: false,
+    loadingMessage: 'Initializing...',
+    
     init() {
       // Pre-fill Raasi from URL param if exists
       const params = new URLSearchParams(window.location.search);
@@ -341,8 +384,29 @@ document.addEventListener('alpine:init', () => {
     },
 
     submit() {
-      alert("Report generation logic would trigger here. Data: " + JSON.stringify(this.formData));
+      // Save data to localStorage for the report page to use
+      localStorage.setItem('astroraja_user_data', JSON.stringify(this.formData));
+      
+      this.isGenerating = true;
+      this.loadingMessage = 'Analyzing your Raasi and Lagnam combination...';
+      
+      setTimeout(() => {
+        this.loadingMessage = 'Mapping Nakshatra karmic themes...';
+      }, 1500);
+      
+      setTimeout(() => {
+        this.loadingMessage = 'Structuring your Life Transformation Report...';
+      }, 3000);
+      
+      setTimeout(() => {
+        this.isGenerating = false;
+        this.isComplete = true;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 4500);
     }
   }));
 });
+
+window.Alpine = Alpine;
+Alpine.start();
 </script>

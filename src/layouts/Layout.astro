@@ -9,10 +9,10 @@ interface Props {
 }
 
 const { 
-  title = "Ask Astro Raja | Personalized Vedic Astrology",
-  description = "Get a highly personalized, AI-powered Vedic astrology report without endless back-and-forth. Clear guidance based on your Raasi, Lagnam, and current struggles.",
+  title = "PatternBreak | Decode Your Behavioral Blueprint",
+  description = "We don't read your stars. We read your patterns. And we give you the system to rewrite them.",
   image = "/images/hero_moon_zodiac_1779193351110.png",
-  basePath = "/v1"
+  basePath = ""
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://askastroraja.com');
@@ -21,9 +21,13 @@ const homeLink = `${basePath}/`;
 const getReadingLink = `${basePath}/#form-section`;
 const sampleLink = `${basePath}/sample-report`;
 const howItWorksLink = `${basePath}/how-it-works`;
+const manifestoLink = `${basePath}/manifesto`;
+const relationshipLink = `${basePath}/relationships`;
+const careerLink = `${basePath}/career`;
+const caseStudiesLink = `${basePath}/case-studies`;
 const raasiGuideLink = `${basePath}/raasi-guide`;
-const aboutLink = `${basePath}/about`;
 const faqLink = `${basePath}/faq`;
+const aboutLink = `${basePath}/about`;
 const privacyLink = `${basePath}/privacy`;
 const termsLink = `${basePath}/terms`;
 const contactLink = `${basePath}/contact`;
@@ -85,7 +89,7 @@ const isActive = (path) => {
           <span class="text-xl sm:text-2xl font-bold tracking-tight text-brand-navy">Ask Astro Raja</span>
         </a>
         
-        <nav class="hidden md:flex items-center gap-8 font-medium">
+        <nav class="hidden md:flex items-center gap-6 font-medium text-sm lg:text-base">
           <a href={howItWorksLink} class={`transition-colors ${isActive(howItWorksLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>How It Works</a>
           <a href={raasiGuideLink} class={`transition-colors ${isActive(raasiGuideLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>Raasi Guide</a>
           <a href={aboutLink} class={`transition-colors ${isActive(aboutLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>About</a>
@@ -157,20 +161,20 @@ const isActive = (path) => {
         
         <div class="col-span-1 md:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-8">
           <div>
-          <h4 class="font-bold text-brand-navy mb-4">Tool</h4>
+          <h4 class="font-bold text-brand-navy mb-4">Diagnostics</h4>
           <ul class="space-y-3 text-sm">
             <li><a href={getReadingLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Get Your Reading</a></li>
-            <li><a href={sampleLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Sample Report</a></li>
-            <li><a href={raasiGuideLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Raasi Guide</a></li>
-            <li><a href={howItWorksLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">How It Works</a></li>
+            <li><a href={caseStudiesLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Symptoms / Case Studies</a></li>
+            <li><a href={manifestoLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">The Manifesto</a></li>
           </ul>
         </div>
 
         <div>
-          <h4 class="font-bold text-brand-navy mb-4">Company</h4>
+          <h4 class="font-bold text-brand-navy mb-4">Systems</h4>
           <ul class="space-y-3 text-sm">
-            <li><a href={aboutLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">About Astro Raja</a></li>
-            <li><a href={contactLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Contact Us</a></li>
+            <li><a href={relationshipLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Relationship Dynamics</a></li>
+            <li><a href={careerLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Career & Wealth</a></li>
+            <li><a href={howItWorksLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Methodology</a></li>
           </ul>
         </div>
         
