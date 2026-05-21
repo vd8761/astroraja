@@ -56,6 +56,9 @@ const isActive = (path) => {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Razorpay Checkout -->
+    <script is:inline src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -111,6 +114,7 @@ const isActive = (path) => {
           <a href={raasiGuideLink} class={`transition-colors ${isActive(raasiGuideLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>Raasi Guide</a>
           <a href={aboutLink} class={`transition-colors ${isActive(aboutLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>About</a>
           <a href={faqLink} class={`transition-colors ${isActive(faqLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>FAQ</a>
+          <a href={contactLink} class={`transition-colors ${isActive(contactLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>Contact</a>
         </nav>
         
         <div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
@@ -141,6 +145,7 @@ const isActive = (path) => {
         <a href={raasiGuideLink} class={`mobile-link font-medium py-2 border-b border-brand-border/30 ${isActive(raasiGuideLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>Raasi Guide</a>
         <a href={aboutLink} class={`mobile-link font-medium py-2 border-b border-brand-border/30 ${isActive(aboutLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>About</a>
         <a href={faqLink} class={`mobile-link font-medium py-2 border-b border-brand-border/30 ${isActive(faqLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>FAQ</a>
+        <a href={contactLink} class={`mobile-link font-medium py-2 border-b border-brand-border/30 ${isActive(contactLink) ? 'text-brand-saffron' : 'text-brand-text hover:text-brand-saffron'}`}>Contact</a>
       </div>
     </header>
 
@@ -219,8 +224,10 @@ const isActive = (path) => {
         </div>
         
           <div class="col-span-2 sm:col-span-1">
-            <h4 class="font-bold text-brand-navy mb-4">Legal</h4>
+            <h4 class="font-bold text-brand-navy mb-4">Support & Legal</h4>
             <ul class="space-y-3 text-sm">
+              <li><a href={contactLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Contact Us</a></li>
+              <li><a href={faqLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">FAQ</a></li>
               <li><a href={privacyLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Privacy Policy</a></li>
               <li><a href={termsLink} class="text-brand-text-muted hover:text-brand-saffron transition-colors">Terms of Use</a></li>
             </ul>

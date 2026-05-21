@@ -265,9 +265,9 @@ import Layout from '../layouts/Layout.astro';
       </button>
       <div x-show="step === 0"></div> <!-- Spacer for flex-between -->
 
-      <button @click="nextStep" x-show="step < 5" class="px-8 py-3.5 bg-brand-navy text-white rounded-xl font-bold hover:bg-brand-saffron transition-colors shadow-lg flex items-center gap-2">
-        Continue
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <button @click="nextStep" x-show="step < 5" class="px-8 py-3.5 bg-brand-navy text-white rounded-xl font-bold hover:bg-brand-saffron transition-colors shadow-lg flex items-center gap-2" :disabled="isPaying" :class="{ 'opacity-70 cursor-wait': isPaying }">
+        <span x-text="isPaying ? 'Securing Spot...' : 'Continue'"></span>
+        <svg x-show="!isPaying" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
       </button>
 
       <button @click="submit" x-show="step === 5" class="px-8 py-4 bg-brand-saffron text-white rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-[0_4px_15px_rgba(245,158,11,0.3)] flex items-center gap-2">
@@ -331,6 +331,8 @@ document.addEventListener('alpine:init', () => {
     isGenerating: false,
     isComplete: false,
     loadingMessage: 'Initializing...',
+    hasPaid: false,
+    isPaying: false,
     
     init() {
       // Pre-fill Raasi from URL param if exists
@@ -379,10 +381,78 @@ document.addEventListener('alpine:init', () => {
       return valid;
     },
 
+    async initiatePayment() {
+      if (!this.validateStep()) return;
+      
+      this.isPaying = true;
+      let countryCode = 'IN';
+      try {
+        const geoResponse = await fetch('https://ipapi.co/json/');
+        const geoData = await geoResponse.json();
+        if (geoData.country_code) countryCode = geoData.country_code;
+      } catch (e) {
+        console.error("GeoIP failed, defaulting to IN", e);
+      }
+
+      try {
+        const orderRes = await fetch('/api/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ countryCode })
+        });
+        const orderData = await orderRes.json();
+        
+        if (!orderRes.ok) {
+          alert("Payment gateway error: " + (orderData.error || 'Unknown'));
+          this.isPaying = false;
+          return;
+        }
+
+        const options = {
+          key: orderData.keyId,
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: "Ask Astro Raja",
+          description: "Life Transformation Report Assessment",
+          order_id: orderData.orderId,
+          prefill: {
+            name: this.formData.name
+          },
+          theme: {
+            color: "#1e1b4b"
+          },
+          handler: (response) => {
+            this.hasPaid = true;
+            this.isPaying = false;
+            this.step++;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          },
+          modal: {
+            ondismiss: () => {
+              this.isPaying = false;
+            }
+          }
+        };
+        const rzp = new window.Razorpay(options);
+        rzp.on('payment.failed', function (response){
+          alert("Payment Failed: " + response.error.description);
+        });
+        rzp.open();
+      } catch (e) {
+        console.error(e);
+        alert("Network error. Please try again.");
+        this.isPaying = false;
+      }
+    },
+
     nextStep() {
-      if (this.validateStep() && this.step < 5) {
-        this.step++;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (this.validateStep()) {
+        if (this.step === 0 && !this.hasPaid) {
+          this.initiatePayment();
+        } else if (this.step < 5) {
+          this.step++;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       }
     },
 
@@ -393,26 +463,64 @@ document.addEventListener('alpine:init', () => {
       }
     },
 
-    submit() {
+    async submit() {
       // Save data to localStorage for the report page to use
       localStorage.setItem('astroraja_user_data', JSON.stringify(this.formData));
       
       this.isGenerating = true;
       this.loadingMessage = 'Analyzing your Raasi and Lagnam combination...';
       
-      setTimeout(() => {
-        this.loadingMessage = 'Mapping Nakshatra behavioral themes...';
-      }, 1500);
-      
-      setTimeout(() => {
-        this.loadingMessage = 'Structuring your Life Transformation Report...';
+      // Start rotating loading messages
+      const msgs = [
+        'Mapping Nakshatra behavioral themes...', 
+        'Structuring your Life Transformation Report...', 
+        'Drafting your personalized action system...', 
+        'Consulting with Ask Astro Raja AI...'
+      ];
+      let msgIdx = 0;
+      const interval = setInterval(() => {
+        this.loadingMessage = msgs[msgIdx % msgs.length];
+        msgIdx++;
       }, 3000);
       
-      setTimeout(() => {
+      try {
+        const response = await fetch('/api/generate-reading', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(this.formData)
+        });
+        
+        clearInterval(interval);
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+           alert('Error generating report: ' + (data.error || 'Unknown error'));
+           this.isGenerating = false;
+           return;
+        }
+        
+        // Trigger file download
+        const blob = new Blob([data.report], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const filenameSafeName = this.formData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'user';
+        a.download = `AstroRaja_Life_Report_${filenameSafeName}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
         this.isGenerating = false;
         this.isComplete = true;
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 4500);
+      } catch (err) {
+        clearInterval(interval);
+        console.error(err);
+        alert('A network error occurred while generating your report. Please check your connection and API key.');
+        this.isGenerating = false;
+      }
     }
   }));
 });
