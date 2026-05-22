@@ -131,14 +131,6 @@ import Layout from '../layouts/Layout.astro';
           <p class="text-brand-text-muted text-xs mt-2">Tamil name shown in brackets. Select the one you know by either name.</p>
           <p x-show="errors.nakshatra" class="text-red-500 text-xs mt-1">Please select your Nakshatra.</p>
         </div>
-
-        <div>
-          <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Report Language <span class="text-brand-saffron">*</span></label>
-          <div class="grid grid-cols-2 gap-4">
-            <button type="button" @click="formData.language = 'English'" class="p-4 rounded-xl border transition-all text-center font-bold" :class="formData.language === 'English' ? 'bg-brand-saffron text-white border-brand-saffron' : 'bg-white text-brand-navy border-brand-border'">English</button>
-            <button type="button" @click="formData.language = 'Tamil'" class="p-4 rounded-xl border transition-all text-center font-bold" :class="formData.language === 'Tamil' ? 'bg-brand-saffron text-white border-brand-saffron' : 'bg-white text-brand-navy border-brand-border'">Tamil (தமிழ்)</button>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -266,6 +258,14 @@ import Layout from '../layouts/Layout.astro';
           <button @click="step = 4" class="absolute top-6 right-6 text-brand-saffron text-xs font-semibold hover:underline">Edit</button>
           <div class="text-brand-saffron-dark text-[10px] tracking-widest uppercase mb-2">Spiritual Orientation</div>
           <div class="font-bold text-brand-navy" x-text="formData.spiritual"></div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-bold text-brand-navy uppercase tracking-wider mb-3">Select Final Report Language <span class="text-brand-saffron">*</span></label>
+        <div class="grid grid-cols-2 gap-4">
+          <button type="button" @click="formData.language = 'English'" class="p-4 rounded-xl border-2 transition-all text-center font-bold" :class="formData.language === 'English' ? 'bg-brand-saffron text-white border-brand-saffron' : 'bg-white text-brand-navy border-brand-border hover:border-brand-saffron/50'">English</button>
+          <button type="button" @click="formData.language = 'Tamil'" class="p-4 rounded-xl border-2 transition-all text-center font-bold" :class="formData.language === 'Tamil' ? 'bg-brand-saffron text-white border-brand-saffron' : 'bg-white text-brand-navy border-brand-border hover:border-brand-saffron/50'">Tamil (தமிழ்)</button>
         </div>
       </div>
 
