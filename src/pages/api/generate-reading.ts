@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
 import Anthropic from '@anthropic-ai/sdk';
+import nodemailer from 'nodemailer';
+import { marked } from 'marked';
 import skillTemplate from '../../lib/skill.md?raw';
-import * as fs from 'fs';
-import * as path from 'path';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -83,6 +83,67 @@ Language: ${data.language || 'English'}
       console.log(logEntry);
     } catch (logErr) {
       console.error("Failed to calculate tokens:", logErr);
+    }
+    // --------------------------------------------------
+
+    // --- Email Sending Logic ---
+    if (data.email) {
+      try {
+        const parsedMarkdown = await marked.parse(textContent);
+        const filenameSafeName = data.name ? data.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'user';
+        
+        const htmlReport = `<!DOCTYPE html>
+<html lang="${data.language === 'Tamil' ? 'ta' : 'en'}">
+<head>
+    <meta charset="UTF-8">
+    <title>Astro Raja Report - ${data.name}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 40px auto; padding: 20px; }
+        h1 { color: #1e3a8a; border-bottom: 2px solid #f59e0b; padding-bottom: 10px; }
+        h2 { color: #1e3a8a; margin-top: 30px; }
+        h3 { color: #475569; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #cbd5e1; padding: 12px; text-align: left; }
+        th { background-color: #f1f5f9; }
+        blockquote { border-left: 4px solid #f59e0b; padding-left: 15px; font-style: italic; color: #64748b; background: #f8fafc; padding: 10px 15px; margin-left: 0; }
+        @media print {
+            body { margin: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    ${parsedMarkdown}
+</body>
+</html>`;
+
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'askastroraja@gmail.com',
+            pass: import.meta.env.GMAIL_APP_PASSWORD || process.env.GMAIL_APP_PASSWORD
+          }
+        });
+
+        const mailOptions = {
+          from: '"Astro Raja" <askastroraja@gmail.com>',
+          to: data.email,
+          subject: `Your Astro Raja Life Transformation Report - ${data.name}`,
+          text: `Hello ${data.name},\n\nYour Astro Raja Life Transformation Report is ready! Please find the beautifully formatted document attached to this email.\n\nBest regards,\nAstro Raja Team`,
+          attachments: [
+            {
+              filename: `AstroRaja_Life_Report_${filenameSafeName}.html`,
+              content: htmlReport,
+              contentType: 'text/html'
+            }
+          ]
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log(`Email successfully sent to ${data.email}`);
+      } catch (emailError) {
+        console.error("Failed to send email:", emailError);
+        // Continue without throwing so the UI still displays the report to the user
+      }
     }
     // --------------------------------------------------
 
