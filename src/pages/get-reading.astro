@@ -33,6 +33,30 @@ import Layout from '../layouts/Layout.astro';
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
+            <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Email ID <span class="text-brand-saffron">*</span></label>
+            <input type="email" x-model="formData.email" placeholder="e.g. priya@example.com" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all" :class="{'border-red-500': errors.email}">
+            <p x-show="errors.email" class="text-red-500 text-xs mt-1">Please enter a valid email address.</p>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Mobile Number <span class="text-brand-saffron">*</span></label>
+            <div class="flex gap-2">
+              <select x-model="formData.countryCode" class="w-24 p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all appearance-none text-center" :class="{'border-red-500': errors.mobile}">
+                <option value="+91">+91 (IN)</option>
+                <option value="+1">+1 (US/CA)</option>
+                <option value="+44">+44 (UK)</option>
+                <option value="+61">+61 (AU)</option>
+                <option value="+65">+65 (SG)</option>
+                <option value="+971">+971 (AE)</option>
+                <option value="+60">+60 (MY)</option>
+              </select>
+              <input type="tel" x-model="formData.mobile" placeholder="9876543210" class="flex-1 p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all" :class="{'border-red-500': errors.mobile}">
+            </div>
+            <p x-show="errors.mobile" class="text-red-500 text-xs mt-1">Please enter your mobile number.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
             <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Raasi (Moon Sign) <span class="text-brand-saffron">*</span></label>
             <select x-model="formData.raasi" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all appearance-none" :class="{'border-red-500': errors.raasi}">
               <option value="">Select your Raasi</option>
@@ -106,6 +130,14 @@ import Layout from '../layouts/Layout.astro';
           </select>
           <p class="text-brand-text-muted text-xs mt-2">Tamil name shown in brackets. Select the one you know by either name.</p>
           <p x-show="errors.nakshatra" class="text-red-500 text-xs mt-1">Please select your Nakshatra.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Report Language <span class="text-brand-saffron">*</span></label>
+          <div class="grid grid-cols-2 gap-4">
+            <button type="button" @click="formData.language = 'English'" class="p-4 rounded-xl border transition-all text-center font-bold" :class="formData.language === 'English' ? 'bg-brand-saffron text-white border-brand-saffron' : 'bg-white text-brand-navy border-brand-border'">English</button>
+            <button type="button" @click="formData.language = 'Tamil'" class="p-4 rounded-xl border transition-all text-center font-bold" :class="formData.language === 'Tamil' ? 'bg-brand-saffron text-white border-brand-saffron' : 'bg-white text-brand-navy border-brand-border'">Tamil (தமிழ்)</button>
+          </div>
         </div>
       </div>
     </div>
@@ -289,10 +321,18 @@ import Layout from '../layouts/Layout.astro';
           <!-- Center star -->
           <div class="absolute inset-0 flex items-center justify-center text-brand-saffron text-4xl">✦</div>
         </div>
-        <h3 class="text-2xl font-serif font-bold text-white mb-2">Connecting to Vedic Engine</h3>
+        <h3 class="text-2xl font-serif font-bold text-white mb-2">Generating Report</h3>
         <p class="text-brand-saffron/80 text-lg tracking-wide animate-pulse" x-text="loadingMessage"></p>
-        <div class="mt-10 h-1 bg-white/10 rounded-full overflow-hidden">
-          <div class="h-full bg-brand-saffron transition-all duration-[3000ms] ease-out" :style="isGenerating ? 'width: 100%' : 'width: 0%'"></div>
+        <div class="mt-8 relative">
+          <div class="flex justify-between text-xs text-white/70 mb-2 font-mono">
+            <span>0%</span>
+            <span x-text="generationProgress + '%'" class="text-brand-saffron font-bold text-sm">0%</span>
+            <span>100%</span>
+          </div>
+          <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+            <div class="h-full bg-brand-saffron transition-all duration-300 ease-out" :style="`width: ${generationProgress}%`"></div>
+          </div>
+          <p class="text-white/50 text-xs mt-4">This typically takes 2-3 minutes. Please do not close this window.</p>
         </div>
       </div>
     </div>
@@ -308,11 +348,11 @@ document.addEventListener('alpine:init', () => {
     step: 0,
     stepLabels: ['Your Details', 'Current Struggles', 'Daily Life', 'Life Goals', 'Spiritual Orientation'],
     formData: {
-      name: '', raasi: '', lagnam: '', nakshatra: '',
+      name: '', email: '', countryCode: '+91', mobile: '', language: 'English', raasi: '', lagnam: '', nakshatra: '',
       struggles: [], dailyLife: '', goals: [], spiritual: ''
     },
     errors: {
-      name: false, raasi: false, lagnam: false, nakshatra: false,
+      name: false, email: false, mobile: false, raasi: false, lagnam: false, nakshatra: false,
       struggles: false, dailyLife: false, goals: false, spiritual: false
     },
     struggleOpts: ["Money / Debt", "Health anxiety", "Relationship stress", "Family pressure", "Career confusion", "Overthinking", "Lack of confidence", "Loneliness"],
@@ -334,6 +374,8 @@ document.addEventListener('alpine:init', () => {
     isGenerating: false,
     isComplete: false,
     loadingMessage: 'Initializing...',
+    generationProgress: 0,
+    generationInterval: null,
     reportText: '',
     hasPaid: false,
     isPaying: false,
@@ -346,6 +388,8 @@ document.addEventListener('alpine:init', () => {
       
       // Clear errors dynamically when user types/selects
       this.$watch('formData.name', (val) => { if(val.trim()) this.errors.name = false; });
+      this.$watch('formData.email', (val) => { if(val.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) this.errors.email = false; });
+      this.$watch('formData.mobile', (val) => { if(val.trim()) this.errors.mobile = false; });
       this.$watch('formData.raasi', (val) => { if(val) this.errors.raasi = false; });
       this.$watch('formData.lagnam', (val) => { if(val) this.errors.lagnam = false; });
       this.$watch('formData.nakshatra', (val) => { if(val) this.errors.nakshatra = false; });
@@ -365,10 +409,12 @@ document.addEventListener('alpine:init', () => {
       let valid = true;
       if (this.step === 0) {
         this.errors.name = !this.formData.name.trim();
+        this.errors.email = !this.formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.formData.email);
+        this.errors.mobile = !this.formData.mobile.trim();
         this.errors.raasi = !this.formData.raasi;
         this.errors.lagnam = !this.formData.lagnam;
         this.errors.nakshatra = !this.formData.nakshatra;
-        if (this.errors.name || this.errors.raasi || this.errors.lagnam || this.errors.nakshatra) valid = false;
+        if (this.errors.name || this.errors.email || this.errors.mobile || this.errors.raasi || this.errors.lagnam || this.errors.nakshatra) valid = false;
       } else if (this.step === 1) {
         this.errors.struggles = this.formData.struggles.length === 0;
         if (this.errors.struggles) valid = false;
@@ -516,19 +562,31 @@ document.addEventListener('alpine:init', () => {
       
       this.isGenerating = true;
       this.loadingMessage = 'Analyzing your Raasi and Lagnam combination...';
+      this.generationProgress = 0;
       
       // Start rotating loading messages
       const msgs = [
         'Mapping Nakshatra behavioral themes...', 
         'Structuring your Life Transformation Report...', 
+        'Translating complex Vedic concepts...',
         'Drafting your personalized action system...', 
-        'Consulting with Ask Astro Raja AI...'
+        'Consulting with Ask Astro Raja AI...',
+        'Finalizing document layout...'
       ];
       let msgIdx = 0;
-      const interval = setInterval(() => {
-        this.loadingMessage = msgs[msgIdx % msgs.length];
-        msgIdx++;
-      }, 3000);
+      
+      // 150 seconds = 150,000ms. We update progress every 1.5s (1500ms) by 1%.
+      this.generationInterval = setInterval(() => {
+        if (this.generationProgress < 99) {
+          this.generationProgress += 1;
+        }
+        
+        // Every 15% (22.5s) we change the loading message
+        if (this.generationProgress % 15 === 0) {
+          this.loadingMessage = msgs[msgIdx % msgs.length];
+          msgIdx++;
+        }
+      }, 1500);
       
       try {
         const response = await fetch('/api/generate-reading', {
@@ -537,7 +595,7 @@ document.addEventListener('alpine:init', () => {
           body: JSON.stringify(this.formData)
         });
         
-        clearInterval(interval);
+        clearInterval(this.generationInterval);
         
         const result = await response.json();
         
@@ -545,16 +603,21 @@ document.addEventListener('alpine:init', () => {
           throw new Error(typeof result.error === 'string' ? result.error : (result.message || 'Unknown error'));
         }
         
+        this.generationProgress = 100;
         this.reportText = result.report;
         
         // Trigger file download automatically
         this.downloadReport();
         
-        this.isGenerating = false;
-        this.isComplete = true;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Small delay so user sees 100% completion before UI switches
+        setTimeout(() => {
+          this.isGenerating = false;
+          this.isComplete = true;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 800);
+        
       } catch (err) {
-        clearInterval(interval);
+        clearInterval(this.generationInterval);
         this.isGenerating = false;
         const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
         alert(`Error generating report: ${errorMessage}`);
