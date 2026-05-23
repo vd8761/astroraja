@@ -42,7 +42,7 @@ Language: ${data.language || 'English'}
 
     // The SKILL.md actually asks for output in .docx format by default, but we'll 
     // ask Claude to output plain text markdown so we can easily save it as a .txt file.
-    const systemPrompt = skillTemplate + `\n\nCRITICAL INSTRUCTION: Output the final report as raw Markdown text. You MUST complete the entire report from Section 1 to Section 14. Keep each section concise and punchy so that the full report easily fits within token limits (aim for ~3000 words total). Do NOT cut off the end of the report.\n\nCRITICAL LANGUAGE INSTRUCTION: The user has requested the report in ${data.language || 'English'}. You MUST output the ENTIRE document (including all headings, tables, labels, advice, and paragraphs) in ${data.language || 'English'}. Do not output English headers if the language requested is Tamil.`;
+    const systemPrompt = skillTemplate + `\n\nCRITICAL INSTRUCTION: Output the final report as raw Markdown text. You MUST complete the entire report from Section 1 to Section 14. To avoid getting cut off by token limits, be EXTREMELY CONCISE in each section. Do not ramble. Get straight to the point. DO NOT STOP until Section 14 is fully generated.\n\nCRITICAL LANGUAGE INSTRUCTION: The user has requested the report in ${data.language || 'English'}. You MUST output the ENTIRE document (including all headings, tables, labels, advice, and paragraphs) in ${data.language || 'English'}. Do not output English headers if the language requested is Tamil.`;
 
     const msg = await anthropic.messages.create({
       model: "claude-sonnet-4-6",

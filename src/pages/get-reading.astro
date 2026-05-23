@@ -276,16 +276,15 @@ import Layout from '../layouts/Layout.astro';
       <div class="w-20 h-20 bg-green-50 text-green-600 border border-green-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
       </div>
-      <h2 class="text-4xl font-bold text-brand-navy mb-4">Report Generated!</h2>
-      <p class="text-xl text-brand-text mb-8">Thank you, <span class="font-bold text-brand-saffron-dark" x-text="formData.name"></span>. Your Life Transformation Report is ready.</p>
+      <h2 class="text-4xl font-bold text-brand-navy mb-4">Report Emailed!</h2>
+      <p class="text-xl text-brand-text mb-8">Thank you, <span class="font-bold text-brand-saffron-dark" x-text="formData.name"></span>. Your Life Transformation Report has been sent to your email.</p>
       <div class="max-w-lg mx-auto bg-slate-50 border border-brand-border rounded-2xl p-8 shadow-sm">
-        <p class="text-brand-text font-medium leading-relaxed mb-6">
-          Your behavioral blueprint has been successfully analyzed by Astro Raja AI.
+        <div class="w-16 h-16 bg-blue-50 text-brand-navy border border-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </div>
+        <p class="text-brand-text font-medium leading-relaxed">
+          Please check your inbox at <strong x-text="formData.email"></strong>. <br><span class="text-sm mt-2 block text-brand-text-muted">(Don't forget to check your spam/junk folder just in case!)</span>
         </p>
-        <button @click="downloadReport($event)" class="px-8 py-4 w-full bg-brand-saffron text-white rounded-xl font-bold hover:bg-brand-saffron-dark transition-colors shadow-md hover:shadow-lg flex items-center justify-center gap-2">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          Download Report (.html)
-        </button>
       </div>
       <div class="mt-12">
         <a href="/" class="px-8 py-4 bg-brand-navy text-white rounded-xl font-bold hover:bg-brand-saffron transition-colors inline-block shadow-md hover:shadow-lg">Return to Home</a>
@@ -513,49 +512,6 @@ document.addEventListener('alpine:init', () => {
       }
     },
 
-    downloadReport(event) {
-      if (!this.reportText) return;
-      
-      const parsedMarkdown = marked.parse(this.reportText);
-      const filenameSafeName = this.formData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'user';
-      
-      const htmlContent = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Astro Raja Report - ${this.formData.name}</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 40px auto; padding: 20px; }
-        h1 { color: #1e3a8a; border-bottom: 2px solid #f59e0b; padding-bottom: 10px; }
-        h2 { color: #1e3a8a; margin-top: 30px; }
-        h3 { color: #475569; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid #cbd5e1; padding: 12px; text-align: left; }
-        th { background-color: #f1f5f9; }
-        blockquote { border-left: 4px solid #f59e0b; padding-left: 15px; font-style: italic; color: #64748b; background: #f8fafc; padding: 10px 15px; margin-left: 0; }
-        @media print {
-            body { margin: 0; padding: 20px; }
-            button { display: none; }
-        }
-    </style>
-</head>
-<body>
-    <button onclick="window.print()" style="padding: 10px 20px; background: #f59e0b; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; font-size: 16px; font-weight: bold;">🖨️ Click Here to Save as PDF</button>
-    ${parsedMarkdown}
-</body>
-</html>`;
-
-      const blob = new Blob([htmlContent], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `AstroRaja_Life_Report_${filenameSafeName}.html`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    },
-
     async submit() {
       // Save data to localStorage for the report page to use
       localStorage.setItem('astroraja_user_data', JSON.stringify(this.formData));
@@ -605,10 +561,6 @@ document.addEventListener('alpine:init', () => {
         
         this.generationProgress = 100;
         this.reportText = result.report;
-        
-        // Trigger file download automatically
-        this.downloadReport();
-        
         // Small delay so user sees 100% completion before UI switches
         setTimeout(() => {
           this.isGenerating = false;
