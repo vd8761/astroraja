@@ -264,8 +264,8 @@ import Layout from '../layouts/Layout.astro';
       <div class="mb-4">
         <label class="block text-sm font-bold text-brand-navy uppercase tracking-wider mb-3">Select Final Report Language <span class="text-brand-saffron">*</span></label>
         <div class="grid grid-cols-2 gap-4">
-          <button type="button" @click="formData.language = 'English'" class="p-4 rounded-xl border-2 transition-all text-center font-bold" :class="formData.language === 'English' ? 'bg-brand-saffron text-white border-brand-saffron' : 'bg-white text-brand-navy border-brand-border hover:border-brand-saffron/50'">English</button>
-          <button type="button" @click="formData.language = 'Tamil'" class="p-4 rounded-xl border-2 transition-all text-center font-bold" :class="formData.language === 'Tamil' ? 'bg-brand-saffron text-white border-brand-saffron' : 'bg-white text-brand-navy border-brand-border hover:border-brand-saffron/50'">Tamil (தமிழ்)</button>
+          <button type="button" @click="formData.language = 'English'" class="p-4 rounded-xl border-2 transition-all text-center font-bold" :class="formData.language === 'English' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-brand-navy border-brand-border hover:border-brand-navy/50'">English</button>
+          <button type="button" @click="formData.language = 'Tamil'" class="p-4 rounded-xl border-2 transition-all text-center font-bold" :class="formData.language === 'Tamil' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-brand-navy border-brand-border hover:border-brand-navy/50'">Tamil (தமிழ்)</button>
         </div>
       </div>
 
@@ -517,41 +517,16 @@ document.addEventListener('alpine:init', () => {
       localStorage.setItem('astroraja_user_data', JSON.stringify(this.formData));
       
       this.isGenerating = true;
-      this.loadingMessage = 'Analyzing your Raasi and Lagnam combination...';
-      this.generationProgress = 0;
-      
-      // Start rotating loading messages
-      const msgs = [
-        'Mapping Nakshatra behavioral themes...', 
-        'Structuring your Life Transformation Report...', 
-        'Translating complex Vedic concepts...',
-        'Drafting your personalized action system...', 
-        'Consulting with Ask Astro Raja AI...',
-        'Finalizing document layout...'
-      ];
-      let msgIdx = 0;
-      
-      // 150 seconds = 150,000ms. We update progress every 1.5s (1500ms) by 1%.
-      this.generationInterval = setInterval(() => {
-        if (this.generationProgress < 99) {
-          this.generationProgress += 1;
-        }
-        
-        // Every 15% (22.5s) we change the loading message
-        if (this.generationProgress % 15 === 0) {
-          this.loadingMessage = msgs[msgIdx % msgs.length];
-          msgIdx++;
-        }
-      }, 1500);
+      this.loadingMessage = 'Queuing your Life Transformation Report...';
       
       try {
-        const response = await fetch('/api/generate-reading', {
+        const response = await fetch('/api/queue-reading', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(this.formData)
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(this.formData),
         });
-        
-        clearInterval(this.generationInterval);
         
         const result = await response.json();
         
