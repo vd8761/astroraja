@@ -21,8 +21,11 @@
     "@upstash/qstash": "^2.11.0",
     "alpinejs": "^3.15.12",
     "astro": "^6.3.5",
+    "html-to-pdfmake": "^2.5.33",
+    "jsdom": "^29.1.1",
     "marked": "^18.0.4",
     "nodemailer": "^8.0.7",
+    "pdfmake": "^0.3.8",
     "razorpay": "^2.9.6",
     "tailwindcss": "^4.3.0"
   },

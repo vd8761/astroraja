@@ -5,6 +5,12 @@ import nodemailer from 'nodemailer';
 import { marked } from 'marked';
 import skillTemplate from '../../lib/skill.md?raw';
 
+import PdfPrinter from 'pdfmake';
+import htmlToPdfmake from 'html-to-pdfmake';
+import { JSDOM } from 'jsdom';
+import fs from 'fs';
+import path from 'path';
+
 export const POST: APIRoute = async ({ request }) => {
   try {
     // 1. Parse QStash payload
@@ -76,35 +82,59 @@ Language: ${report.language || 'English'}
       WHERE id = ${report_id}
     `;
 
-    // 6. Send Email
+    // 6. Generate PDF and Send Email
     if (report.email) {
       try {
         const parsedMarkdown = await marked.parse(textContent);
         const filenameSafeName = report.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
         
-        const htmlReport = `<!DOCTYPE html>
-<html lang="${report.language === 'Tamil' ? 'ta' : 'en'}">
-<head>
-    <meta charset="UTF-8">
-    <title>Astro Raja Report - ${report.name}</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 40px auto; padding: 20px; }
-        h1 { color: #1e3a8a; border-bottom: 2px solid #f59e0b; padding-bottom: 10px; }
-        h2 { color: #1e3a8a; margin-top: 30px; }
-        h3 { color: #475569; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid #cbd5e1; padding: 12px; text-align: left; }
-        th { background-color: #f1f5f9; }
-        blockquote { border-left: 4px solid #f59e0b; padding-left: 15px; font-style: italic; color: #64748b; background: #f8fafc; padding: 10px 15px; margin-left: 0; }
-        @media print {
-            body { margin: 0; padding: 20px; }
-        }
-    </style>
-</head>
-<body>
-    ${parsedMarkdown}
-</body>
-</html>`;
+        // Define fonts for pdfmake
+        const fontsDir = path.join(process.cwd(), 'public', 'fonts');
+        const fonts = {
+          Roboto: {
+            normal: path.join(fontsDir, 'NotoSans-Regular.ttf'),
+            bold: path.join(fontsDir, 'NotoSans-Bold.ttf'),
+            italics: path.join(fontsDir, 'NotoSans-Regular.ttf'),
+            bolditalics: path.join(fontsDir, 'NotoSans-Bold.ttf')
+          },
+          Tamil: {
+            normal: path.join(fontsDir, 'NotoSansTamil-Regular.ttf'),
+            bold: path.join(fontsDir, 'NotoSansTamil-Bold.ttf'),
+            italics: path.join(fontsDir, 'NotoSansTamil-Regular.ttf'),
+            bolditalics: path.join(fontsDir, 'NotoSansTamil-Bold.ttf')
+          }
+        };
+
+        const printer = new PdfPrinter(fonts);
+        
+        // We must pass a JSDOM window to html-to-pdfmake to parse the HTML string
+        const { window } = new JSDOM("");
+        const pdfContent = htmlToPdfmake(parsedMarkdown, { window });
+
+        const docDefinition = {
+          content: pdfContent,
+          defaultStyle: {
+            font: report.language === 'Tamil' ? 'Tamil' : 'Roboto'
+          },
+          styles: {
+            // pdfmake default styles matching our previous HTML CSS
+            'html-h1': { fontSize: 24, bold: true, margin: [0, 10, 0, 10], color: '#1e3a8a' },
+            'html-h2': { fontSize: 18, bold: true, margin: [0, 20, 0, 10], color: '#1e3a8a' },
+            'html-h3': { fontSize: 14, bold: true, margin: [0, 15, 0, 5], color: '#475569' },
+            'html-p': { margin: [0, 5, 0, 10], lineHeight: 1.5 },
+            'html-blockquote': { margin: [10, 5, 0, 10], italics: true, color: '#64748b' }
+          }
+        };
+
+        const pdfDoc = printer.createPdfKitDocument(docDefinition);
+        const chunks: Buffer[] = [];
+        
+        const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
+          pdfDoc.on('data', chunk => chunks.push(chunk));
+          pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
+          pdfDoc.on('error', reject);
+          pdfDoc.end();
+        });
 
         const transporter = nodemailer.createTransport({
           service: 'gmail',
@@ -118,11 +148,11 @@ Language: ${report.language || 'English'}
           from: '"Astro Raja" <askastroraja@gmail.com>',
           to: report.email,
           subject: `Your Astro Raja Life Transformation Report - ${report.name}`,
-          text: `Hello ${report.name},\n\nYour Astro Raja Life Transformation Report is ready! Please find the document attached to this email.\n\nBest regards,\nAstro Raja Team`,
+          text: `Hello ${report.name},\n\nYour Astro Raja Life Transformation Report is ready! Please find the PDF document attached to this email.\n\nBest regards,\nAstro Raja Team`,
           attachments: [{
-            filename: `AstroRaja_Life_Report_${filenameSafeName}.html`,
-            content: htmlReport,
-            contentType: 'text/html'
+            filename: `AstroRaja_Life_Report_${filenameSafeName}.pdf`,
+            content: pdfBuffer,
+            contentType: 'application/pdf'
           }]
         });
       } catch (emailError) {
