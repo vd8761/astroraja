@@ -1,0 +1,99 @@
+---
+import crypto from 'crypto';
+
+const adminPassword = import.meta.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+if (adminPassword) {
+  const expectedHash = crypto.createHash('sha256').update(adminPassword).digest('hex');
+  const authCookie = Astro.cookies.get('astro_admin_auth')?.value;
+
+  if (authCookie === expectedHash) {
+    return Astro.redirect('/admin/dashboard');
+  }
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Astro Raja - Admin Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+  
+  <div class="max-w-md w-full bg-white rounded-2xl shadow-lg border border-slate-200 p-8" x-data="loginForm">
+    
+    <div class="text-center mb-8">
+      <div class="w-16 h-16 bg-blue-900 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+        AR
+      </div>
+      <h1 class="text-2xl font-bold text-slate-800">Admin Panel</h1>
+      <p class="text-slate-500 mt-2">Enter your master password to continue</p>
+    </div>
+
+    <form @submit.prevent="submitLogin">
+      <div class="mb-6">
+        <label class="block text-sm font-bold text-slate-700 mb-2">Master Password</label>
+        <input 
+          type="password" 
+          x-model="password" 
+          class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-900 focus:border-blue-900 outline-none transition-all"
+          placeholder="••••••••"
+          required
+        >
+        <p x-show="error" x-text="error" class="text-red-500 text-sm mt-2 font-medium" style="display: none;"></p>
+      </div>
+
+      <button 
+        type="submit" 
+        class="w-full bg-blue-900 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-800 transition-colors disabled:opacity-70 flex justify-center"
+        :disabled="loading"
+      >
+        <span x-show="!loading">Secure Login</span>
+        <span x-show="loading" style="display: none;">
+          <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        </span>
+      </button>
+    </form>
+    
+  </div>
+
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('loginForm', () => ({
+        password: '',
+        error: '',
+        loading: false,
+        
+        async submitLogin() {
+          this.error = '';
+          this.loading = true;
+          
+          try {
+            const res = await fetch('/api/admin/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ password: this.password })
+            });
+            
+            const data = await res.json();
+            
+            if (res.ok && data.success) {
+              window.location.href = '/admin/dashboard';
+            } else {
+              this.error = data.error || 'Invalid password';
+              this.password = '';
+            }
+          } catch (err) {
+            this.error = 'Network error. Please try again.';
+          } finally {
+            this.loading = false;
+          }
+        }
+      }));
+    });
+  </script>
+</body>
+</html>
