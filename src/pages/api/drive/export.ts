@@ -3,7 +3,7 @@ import sql from '../../../lib/db';
 import { verifyAuthHeader } from '../../../lib/auth';
 import PdfPrinter from 'pdfmake';
 import htmlToPdfmake from 'html-to-pdfmake';
-import { JSDOM } from 'jsdom';
+import { parseHTML } from 'linkedom';
 import { marked } from 'marked';
 import path from 'path';
 
@@ -60,7 +60,7 @@ export const POST: APIRoute = async ({ request }) => {
     };
 
     const printer = new PdfPrinter(fonts);
-    const { window } = new JSDOM("");
+    const { window } = parseHTML("<html><body></body></html>");
     const pdfContent = htmlToPdfmake(parsedHtml, { window });
 
     const docDefinition = {

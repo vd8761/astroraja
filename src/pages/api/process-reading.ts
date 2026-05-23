@@ -7,7 +7,7 @@ import skillTemplate from '../../lib/skill.md?raw';
 
 import PdfPrinter from 'pdfmake';
 import htmlToPdfmake from 'html-to-pdfmake';
-import { JSDOM } from 'jsdom';
+import { parseHTML } from 'linkedom';
 import fs from 'fs';
 import path from 'path';
 
@@ -108,7 +108,7 @@ Language: ${report.language || 'English'}
         const printer = new PdfPrinter(fonts);
         
         // We must pass a JSDOM window to html-to-pdfmake to parse the HTML string
-        const { window } = new JSDOM("");
+        const { window } = parseHTML("<html><body></body></html>");
         const pdfContent = htmlToPdfmake(parsedMarkdown, { window });
 
         const docDefinition = {
