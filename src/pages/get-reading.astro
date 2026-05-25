@@ -519,7 +519,8 @@ document.addEventListener('alpine:init', () => {
       localStorage.setItem('astroraja_user_data', JSON.stringify(this.formData));
       
       this.isGenerating = true;
-      this.loadingMessage = 'Queuing your Life Transformation Report...';
+      this.generationProgress = 0;
+      this.loadingMessage = 'Connecting to Astro Raja AI...';
       
       try {
         const response = await fetch('/api/queue-reading', {
@@ -536,20 +537,60 @@ document.addEventListener('alpine:init', () => {
           throw new Error(typeof result.error === 'string' ? result.error : (result.message || 'Unknown error'));
         }
         
-        this.generationProgress = 100;
-        this.reportText = result.report;
-        // Small delay so user sees 100% completion before UI switches
-        setTimeout(() => {
-          this.isGenerating = false;
-          this.isComplete = true;
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 800);
+        // --- Simulated Loading Process (35 seconds) ---
+        const messages = [
+          'Mapping Nakshatra behavioral themes...', 
+          'Structuring your Life Transformation Report...', 
+          'Translating complex Vedic concepts...',
+          'Drafting your personalized action system...', 
+          'Consulting with Ask Astro Raja AI...',
+          'Finalizing document layout...'
+        ];
+        
+        let msgIndex = 0;
+        
+        // Update messages every 5 seconds
+        const msgInterval = setInterval(() => {
+          if (msgIndex < messages.length - 1) {
+            msgIndex++;
+            this.loadingMessage = messages[msgIndex];
+          }
+        }, 5000);
+        
+        // Update progress bar over 35 seconds to reach 99%
+        const durationMs = 35000; 
+        const intervalMs = 250;
+        const steps = durationMs / intervalMs;
+        let currentStep = 0;
+        
+        this.generationInterval = setInterval(() => {
+          currentStep++;
+          // Ease-out curve so it slows down near the end
+          const progress = Math.min(99, Math.floor(99 * (1 - Math.pow(1 - currentStep/steps, 2.5))));
+          this.generationProgress = progress;
+          
+          if (currentStep >= steps) {
+            clearInterval(this.generationInterval);
+            clearInterval(msgInterval);
+            
+            // Finish up
+            this.loadingMessage = 'Report generation complete!';
+            this.generationProgress = 100;
+            
+            // Wait 1 second at 100% before showing success page
+            setTimeout(() => {
+              this.isGenerating = false;
+              this.isComplete = true;
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 1200);
+          }
+        }, intervalMs);
         
       } catch (err) {
         clearInterval(this.generationInterval);
         this.isGenerating = false;
         const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
-        alert(`Error generating report: ${errorMessage}`);
+        alert(`Error queuing report: ${errorMessage}`);
       }
     }
   }));
