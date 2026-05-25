@@ -1,0 +1,521 @@
+---
+import crypto from 'crypto';
+import sql from '../../../lib/db';
+import { marked } from 'marked';
+
+// ── Auth Guard ────────────────────────────────────────────────────────────────
+const adminPassword = import.meta.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+if (!adminPassword) return Astro.redirect('/admin');
+
+const expectedHash = crypto.createHash('sha256').update(adminPassword).digest('hex');
+const authCookie = Astro.cookies.get('astro_admin_auth')?.value;
+if (authCookie !== expectedHash) return Astro.redirect('/admin');
+
+// ── Fetch Report ──────────────────────────────────────────────────────────────
+const { id } = Astro.params;
+
+const rows = await sql`
+  SELECT 
+    r.id,
+    r.language,
+    r.status,
+    r.price_paid,
+    r.currency,
+    r.created_at,
+    r.raw_markdown_report,
+    r.form_data,
+    p.name,
+    p.raasi,
+    p.lagnam,
+    p.nakshatra,
+    u.email
+  FROM reports r
+  JOIN profiles p ON r.profile_id = p.id
+  JOIN users u ON r.user_id = u.id
+  WHERE r.id = ${id}
+  LIMIT 1
+`;
+
+if (rows.length === 0) {
+  return new Response('Report not found', { status: 404 });
+}
+
+const report = rows[0];
+const formData = report.form_data || {};
+
+// ── Render Markdown → HTML ────────────────────────────────────────────────────
+let htmlContent = '';
+if (report.raw_markdown_report) {
+  htmlContent = await marked.parse(report.raw_markdown_report);
+}
+
+const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
+  dateStyle: 'long', timeStyle: 'short'
+});
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report Preview — {report.name} | Astro Raja Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #1A3C5E;
+      --navy2:  #2E6B9E;
+      --gold:   #C5952A;
+      --cream:  #FFFBF4;
+      --amber:  #FFF8EC;
+      --green:  #2E8B57;
+      --red:    #CC3333;
+      --slate:  #475569;
+      --border: #E2D9C8;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F1EDE6;
+      color: #1e293b;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    /* ── Sticky Action Bar ───────────────────────────────────────── */
+    .action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--navy);
+      padding: 12px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+    .action-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .action-bar .logo {
+      font-family: 'Lora', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: 0.3px;
+    }
+    .action-bar .logo span { color: var(--gold); }
+    .back-link {
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: color .2s;
+    }
+    .back-link:hover { color: #fff; }
+    .action-bar-right { display: flex; align-items: center; gap: 10px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      transition: all .2s;
+    }
+    .btn-download {
+      background: var(--gold);
+      color: #fff;
+    }
+    .btn-download:hover { background: #b8841f; transform: translateY(-1px); }
+    .btn-email {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-email:hover { background: rgba(255,255,255,0.2); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Page Wrapper ────────────────────────────────────────────── */
+    .page { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
+
+    /* ── Metadata Card ───────────────────────────────────────────── */
+    .meta-card {
+      background: var(--navy);
+      border-radius: 16px;
+      padding: 28px 32px;
+      color: #fff;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .meta-card::before {
+      content: '✦';
+      position: absolute;
+      top: -20px; right: -10px;
+      font-size: 120px;
+      color: rgba(197,149,42,0.08);
+      pointer-events: none;
+    }
+    .meta-name {
+      font-family: 'Lora', serif;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .meta-subtitle {
+      font-size: 13px;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .meta-item label {
+      display: block;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 3px;
+    }
+    .meta-item .val {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .status-completed { background: #dcfce7; color: #166534; }
+    .status-processing { background: #fef9c3; color: #854d0e; }
+    .status-failed { background: #fee2e2; color: #991b1b; }
+
+    /* ── Report Struggles ────────────────────────────────────────── */
+    .struggles-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .struggle-tag {
+      background: rgba(197,149,42,0.15);
+      border: 1px solid rgba(197,149,42,0.3);
+      color: var(--gold);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* ── Report Content Card ─────────────────────────────────────── */
+    .report-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px 44px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Markdown Styles ─────────────────────────────────────────── */
+    .report-content h1 {
+      font-family: 'Lora', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--navy);
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 10px;
+      margin: 36px 0 16px;
+    }
+    .report-content h1:first-child { margin-top: 0; }
+
+    .report-content h2 {
+      font-family: 'Lora', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy2);
+      margin: 28px 0 12px;
+      padding-left: 12px;
+      border-left: 3px solid var(--gold);
+    }
+
+    .report-content h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--slate);
+      margin: 20px 0 8px;
+    }
+
+    .report-content p {
+      margin: 10px 0;
+      color: #334155;
+      line-height: 1.75;
+    }
+
+    .report-content strong { color: var(--navy); }
+
+    .report-content blockquote {
+      border-left: 4px solid var(--navy2);
+      background: #EEF4FA;
+      padding: 14px 20px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      color: var(--navy);
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .report-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 14px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    }
+    .report-content table thead tr {
+      background: var(--navy);
+      color: #fff;
+    }
+    .report-content table thead th {
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.3px;
+    }
+    .report-content table tbody tr {
+      border-bottom: 1px solid #e9e2d4;
+    }
+    .report-content table tbody tr:nth-child(even) {
+      background: var(--amber);
+    }
+    .report-content table tbody tr:hover {
+      background: #FFF3D6;
+    }
+    .report-content table td {
+      padding: 11px 14px;
+      vertical-align: top;
+      line-height: 1.6;
+    }
+
+    .report-content ul, .report-content ol {
+      padding-left: 22px;
+      margin: 10px 0;
+    }
+    .report-content li {
+      margin-bottom: 6px;
+      color: #334155;
+      line-height: 1.7;
+    }
+
+    .report-content hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+    }
+
+    /* ── Empty State ─────────────────────────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--slate);
+    }
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state h3 { font-size: 18px; margin-bottom: 6px; }
+
+    /* ── Toast ───────────────────────────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all .3s;
+      z-index: 999;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── Print ───────────────────────────────────────────────────── */
+    @media print {
+      .action-bar, .btn { display: none !important; }
+      .page { padding: 0; }
+      .meta-card { border-radius: 0; }
+      .report-card { box-shadow: none; border: none; padding: 20px; }
+      body { background: #fff; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Action Bar -->
+  <div class="action-bar">
+    <div class="action-bar-left">
+      <span class="logo">Astro <span>Raja</span></span>
+      <a href="/admin/dashboard" class="back-link">← Back to Dashboard</a>
+    </div>
+    <div class="action-bar-right">
+      <button class="btn btn-email" id="emailBtn" onclick="sendEmail()" title="Send email (Phase 2)">
+        ✉ Send Email
+      </button>
+      <a
+        href={`/api/admin/report-pdf?id=${report.id}`}
+        class="btn btn-download"
+        download={`AstroRaja_Report_${report.name?.replace(/\s+/g,'_')}.pdf`}
+        target="_blank"
+      >
+        ↓ Download PDF
+      </a>
+      <button class="btn" style="background:rgba(255,255,255,0.1);color:#fff;" onclick="window.print()">
+        🖨 Print
+      </button>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Metadata Card -->
+    <div class="meta-card">
+      <div class="meta-subtitle">Life Transformation Report</div>
+      <div class="meta-name">{report.name}</div>
+
+      <div class="meta-grid">
+        <div class="meta-item">
+          <label>Raasi (Moon Sign)</label>
+          <div class="val">{report.raasi || '—'}</div>
+        </div>
+        <div class="meta-item">
+          <label>Lagnam (Ascendant)</label>
+          <div class="val">{report.lagnam || '—'}</div>
+        </div>
+        <div class="meta-item">
+          <label>Nakshatra</label>
+          <div class="val">{report.nakshatra || '—'}</div>
+        </div>
+        <div class="meta-item">
+          <label>Language</label>
+          <div class="val">{report.language || 'English'}</div>
+        </div>
+        <div class="meta-item">
+          <label>Status</label>
+          <div>
+            <span class={`status-badge status-${report.status}`}>{report.status}</span>
+          </div>
+        </div>
+        <div class="meta-item">
+          <label>Revenue</label>
+          <div class="val">{report.currency} {report.price_paid}</div>
+        </div>
+        <div class="meta-item">
+          <label>Email</label>
+          <div class="val" style="font-size:13px;word-break:break-all;">{report.email || '—'}</div>
+        </div>
+        <div class="meta-item">
+          <label>Generated</label>
+          <div class="val" style="font-size:13px;">{createdAt}</div>
+        </div>
+      </div>
+
+      <!-- Struggles / Goals as tags -->
+      {formData.struggles && formData.struggles.length > 0 && (
+        <div class="struggles-row">
+          {formData.struggles.map((s: string) => (
+            <span class="struggle-tag">{s}</span>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <!-- Report Content -->
+    <div class="report-card">
+      {htmlContent ? (
+        <div class="report-content" set:html={htmlContent} />
+      ) : (
+        <div class="empty-state">
+          <div class="icon">📭</div>
+          <h3>No report content yet</h3>
+          <p>This report has not been generated yet (status: <strong>{report.status}</strong>).<br/>
+          The AI content will appear here once processing is complete.</p>
+        </div>
+      )}
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <script define:vars={{ reportId: report.id, reportName: report.name, reportEmail: report.email }}>
+    function showToast(msg, duration = 3000) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), duration);
+    }
+
+    async function sendEmail() {
+      const btn = document.getElementById('emailBtn');
+      if (!reportEmail) {
+        showToast('⚠️ No email address on file for this user.');
+        return;
+      }
+      if (!confirm(`Send report email to ${reportEmail}?`)) return;
+      btn.disabled = true;
+      btn.textContent = '⏳ Sending...';
+      try {
+        const res = await fetch('/api/admin/send-report-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ report_id: reportId })
+        });
+        const json = await res.json();
+        if (res.ok) {
+          showToast('✅ Email sent successfully!');
+          btn.textContent = '✔ Sent';
+        } else {
+          throw new Error(json.error || 'Unknown error');
+        }
+      } catch (err) {
+        showToast('❌ Email failed: ' + err.message, 5000);
+        btn.disabled = false;
+        btn.textContent = '✉ Send Email';
+      }
+    }
+  </script>
+
+</body>
+</html>
