@@ -58,10 +58,18 @@ Spiritual Orientation: ${data.spiritual || 'Not specified'}
 Language: ${report.language || 'English'}
 `;
 
-    const systemPrompt = skillTemplate + `\n\nCRITICAL INSTRUCTION: Output the final report as raw Markdown text. You MUST complete the entire report from Section 1 to Section 14. To avoid getting cut off by token limits, be EXTREMELY CONCISE in each section. Do not ramble. Get straight to the point. DO NOT STOP until Section 14 is fully generated.\n\nCRITICAL LANGUAGE INSTRUCTION: The user has requested the report in ${report.language || 'English'}. You MUST output the ENTIRE document (including all headings, tables, labels, advice, and paragraphs) in ${report.language || 'English'}. Do not output English headers if the language requested is Tamil.`;
+    const systemPrompt = skillTemplate + `
+
+CRITICAL INSTRUCTION: Output the final report as raw Markdown text. You MUST complete the entire report from Section 1 to Section 14 exactly as formatted in the skill guide. 
+Do not skip any section, table, or paragraph. Provide maximum detail and context for every point.
+To avoid getting cut off by token limits, we have allocated 8192 tokens. DO NOT STOP until Section 14 is fully generated.
+
+CRITICAL LANGUAGE INSTRUCTION: The user has requested the report in ${report.language || 'English'}. You MUST output the ENTIRE document (including all headings, tables, labels, advice, and paragraphs) flawlessly in ${report.language || 'English'}. If Tamil is requested, ensure the Tamil translation is deeply contextual, natural, and preserves the intense psychological tone without losing any meaning.
+
+CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables required in the sections. Use Markdown H1 (#) for the main title, H2 (##) for sections, and blockquotes (>) for quotes.`;
 
     const msg = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
+      model: "claude-3-5-sonnet-20241022",
       max_tokens: 8192,
       temperature: 0.7,
       system: systemPrompt,
@@ -111,19 +119,117 @@ Language: ${report.language || 'English'}
         const { window } = parseHTML("<html><body></body></html>");
         const pdfContent = htmlToPdfmake(parsedMarkdown, { window });
 
-        const docDefinition = {
-          content: pdfContent,
+        const fontFamily = report.language === 'Tamil' ? 'Tamil' : 'Roboto';
+
+        const docDefinition: any = {
+          pageSize: 'A4',
+          pageMargins: [50, 60, 50, 60],
+          header: (currentPage: number, pageCount: number) => ({
+            columns: [
+              {
+                text: '✦ Ask Astro Raja — Life Transformation Report',
+                fontSize: 9,
+                color: '#2E6B9E',
+                bold: true,
+                margin: [50, 18, 0, 0],
+              },
+              {
+                text: `${report.name}  |  Page ${currentPage} of ${pageCount}`,
+                fontSize: 9,
+                color: '#94A3B8',
+                alignment: 'right',
+                margin: [0, 18, 50, 0],
+              }
+            ]
+          }),
+          footer: (_currentPage: number, _pageCount: number) => ({
+            text: `${report.raasi || ''} · ${report.lagnam || ''} · ${report.nakshatra || ''}  —  Confidential & Personalized`,
+            fontSize: 8,
+            color: '#CBD5E1',
+            alignment: 'center',
+            margin: [50, 0, 50, 18],
+          }),
+          content: [
+            {
+              stack: [
+                { text: 'LIFE TRANSFORMATION REPORT', fontSize: 10, color: '#C5952A', bold: true, letterSpacing: 2, margin: [0, 0, 0, 8] },
+                { text: report.name, fontSize: 28, bold: true, color: '#1A3C5E', font: fontFamily, margin: [0, 0, 0, 6] },
+                {
+                  columns: [
+                    { text: `Raasi: ${report.raasi || '—'}`, fontSize: 12, color: '#475569' },
+                    { text: `Lagnam: ${report.lagnam || '—'}`, fontSize: 12, color: '#475569' },
+                    { text: `Nakshatra: ${report.nakshatra || '—'}`, fontSize: 12, color: '#475569' },
+                  ],
+                  margin: [0, 0, 0, 4],
+                },
+                { text: `Language: ${report.language || 'English'}`, fontSize: 11, color: '#94A3B8', margin: [0, 0, 0, 20] },
+                { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 495, y2: 0, lineWidth: 1.5, lineColor: '#C5952A' }] },
+              ],
+              margin: [0, 20, 0, 24],
+            },
+            pdfContent,
+          ],
           defaultStyle: {
-            font: report.language === 'Tamil' ? 'Tamil' : 'Roboto'
+            font: fontFamily,
+            fontSize: 11,
+            lineHeight: 1.55,
+            color: '#1e293b',
           },
           styles: {
-            // pdfmake default styles matching our previous HTML CSS
-            'html-h1': { fontSize: 24, bold: true, margin: [0, 10, 0, 10], color: '#1e3a8a' },
-            'html-h2': { fontSize: 18, bold: true, margin: [0, 20, 0, 10], color: '#1e3a8a' },
-            'html-h3': { fontSize: 14, bold: true, margin: [0, 15, 0, 5], color: '#475569' },
-            'html-p': { margin: [0, 5, 0, 10], lineHeight: 1.5 },
-            'html-blockquote': { margin: [10, 5, 0, 10], italics: true, color: '#64748b' }
-          }
+            'html-h1': {
+              fontSize: 18,
+              bold: true,
+              color: '#1A3C5E',
+              margin: [0, 20, 0, 8],
+              decoration: 'underline',
+              decorationColor: '#C5952A',
+              font: fontFamily,
+            },
+            'html-h2': {
+              fontSize: 14,
+              bold: true,
+              color: '#2E6B9E',
+              margin: [0, 16, 0, 6],
+              font: fontFamily,
+            },
+            'html-h3': {
+              fontSize: 12,
+              bold: true,
+              color: '#475569',
+              margin: [0, 12, 0, 4],
+            },
+            'html-p': {
+              margin: [0, 4, 0, 8],
+              lineHeight: 1.6,
+            },
+            'html-blockquote': {
+              margin: [12, 6, 0, 12],
+              italics: true,
+              color: '#1A3C5E',
+              fontSize: 12,
+              bold: true,
+            },
+            'html-strong': {
+              bold: true,
+              color: '#1A3C5E',
+            },
+            'html-table': {
+              margin: [0, 6, 0, 14],
+            },
+            'html-th': {
+              bold: true,
+              fillColor: '#1A3C5E',
+              color: '#FFFFFF',
+              fontSize: 10,
+            },
+            'html-td': {
+              fontSize: 10,
+              margin: [4, 4, 4, 4],
+            },
+            'html-li': {
+              margin: [0, 3, 0, 3],
+            },
+          },
         };
 
         const pdfDoc = printer.createPdfKitDocument(docDefinition);
