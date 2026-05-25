@@ -2,7 +2,9 @@ import type { APIRoute } from 'astro';
 import crypto from 'crypto';
 import sql from '../../../lib/db';
 import { marked } from 'marked';
-import PdfPrinter from 'pdfmake';
+// @ts-ignore
+import PdfPrinterPkg from 'pdfmake/src/printer.js';
+const PdfPrinter = PdfPrinterPkg.default || PdfPrinterPkg;
 import htmlToPdfmake from 'html-to-pdfmake';
 import { parseHTML } from 'linkedom';
 import fs from 'fs';
@@ -209,7 +211,7 @@ export const GET: APIRoute = async ({ request, cookies }) => {
       },
     };
 
-    const pdfDoc = printer.createPdfKitDocument(docDefinition as any);
+    const pdfDoc = await printer.createPdfKitDocument(docDefinition as any);
     const chunks: Buffer[] = [];
 
     const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {

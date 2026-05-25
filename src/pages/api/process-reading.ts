@@ -5,7 +5,9 @@ import nodemailer from 'nodemailer';
 import { marked } from 'marked';
 import skillTemplate from '../../lib/skill.md?raw';
 
-import PdfPrinter from 'pdfmake';
+// @ts-ignore
+import PdfPrinterPkg from 'pdfmake/src/printer.js';
+const PdfPrinter = PdfPrinterPkg.default || PdfPrinterPkg;
 import htmlToPdfmake from 'html-to-pdfmake';
 import { parseHTML } from 'linkedom';
 import fs from 'fs';
@@ -232,7 +234,7 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
           },
         };
 
-        const pdfDoc = printer.createPdfKitDocument(docDefinition);
+        const pdfDoc = await printer.createPdfKitDocument(docDefinition as any);
         const chunks: Buffer[] = [];
         
         const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
