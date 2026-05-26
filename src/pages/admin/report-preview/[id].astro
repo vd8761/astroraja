@@ -44,7 +44,10 @@ const report = rows[0];
 const formData = report.form_data || {};
 
 // ── Render Markdown → HTML ────────────────────────────────────────────────────
-let hasContent = !!report.raw_markdown_report;
+let htmlContent = '';
+if (report.raw_markdown_report) {
+  htmlContent = await marked.parse(report.raw_markdown_report);
+}
 
 const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
   dateStyle: 'long', timeStyle: 'short'
@@ -152,35 +155,57 @@ const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
     /* ── Metadata Card ───────────────────────────────────────────── */
     .meta-card {
       background: var(--navy);
-      border-radius: 16px;
-      padding: 28px 32px;
+      border-radius: 12px;
+      padding: 36px 40px;
       color: #fff;
-      margin-bottom: 28px;
+      margin-bottom: 32px;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 10px 30px rgba(26, 60, 94, 0.4);
+      border: 1px solid rgba(197,149,42,0.3);
     }
     .meta-card::before {
       content: '✦';
       position: absolute;
-      top: -20px; right: -10px;
-      font-size: 120px;
-      color: rgba(197,149,42,0.08);
+      top: -30px; right: 20px;
+      font-size: 160px;
+      color: rgba(197,149,42,0.06);
       pointer-events: none;
+      line-height: 1;
+    }
+    .meta-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--gold);
+    }
+    .meta-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 30px;
+      border-bottom: 1px solid rgba(197,149,42,0.2);
+      padding-bottom: 24px;
+    }
+    .meta-subtitle {
+      font-size: 11px;
+      color: var(--gold);
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
     }
     .meta-name {
       font-family: 'Lora', serif;
-      font-size: 28px;
-      font-weight: 600;
-      margin-bottom: 4px;
+      font-size: 34px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.5px;
     }
-    .meta-subtitle {
-      font-size: 13px;
-      color: var(--gold);
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
+
+
+
     .meta-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -232,23 +257,112 @@ const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
 
     /* ── Report Content Card ─────────────────────────────────────── */
     .report-card {
-      background: #e2e8f0;
+      background: #fff;
       border-radius: 16px;
-      padding: 0;
-      overflow: hidden;
+      padding: 40px 44px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.06);
       border: 1px solid var(--border);
-      height: 1000px;
     }
-    
-    .report-iframe {
+
+    /* ── Markdown Styles ─────────────────────────────────────────── */
+    .report-content h1 {
+      font-family: 'Lora', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--navy);
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 10px;
+      margin: 36px 0 16px;
+    }
+    .report-content h1:first-child { margin-top: 0; }
+
+    .report-content h2 {
+      font-family: 'Lora', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy2);
+      margin: 28px 0 12px;
+      padding-left: 12px;
+      border-left: 3px solid var(--gold);
+    }
+
+    .report-content h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--slate);
+      margin: 20px 0 8px;
+    }
+
+    .report-content p {
+      margin: 10px 0;
+      color: #334155;
+      line-height: 1.75;
+    }
+
+    .report-content strong { color: var(--navy); }
+
+    .report-content blockquote {
+      border-left: 4px solid var(--navy2);
+      background: #EEF4FA;
+      padding: 14px 20px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      color: var(--navy);
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .report-content table {
       width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 14px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    }
+    .report-content table thead tr {
+      background: var(--navy);
+      color: #fff;
+    }
+    .report-content table thead th {
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.3px;
+    }
+    .report-content table tbody tr {
+      border-bottom: 1px solid #e9e2d4;
+    }
+    .report-content table tbody tr:nth-child(even) {
+      background: var(--amber);
+    }
+    .report-content table tbody tr:hover {
+      background: #FFF3D6;
+    }
+    .report-content table td {
+      padding: 11px 14px;
+      vertical-align: top;
+      line-height: 1.6;
     }
 
+    .report-content ul, .report-content ol {
+      padding-left: 22px;
+      margin: 10px 0;
+    }
+    .report-content li {
+      margin-bottom: 6px;
+      color: #334155;
+      line-height: 1.7;
+    }
 
+    .report-content hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+    }
 
     /* ── Empty State ─────────────────────────────────────────────── */
     .empty-state {
@@ -304,13 +418,12 @@ const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
         href={`/api/admin/report-pdf?id=${report.id}`}
         class="btn btn-download"
         download={`AstroRaja_Report_${report.name?.replace(/\s+/g,'_')}.pdf`}
-        target="_blank"
       >
         ↓ Download PDF
       </a>
-      <button class="btn" style="background:rgba(255,255,255,0.1);color:#fff;" onclick="window.print()">
-        🖨 Print
-      </button>
+      <a class="btn" style="background:rgba(255,255,255,0.1);color:#fff;" href={`/api/admin/report-pdf?id=${report.id}`} target="_blank" title="Print PDF directly">
+        🖨 Print PDF
+      </a>
     </div>
   </div>
 
@@ -318,8 +431,10 @@ const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
 
     <!-- Metadata Card -->
     <div class="meta-card">
-      <div class="meta-subtitle">Life Transformation Report</div>
-      <div class="meta-name">{report.name}</div>
+      <div class="meta-header">
+        <div class="meta-subtitle">ASK ASTRO RAJA &nbsp;•&nbsp; LIFE TRANSFORMATION REPORT</div>
+        <div class="meta-name">{report.name}</div>
+      </div>
 
       <div class="meta-grid">
         <div class="meta-item">
@@ -370,10 +485,10 @@ const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
 
     <!-- Report Content -->
     <div class="report-card">
-      {hasContent ? (
-        <iframe src={`/api/preview-pdf?report_id=${report.id}#toolbar=0&navpanes=0&view=FitH`} class="report-iframe" title="PDF Preview"></iframe>
+      {htmlContent ? (
+        <div class="report-content" set:html={htmlContent} />
       ) : (
-        <div class="empty-state" style="padding-top: 120px;">
+        <div class="empty-state">
           <div class="icon">📭</div>
           <h3>No report content yet</h3>
           <p>This report has not been generated yet (status: <strong>{report.status}</strong>).<br/>
