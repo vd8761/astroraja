@@ -430,6 +430,7 @@ document.addEventListener('alpine:init', () => {
           if (parsed.formData) this.formData = { ...this.formData, ...parsed.formData };
           if (parsed.step !== undefined) this.step = parsed.step;
           if (parsed.hasPaid !== undefined) this.hasPaid = parsed.hasPaid;
+          if (parsed.isSubmitted === true) this.isComplete = true;
         } catch(e) {}
       }
 
@@ -443,7 +444,8 @@ document.addEventListener('alpine:init', () => {
         sessionStorage.setItem('astroraja_form_state', JSON.stringify({
           formData: this.formData,
           step: this.step,
-          hasPaid: this.hasPaid
+          hasPaid: this.hasPaid,
+          isSubmitted: this.isComplete
         }));
       };
 
@@ -605,6 +607,15 @@ document.addEventListener('alpine:init', () => {
           throw new Error(typeof result.error === 'string' ? result.error : (result.message || 'Unknown error'));
         }
         
+        // Immediately record that the request was successfully queued
+        // If the user refreshes during the animation, they skip the form and go straight to the Success page
+        sessionStorage.setItem('astroraja_form_state', JSON.stringify({
+          formData: this.formData,
+          step: this.step,
+          hasPaid: this.hasPaid,
+          isSubmitted: true
+        }));
+
         // --- Simulated Loading Process (35 seconds) ---
         const messages = [
           'Analyzing your Vedic parameters...', 
