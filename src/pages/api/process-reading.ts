@@ -22,7 +22,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // 2. Fetch Report & Profile from Database
     const reports = await sql`
-      SELECT r.id, r.language, r.form_data, p.name, p.raasi, p.lagnam, p.nakshatra, u.email 
+      SELECT r.id, r.language, r.form_data, r.raw_markdown_report, r.tokens_used, r.status, p.name, p.raasi, p.lagnam, p.nakshatra, u.email 
       FROM reports r
       JOIN profiles p ON r.profile_id = p.id
       JOIN users u ON r.user_id = u.id
@@ -34,11 +34,16 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ error: 'Report not found in database' }), { status: 404 });
     }
 
-    const report = reports[0];
+    if (report.status === 'completed') {
+      return new Response(JSON.stringify({ message: 'Already completed' }), { status: 200 });
+    }
+
     const data = report.form_data; // This is the original JSON submitted by the user
 
-    // 3. Mark as processing
-    await sql`UPDATE reports SET status = 'processing' WHERE id = ${report_id}`;
+    // 3. Mark as processing if not already
+    if (report.status !== 'processing') {
+      await sql`UPDATE reports SET status = 'processing' WHERE id = ${report_id}`;
+    }
 
     // 4. Generate AI Report
     const apiKey = import.meta.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
@@ -68,38 +73,36 @@ CRITICAL LANGUAGE INSTRUCTION: The user has requested the report in ${report.lan
 
 CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables required in the sections. Use Markdown H1 (#) for the main title, H2 (##) for sections, and blockquotes (>) for quotes.`;
 
-    let textContent = '';
+    let textContent = report.raw_markdown_report || '';
     let isComplete = false;
-    let messages: any[] = [{ role: "user", content: [{ type: "text", text: userPrompt }] }];
-    let totalTokensUsed = 0;
+    let messages: any[] = data.ai_messages || [{ role: "user", content: [{ type: "text", text: userPrompt }] }];
+    let totalTokensUsed = report.tokens_used || 0;
 
     try {
-      while (!isComplete) {
-        const msg: any = await anthropic.messages.create({
-          model: claudeModel,
-          max_tokens: 8192,
-          temperature: 0.7,
-          system: systemPrompt,
-          messages: messages
-        });
+      const msg: any = await anthropic.messages.create({
+        model: claudeModel,
+        max_tokens: 8192,
+        temperature: 0.7,
+        system: systemPrompt,
+        messages: messages
+      });
 
-        for (const block of msg.content) {
-          if (block.type === 'text') {
-            textContent += block.text;
-          }
+      for (const block of msg.content) {
+        if (block.type === 'text') {
+          textContent += block.text;
         }
+      }
 
-        if (msg.usage) {
-          totalTokensUsed += (msg.usage.input_tokens || 0) + (msg.usage.output_tokens || 0);
-        }
+      if (msg.usage) {
+        totalTokensUsed += (msg.usage.input_tokens || 0) + (msg.usage.output_tokens || 0);
+      }
 
-        if (msg.stop_reason === 'max_tokens') {
-          // Append assistant's partial response and user's 'Continue' prompt to keep going
-          messages.push({ role: "assistant", content: msg.content });
-          messages.push({ role: "user", content: [{ type: "text", text: "Continue exactly where you left off. Do not repeat previous content, just continue formatting the remaining sections." }] });
-        } else {
-          isComplete = true;
-        }
+      if (msg.stop_reason === 'max_tokens') {
+        // Append assistant's partial response and user's 'Continue' prompt to keep going
+        messages.push({ role: "assistant", content: msg.content });
+        messages.push({ role: "user", content: [{ type: "text", text: "Continue exactly where you left off. Do not repeat previous content, just continue formatting the remaining sections." }] });
+      } else {
+        isComplete = true;
       }
     } catch (aiError: any) {
       if (isModelDeprecatedError(aiError)) {
@@ -115,10 +118,45 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
       throw aiError;
     }
 
-    // 5. Update Database with Completed Report
+    // 5. Update Database with Checkpoint
+    data.ai_messages = messages; // Save ongoing conversation context
+
+    if (!isComplete) {
+      await sql`
+        UPDATE reports 
+        SET raw_markdown_report = ${textContent}, tokens_used = ${totalTokensUsed}, form_data = ${data}
+        WHERE id = ${report_id}
+      `;
+
+      // Re-queue the exact same report_id to QStash to continue execution
+      const requestUrl = new URL(request.url);
+      const qstashUrl = `${process.env.QSTASH_URL}/v2/publish/${requestUrl.origin}/api/process-reading`;
+      
+      const qstashRes = await fetch(qstashUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.QSTASH_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ report_id }),
+      });
+
+      if (!qstashRes.ok) {
+        throw new Error('Failed to re-queue chunk to QStash: ' + await qstashRes.text());
+      }
+
+      // Return 200 immediately so this Vercel function invocation completes quickly!
+      return new Response(JSON.stringify({ status: 'continuing_chunk', chunkTokens: totalTokensUsed }), { status: 200 });
+    }
+
+    // --- IF WE REACH HERE, THE GENERATION IS FULLY COMPLETE ---
+    
+    // Clear out the massive ai_messages array to save database space since it's no longer needed
+    delete data.ai_messages;
+
     await sql`
       UPDATE reports 
-      SET status = 'completed', raw_markdown_report = ${textContent}, tokens_used = ${totalTokensUsed}
+      SET status = 'completed', raw_markdown_report = ${textContent}, tokens_used = ${totalTokensUsed}, form_data = ${data}
       WHERE id = ${report_id}
     `;
 
