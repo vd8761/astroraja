@@ -308,11 +308,15 @@ import Layout from '../layouts/Layout.astro';
         <p class="text-brand-text font-medium leading-relaxed">
           It will be delivered to <strong x-text="formData.email"></strong> very shortly.<br>
           <span class="text-brand-navy font-bold mt-3 mb-2 block">You can safely close this page. We'll email you the moment it's ready!</span>
-          <span class="text-sm block text-brand-text-muted">(Don't forget to check your spam/junk folder just in case)</span>
+          <p class="text-xs text-brand-text-muted mt-4">
+            (Don't forget to check your spam/junk folder just in case)
+          </p>
         </p>
-      </div>
-      <div class="mt-12">
-        <a href="/" class="px-8 py-4 bg-brand-navy text-white rounded-xl font-bold hover:bg-brand-saffron transition-colors inline-block shadow-md hover:shadow-lg">Return to Home</a>
+        <div class="mt-8">
+          <a href="/get-reading?new=1" class="px-6 py-3 rounded-xl bg-brand-navy text-white font-bold hover:bg-brand-purple transition-colors shadow-md inline-block">
+            Get Another Reading
+          </a>
+        </div>
       </div>
     </div>
 
@@ -422,6 +426,11 @@ document.addEventListener('alpine:init', () => {
     isPaying: false,
     
     init() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('new')) {
+        sessionStorage.removeItem('astroraja_form_state');
+      }
+
       // 1. Restore from sessionStorage if exists
       const saved = sessionStorage.getItem('astroraja_form_state');
       if (saved) {
@@ -435,7 +444,6 @@ document.addEventListener('alpine:init', () => {
       }
 
       // 2. Pre-fill Raasi from URL param if exists (overrides saved state)
-      const params = new URLSearchParams(window.location.search);
       const r = params.get('raasi');
       if (r) this.formData.raasi = r;
       
