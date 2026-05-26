@@ -40,15 +40,26 @@ import Layout from '../layouts/Layout.astro';
           <div>
             <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Mobile Number <span class="text-brand-saffron">*</span></label>
             <div class="flex gap-2">
-              <select x-model="formData.countryCode" class="w-24 p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all appearance-none text-center" :class="{'border-red-500': errors.mobile}">
-                <option value="+91">+91 (IN)</option>
-                <option value="+1">+1 (US/CA)</option>
-                <option value="+44">+44 (UK)</option>
-                <option value="+61">+61 (AU)</option>
-                <option value="+65">+65 (SG)</option>
-                <option value="+971">+971 (AE)</option>
-                <option value="+60">+60 (MY)</option>
-              </select>
+              <div class="relative w-32" @click.away="countryOpen = false">
+                <button type="button" @click="countryOpen = !countryOpen" class="w-full h-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all flex items-center justify-between" :class="{'border-red-500': errors.mobile}">
+                  <span x-text="formData.countryCode"></span>
+                  <svg class="w-4 h-4 text-brand-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div x-show="countryOpen" style="display: none;" class="absolute z-50 w-72 mt-1 bg-white border border-brand-border rounded-xl shadow-2xl overflow-hidden max-h-72 flex flex-col left-0">
+                  <div class="p-2 border-b border-brand-border sticky top-0 bg-white">
+                    <input type="text" x-model="countrySearch" placeholder="Search country or code..." class="w-full p-2.5 text-sm bg-slate-50 border border-brand-border rounded-lg outline-none focus:border-brand-saffron focus:ring-1 focus:ring-brand-saffron/30 transition-all">
+                  </div>
+                  <div class="overflow-y-auto flex-1">
+                    <template x-for="c in filteredCountries" :key="c.name">
+                      <button type="button" @click="selectCountry(c.code)" class="w-full text-left px-4 py-2.5 text-sm hover:bg-brand-saffron/10 outline-none flex justify-between items-center transition-colors">
+                        <span x-text="c.name" class="font-medium text-brand-navy truncate mr-2"></span>
+                        <span class="text-brand-text-muted text-xs whitespace-nowrap" x-text="c.code"></span>
+                      </button>
+                    </template>
+                    <div x-show="filteredCountries.length === 0" class="p-4 text-sm text-center text-brand-text-muted">No countries found</div>
+                  </div>
+                </div>
+              </div>
               <input type="tel" x-model="formData.mobile" placeholder="9876543210" class="flex-1 p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all" :class="{'border-red-500': errors.mobile}">
             </div>
             <p x-show="errors.mobile" class="text-red-500 text-xs mt-1">Please enter your mobile number.</p>
@@ -351,6 +362,7 @@ import Layout from '../layouts/Layout.astro';
 
 <script>
 import Alpine from 'alpinejs';
+import { countryList } from '../lib/countries.js';
 
 document.addEventListener('alpine:init', () => {
   Alpine.data('readingForm', () => ({
@@ -379,6 +391,22 @@ document.addEventListener('alpine:init', () => {
       { label: "Practical only", sub: "I prefer grounded, realistic guidance" },
       { label: "Open to all", sub: "I am open to any and all perspectives" }
     ],
+
+    countries: countryList,
+    countrySearch: '',
+    countryOpen: false,
+    
+    get filteredCountries() {
+      if (!this.countrySearch) return this.countries;
+      const s = this.countrySearch.toLowerCase();
+      return this.countries.filter(c => c.name.toLowerCase().includes(s) || c.code.includes(s));
+    },
+
+    selectCountry(code) {
+      this.formData.countryCode = code;
+      this.countryOpen = false;
+      this.countrySearch = '';
+    },
 
     isGenerating: false,
     isComplete: false,
