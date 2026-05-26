@@ -10,7 +10,9 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   site: 'https://askastroraja.com',
   output: 'server',
-  adapter: vercel(),
+  adapter: vercel({
+    maxDuration: 300
+  }),
   vite: {
     plugins: [tailwindcss()]
   },

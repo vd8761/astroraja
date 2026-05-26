@@ -1,19 +1,9 @@
-﻿import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro';
 import sql from '../../lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import nodemailer from 'nodemailer';
 import { sendAdminAlert, isModelDeprecatedError } from '../../lib/adminAlert';
-import { marked } from 'marked';
 import skillTemplate from '../../lib/skill.md?raw';
-
-import PdfPrinterPkg from 'pdfmake/js/Printer.js';
-const PdfPrinter = PdfPrinterPkg.default || PdfPrinterPkg;
-import URLResolverPkg from 'pdfmake/js/URLResolver.js';
-const URLResolver = URLResolverPkg.default || URLResolverPkg;
-import htmlToPdfmake from 'html-to-pdfmake';
-import { parseHTML } from 'linkedom';
-import fs from 'fs';
-import path from 'path';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -73,15 +63,34 @@ CRITICAL LANGUAGE INSTRUCTION: The user has requested the report in ${report.lan
 
 CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables required in the sections. Use Markdown H1 (#) for the main title, H2 (##) for sections, and blockquotes (>) for quotes.`;
 
-    let msg;
+    let textContent = '';
+    let isComplete = false;
+    let messages: any[] = [{ role: "user", content: [{ type: "text", text: userPrompt }] }];
+
     try {
-      msg = await anthropic.messages.create({
-        model: claudeModel,
-        max_tokens: 8192,
-        temperature: 0.7,
-        system: systemPrompt,
-        messages: [{ role: "user", content: [{ type: "text", text: userPrompt }] }]
-      });
+      while (!isComplete) {
+        const msg: any = await anthropic.messages.create({
+          model: claudeModel,
+          max_tokens: 8192,
+          temperature: 0.7,
+          system: systemPrompt,
+          messages: messages
+        });
+
+        for (const block of msg.content) {
+          if (block.type === 'text') {
+            textContent += block.text;
+          }
+        }
+
+        if (msg.stop_reason === 'max_tokens') {
+          // Append assistant's partial response and user's 'Continue' prompt to keep going
+          messages.push({ role: "assistant", content: msg.content });
+          messages.push({ role: "user", content: [{ type: "text", text: "Continue exactly where you left off. Do not repeat previous content, just continue formatting the remaining sections." }] });
+        } else {
+          isComplete = true;
+        }
+      }
     } catch (aiError: any) {
       if (isModelDeprecatedError(aiError)) {
         await sendAdminAlert(
@@ -96,13 +105,6 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
       throw aiError;
     }
 
-    let textContent = '';
-    for (const block of msg.content) {
-      if (block.type === 'text') {
-        textContent += block.text;
-      }
-    }
-
     // 5. Update Database with Completed Report
     await sql`
       UPDATE reports 
@@ -110,163 +112,23 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
       WHERE id = ${report_id}
     `;
 
-    // 6. Generate PDF and Send Email
+    // 6. Generate Premium PDF via preview-pdf endpoint & Send Email
     if (report.email) {
       try {
-        const parsedMarkdown = await marked.parse(textContent);
+        // Build the internal URL to the premium PDF generator
+        const baseUrl = process.env.VERCEL_URL
+          ? 'https://' + process.env.VERCEL_URL
+          : (import.meta.env.SITE || 'http://localhost:4321');
+        const pdfUrl = baseUrl + '/api/preview-pdf?report_id=' + report_id;
+
+        const pdfRes = await fetch(pdfUrl);
+        if (!pdfRes.ok) {
+          throw new Error('PDF generation endpoint returned ' + pdfRes.status);
+        }
+        const pdfArrayBuffer = await pdfRes.arrayBuffer();
+        const pdfBuffer = Buffer.from(pdfArrayBuffer);
+
         const filenameSafeName = report.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-        
-        // Define fonts for pdfmake
-        const fontsDir = path.join(process.cwd(), 'public', 'fonts');
-        const fonts = {
-          Roboto: {
-            normal: path.join(fontsDir, 'NotoSans-Regular.ttf'),
-            bold: path.join(fontsDir, 'NotoSans-Bold.ttf'),
-            italics: path.join(fontsDir, 'NotoSans-Regular.ttf'),
-            bolditalics: path.join(fontsDir, 'NotoSans-Bold.ttf')
-          },
-          NotoSans: {
-            normal:      path.join(fontsDir, 'NotoSans-Regular.ttf'),
-            bold:        path.join(fontsDir, 'NotoSans-Bold.ttf'),
-            italics:     path.join(fontsDir, 'NotoSans-Regular.ttf'),
-            bolditalics: path.join(fontsDir, 'NotoSans-Bold.ttf'),
-          },
-          NotoSerif: {
-            normal:      path.join(fontsDir, 'NotoSerif-Regular.ttf'),
-            bold:        path.join(fontsDir, 'NotoSerif-Bold.ttf'),
-            italics:     path.join(fontsDir, 'NotoSerif-Regular.ttf'),
-            bolditalics: path.join(fontsDir, 'NotoSerif-Bold.ttf'),
-          },
-        };
-
-        const { window } = parseHTML("<html><body></body></html>");
-        const pdfContent = htmlToPdfmake(parsedMarkdown, { 
-          window,
-          tableAutoSize: true 
-        });
-
-        const colors = {
-          primary: '#0F2027',
-          secondary: '#203A43',
-          accent: '#D4AF37',
-          textMain: '#334155',
-          textLight: '#64748B',
-          bgLight: '#F8FAFC',
-          white: '#FFFFFF',
-        };
-
-        const docDefinition: any = {
-          pageSize: 'A4',
-          pageMargins: [50, 80, 50, 70],
-          header: (currentPage: number, pageCount: number) => ({
-            margin: [50, 30, 50, 0],
-            columns: [
-              {
-                text: '✦ ASK ASTRO RAJA',
-                font: 'NotoSerif',
-                fontSize: 9,
-                color: colors.accent,
-                bold: true,
-                letterSpacing: 2,
-              },
-              {
-                text: `${report.name.toUpperCase()}  |  PAGE ${currentPage} OF ${pageCount}`,
-                font: 'NotoSerif',
-                fontSize: 8,
-                color: colors.textLight,
-                alignment: 'right',
-                letterSpacing: 1,
-              }
-            ],
-            canvas: [{ type: 'line', x1: 50, y1: 20, x2: 545, y2: 20, lineWidth: 0.5, lineColor: colors.accent }]
-          }),
-          footer: (currentPage: number, _pageCount: number) => ({
-            margin: [50, 20, 50, 0],
-            stack: [
-              { canvas: [{ type: 'line', x1: 50, y1: 0, x2: 545, y2: 0, lineWidth: 0.5, lineColor: '#E2E8F0' }], margin: [0, 0, 0, 10] },
-              {
-                text: `${report.raasi} (Raasi) · ${report.lagnam} (Lagnam) · ${report.nakshatra} (Nakshatra)`,
-                font: 'NotoSerif',
-                fontSize: 8,
-                color: colors.textLight,
-                alignment: 'center',
-                letterSpacing: 0.5,
-              }
-            ]
-          }),
-          content: [
-            {
-              stack: [
-                { text: 'THE LIFE TRANSFORMATION', font: 'NotoSerif', fontSize: 10, color: colors.accent, bold: true, letterSpacing: 3, margin: [0, 0, 0, 8] },
-                { text: 'Karmic Blueprint & Action Plan', font: 'NotoSerif', fontSize: 26, bold: true, color: colors.primary, margin: [0, 0, 0, 15] },
-                {
-                  columns: [
-                    { text: `RAASI: ${report.raasi}`, font: 'NotoSans', fontSize: 10, color: colors.secondary, bold: true },
-                    { text: `LAGNAM: ${report.lagnam}`, font: 'NotoSans', fontSize: 10, color: colors.secondary, bold: true },
-                    { text: `NAKSHATRA: ${report.nakshatra}`, font: 'NotoSans', fontSize: 10, color: colors.secondary, bold: true },
-                  ],
-                  margin: [0, 0, 0, 25],
-                },
-                { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 495, y2: 0, lineWidth: 2, lineColor: colors.accent }] },
-              ],
-              margin: [0, 10, 0, 35],
-            },
-            ...pdfContent,
-          ],
-          defaultStyle: {
-            font: 'NotoSans',
-            fontSize: 10.5,
-            lineHeight: 1.6,
-            color: colors.textMain,
-          },
-          styles: {
-            'html-h1': {
-              font: 'NotoSerif',
-              fontSize: 18,
-              bold: true,
-              color: colors.primary,
-              margin: [0, 30, 0, 12],
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-            },
-            'html-h2': {
-              font: 'NotoSerif',
-              fontSize: 15,
-              bold: true,
-              color: colors.secondary,
-              margin: [0, 25, 0, 10],
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-            },
-            'html-h3': {
-              font: 'NotoSerif',
-              fontSize: 13,
-              bold: true,
-              color: colors.accent,
-              margin: [0, 15, 0, 8],
-            },
-            'html-p': { margin: [0, 5, 0, 12], alignment: 'justify' },
-            'html-blockquote': { margin: [20, 15, 20, 15], font: 'NotoSerif', italics: true, color: colors.primary, fontSize: 13, lineHeight: 1.5, alignment: 'center' },
-            'html-strong': { bold: true, color: colors.primary },
-            'html-em': { italics: true, color: colors.secondary },
-            'html-table': { margin: [0, 10, 0, 20] },
-            'html-th': { font: 'NotoSans', bold: true, fillColor: colors.primary, color: colors.white, fontSize: 10, margin: [8, 8, 8, 8], alignment: 'left', textTransform: 'uppercase' },
-            'html-td': { font: 'NotoSans', fontSize: 10, margin: [8, 8, 8, 8], color: colors.textMain },
-            'html-li': { margin: [0, 4, 0, 4] },
-          },
-        };
-
-        const urlResolver = new URLResolver();
-        const printer = new PdfPrinter(fonts, null, urlResolver);
-        const pdfDoc = await printer.createPdfKitDocument(docDefinition as any);
-        
-        const chunks: Buffer[] = [];
-        const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
-          pdfDoc.on('data', (chunk: Buffer) => chunks.push(chunk));
-          pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
-          pdfDoc.on('error', reject);
-          pdfDoc.end();
-        });
 
         const transporter = nodemailer.createTransport({
           service: 'gmail',
@@ -279,16 +141,16 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
         await transporter.sendMail({
           from: '"Astro Raja" <askastroraja@gmail.com>',
           to: report.email,
-          subject: `Your Astro Raja Life Transformation Report - ${report.name}`,
-          text: `Hello ${report.name},\n\nYour Astro Raja Life Transformation Report is ready! Please find the PDF document attached to this email.\n\nBest regards,\nAstro Raja Team`,
+          subject: 'Your Astro Raja Life Transformation Report - ' + report.name,
+          text: 'Hello ' + report.name + ',\n\nYour Astro Raja Life Transformation Report is ready! Please find the PDF document attached to this email.\n\nBest regards,\nAstro Raja Team',
           attachments: [{
-            filename: `AstroRaja_Life_Report_${filenameSafeName}.pdf`,
+            filename: 'AstroRaja_Life_Report_' + filenameSafeName + '.pdf',
             content: pdfBuffer,
             contentType: 'application/pdf'
           }]
         });
       } catch (emailError) {
-        console.error("Failed to send email:", emailError);
+        console.error('Failed to generate/send premium PDF email:', emailError);
       }
     }
 

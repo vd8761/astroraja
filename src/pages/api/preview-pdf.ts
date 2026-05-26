@@ -3,8 +3,9 @@ const PdfPrinter = PdfPrinterPkg.default || PdfPrinterPkg;
 import URLResolverPkg from 'pdfmake/js/URLResolver.js';
 const URLResolver = URLResolverPkg.default || URLResolverPkg;
 import path from 'path';
+import type { APIRoute } from 'astro';
 
-export const GET = async () => {
+export const GET: APIRoute = async ({ request }) => {
   try {
     const fontsDir = path.join(process.cwd(), 'public', 'fonts');
 
@@ -345,6 +346,79 @@ export const GET = async () => {
       })),
     } as any);
 
+    // ── DYNAMIC REPORT DATA ────────────────────────────────────────────────
+    const url = new URL(request.url);
+    const reportId = url.searchParams.get('report_id');
+    let reportName = 'MOHANRAAJ';
+    let reportRaasi = 'Simbha';
+    let reportLagnam = 'Kanni';
+    let reportNakshatra = 'Puram';
+    let useRealContent = false;
+    let realContent: any[] = [];
+
+    if (reportId) {
+      try {
+        const { neon } = await import('@neondatabase/serverless');
+        const dbUrl = process.env.DATABASE_URL || (import.meta as any).env?.DATABASE_URL;
+        if (!dbUrl) throw new Error('DATABASE_URL not set');
+        const sql = neon(dbUrl);
+        const rows = await sql`
+          SELECT r.raw_markdown_report, p.name, p.raasi, p.lagnam, p.nakshatra
+          FROM reports r
+          JOIN profiles p ON r.profile_id = p.id
+          WHERE r.id = ${reportId} AND r.status = 'completed'
+        ` as any[];
+      if (rows.length > 0) {
+        const row = rows[0];
+        reportName = (row.name || 'Report').toUpperCase();
+        reportRaasi = row.raasi || 'Simbha';
+        reportLagnam = row.lagnam || 'Kanni';
+        reportNakshatra = row.nakshatra || 'Puram';
+        useRealContent = true;
+        // ── Markdown → pdfmake parser ─────────────────────────────────────
+        const md = (row.raw_markdown_report || '').split('\n');
+        let secNum = 0;
+        let mi = 0;
+        while (mi < md.length) {
+          const l = md[mi];
+          if (l.match(/^## /)) {
+            secNum++;
+            const title = l.replace(/^## /, '').replace(/^Section\s*\d+:?\s*/i, '').trim();
+            realContent.push(sectionHeader(secNum, title.toUpperCase()));
+          } else if (l.match(/^### /)) {
+            realContent.push(subHead(l.replace(/^### /, '').trim()));
+          } else if (l.match(/^#### /)) {
+            realContent.push({ text: l.replace(/^#### /, '').trim(), font: 'Outfit', bold: true, fontSize: 10, color: C.navy, margin: [0, 8, 0, 4] });
+          } else if (l.startsWith('> ')) {
+            const q = l.replace(/^> /, '').trim();
+            if (q) realContent.push(quoteBlock(q));
+          } else if (l.startsWith('|') && mi + 1 < md.length && md[mi + 1].match(/^\|[-:\s|]+\|/)) {
+            const hdrs = l.split('|').filter(h => h.trim()).map(h => h.trim());
+            mi += 2;
+            const rws: string[][] = [];
+            while (mi < md.length && md[mi].startsWith('|')) { rws.push(md[mi].split('|').filter(c => c.trim()).map(c => c.trim())); mi++; }
+            if (hdrs.length > 0 && rws.length > 0) realContent.push(table(hdrs, rws));
+            continue;
+          } else if (l.match(/^[-*] /)) {
+            const items: string[] = [];
+            while (mi < md.length && md[mi].match(/^[-*] /)) { items.push(md[mi].replace(/^[-*] /, '').replace(/\*\*/g, '').trim()); mi++; }
+            if (items.length > 0) realContent.push({ ul: items, font: 'Outfit', fontSize: 9.5, color: C.text, margin: [8, 4, 0, 10] });
+            continue;
+          } else if (l.match(/^\d+\.\s/)) {
+            const items: string[] = [];
+            while (mi < md.length && md[mi].match(/^\d+\.\s/)) { items.push(md[mi].replace(/^\d+\.\s+/, '').replace(/\*\*/g, '').trim()); mi++; }
+            if (items.length > 0) realContent.push({ ol: items, font: 'Outfit', fontSize: 9.5, color: C.text, margin: [8, 4, 0, 10] });
+            continue;
+          } else if (l.trim() && !l.match(/^#{1,6} /) && !l.match(/^[-=]{3,}/)) {
+            const clean = l.trim().replace(/\*\*/g, '').replace(/\*/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+            if (clean) realContent.push({ text: clean, font: 'Outfit', fontSize: 9.5, color: C.text, lineHeight: 1.45, margin: [0, 2, 0, 6] });
+          }
+          mi++;
+        }
+      }
+      } catch (dbErr) { console.error('DB fetch for PDF failed:', dbErr); }
+    }
+
     // ── DOCUMENT CONTENT ──────────────────────────────────────────────────
     const content: any[] = [
 
@@ -369,7 +443,7 @@ export const GET = async () => {
           { text: 'REPORT', font: 'Lora', bold: true, fontSize: 26, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 16] },
           // Gold line
           { canvas: [{ type: 'line', x1: 100, y1: 0, x2: 415, y2: 0, lineWidth: 1, lineColor: C.saffron }], margin: [0, 0, 0, 16] },
-          { text: 'MOHANRAAJ', font: 'Lora', bold: true, fontSize: 20, color: '#e0e7ff', alignment: 'center', margin: [0, 0, 0, 10] },
+          { text: reportName, font: 'Lora', bold: true, fontSize: 20, color: '#e0e7ff', alignment: 'center', margin: [0, 0, 0, 10] },
           {
             text: [
               { text: 'Simbha Raasi (', font: 'Outfit', fontSize: 10, color: C.white },
@@ -450,6 +524,7 @@ export const GET = async () => {
         margin: [0, 14, 0, 6],
       },
 
+      ...(useRealContent ? realContent : [
       // ══ SECTION 1 ═════════════════════════════════════════════════════════
       sectionHeader(1, 'Astro Foundation', 'Your cosmic blueprint — the stars that shape your inner and outer world'),
       table(
@@ -768,6 +843,7 @@ export const GET = async () => {
         layout: 'noBorders',
         margin: [0, 16, 0, 0],
       },
+      ]), // end of Mohanraaj preview sections
     ];
 
     // ── Document Definition ───────────────────────────────────────────────
@@ -789,7 +865,7 @@ export const GET = async () => {
           {
             columns: [
               { text: 'Ask Astro Raja  |  Life Transformation Report', font: 'Outfit', fontSize: 8, color: C.saffron, bold: true, width: '*' },
-              { text: 'MOHANRAAJ  |  Personalized Report', font: 'Outfit', fontSize: 8, color: C.muted, alignment: 'right', width: 'auto' },
+              { text: reportName + '  |  Personalized Report', font: 'Outfit', fontSize: 8, color: C.muted, alignment: 'right', width: 'auto' },
             ],
             margin: [0, 0, 0, 6],
           },
@@ -808,16 +884,19 @@ export const GET = async () => {
             columns: [
               {
                 // Break Tamil into simple segments to prevent wrapping
-                text: [
-                  { text: 'Simbha (', font: 'Outfit', fontSize: 7.5, color: C.muted },
-                  T('சிம்மம்', { fontSize: 7.5, color: C.muted }),
-                  { text: ')  Kanni (', font: 'Outfit', fontSize: 7.5, color: C.muted },
-                  T('கன்னி', { fontSize: 7.5, color: C.muted }),
-                  { text: ')  Puram (', font: 'Outfit', fontSize: 7.5, color: C.muted },
-                  T('பூரம்', { fontSize: 7.5, color: C.muted }),
-                  { text: ')  |  Confidential & Personalized', font: 'Outfit', fontSize: 7.5, color: C.muted },
-                ],
-                width: '*',
+                text: useRealContent
+                  ? reportRaasi + '  ·  ' + reportLagnam + '  ·  ' + reportNakshatra + '  |  Confidential & Personalized'
+                  : [
+                    { text: 'Simbha (', font: 'Outfit', fontSize: 7.5, color: C.muted },
+                    T('சிம்மம்', { fontSize: 7.5, color: C.muted }),
+                    { text: ')  Kanni (', font: 'Outfit', fontSize: 7.5, color: C.muted },
+                    T('கன்னி', { fontSize: 7.5, color: C.muted }),
+                    { text: ')  Puram (', font: 'Outfit', fontSize: 7.5, color: C.muted },
+                    T('பூரம்', { fontSize: 7.5, color: C.muted }),
+                    { text: ')  |  Confidential & Personalized', font: 'Outfit', fontSize: 7.5, color: C.muted },
+                  ],
+              font: 'Outfit', fontSize: 7.5, color: C.muted,
+              width: '*',
               },
               { text: currentPage + ' / ' + pageCount, font: 'Outfit', fontSize: 7.5, color: C.muted, alignment: 'right', width: 40 },
             ],
