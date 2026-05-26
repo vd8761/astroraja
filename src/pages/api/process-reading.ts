@@ -34,6 +34,8 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ error: 'Report not found in database' }), { status: 404 });
     }
 
+    const report = reports[0];
+
     if (report.status === 'completed') {
       return new Response(JSON.stringify({ message: 'Already completed' }), { status: 200 });
     }
