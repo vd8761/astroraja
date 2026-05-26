@@ -2,6 +2,11 @@ import type { APIRoute } from 'astro';
 import sql from '../../lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import nodemailer from 'nodemailer';
+
+export const config = {
+  maxDuration: 300,
+};
+
 import { sendAdminAlert, isModelDeprecatedError } from '../../lib/adminAlert';
 import skillTemplate from '../../lib/skill.md?raw';
 
