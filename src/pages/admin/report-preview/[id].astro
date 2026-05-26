@@ -31,7 +31,7 @@ const rows = await sql`
     u.email
   FROM reports r
   JOIN profiles p ON r.profile_id = p.id
-  JOIN users u ON r.user_id = u.id
+  LEFT JOIN users u ON r.user_id = u.id
   WHERE r.id = ${id}
   LIMIT 1
 `;
