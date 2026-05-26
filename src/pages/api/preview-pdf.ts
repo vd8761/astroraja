@@ -361,8 +361,38 @@ export const GET: APIRoute = async ({ request }) => {
     let reportRaasi = 'Simbha';
     let reportLagnam = 'Kanni';
     let reportNakshatra = 'Puram';
+    let reportRulingPlanet = 'Sun + Mercury';
     let useRealContent = false;
     let realContent: any[] = [];
+
+    const getRulingPlanet = (r: string, l: string) => {
+      const map: Record<string, string> = {
+        'mesham': 'Mars', 'aries': 'Mars',
+        'rishabam': 'Venus', 'taurus': 'Venus',
+        'mithunam': 'Mercury', 'gemini': 'Mercury',
+        'kadagam': 'Moon', 'cancer': 'Moon',
+        'simbham': 'Sun', 'simbha': 'Sun', 'leo': 'Sun',
+        'kanni': 'Mercury', 'virgo': 'Mercury',
+        'thulaam': 'Venus', 'libra': 'Venus',
+        'viruchigam': 'Mars', 'scorpio': 'Mars',
+        'dhanusu': 'Jupiter', 'sagittarius': 'Jupiter',
+        'magaram': 'Saturn', 'capricorn': 'Saturn',
+        'kumbam': 'Saturn', 'aquarius': 'Saturn',
+        'meenam': 'Jupiter', 'pisces': 'Jupiter'
+      };
+      const getLord = (sign: string) => {
+        if (!sign) return '';
+        const s = sign.toLowerCase();
+        for (const k in map) { if (s.includes(k)) return map[k]; }
+        return '';
+      };
+      const rl = getLord(r);
+      const ll = getLord(l);
+      if (rl && ll && rl !== ll) return `${rl} + ${ll}`;
+      if (rl) return rl;
+      if (ll) return ll;
+      return '—';
+    };
 
     if (reportId) {
       try {
@@ -382,6 +412,7 @@ export const GET: APIRoute = async ({ request }) => {
         reportRaasi = row.raasi || 'Simbha';
         reportLagnam = row.lagnam || 'Kanni';
         reportNakshatra = row.nakshatra || 'Puram';
+        reportRulingPlanet = getRulingPlanet(reportRaasi, reportLagnam);
         useRealContent = true;
         // ── Markdown → pdfmake parser ─────────────────────────────────────
         const md = (row.raw_markdown_report || '').split('\n');
@@ -455,8 +486,7 @@ export const GET: APIRoute = async ({ request }) => {
           {
             text: parseText(`${reportRaasi} Raasi   |   ${reportLagnam} Lagnam   |   ${reportNakshatra}`),
             font: 'Outfit', fontSize: 10, color: C.white, alignment: 'center', margin: [0, 0, 0, 8],
-          },
-          { text: 'Your Comprehensive Cosmic Blueprint', font: 'Lora', italics: true, fontSize: 11, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 0] },
+          }
         ],
         margin: [0, -210, 0, 0],
         // position over the rect
@@ -500,6 +530,20 @@ export const GET: APIRoute = async ({ request }) => {
                 stack: [
                   { text: 'NAKSHATRA', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
                   { text: parseText(reportNakshatra), font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                ],
+                fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
+              }]],
+            },
+            layout: 'noBorders',
+          },
+          { width: 6, text: '' },
+          {
+            table: {
+              widths: ['*'],
+              body: [[{
+                stack: [
+                  { text: 'RULING PLANET', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
+                  { text: reportRulingPlanet, font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
