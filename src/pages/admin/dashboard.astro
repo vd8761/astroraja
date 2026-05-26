@@ -17,9 +17,16 @@ if (authCookie !== expectedHash) {
 }
 
 // Fetch Dashboard Data
-const usersResult = await sql`SELECT * FROM users ORDER BY created_at DESC LIMIT 50`;
+const usersResult = await sql`
+  SELECT u.*, COALESCE(SUM(r.tokens_used), 0) as total_token_usage_history
+  FROM users u
+  LEFT JOIN reports r ON u.id = r.user_id
+  GROUP BY u.id
+  ORDER BY u.created_at DESC 
+  LIMIT 50
+`;
 const reportsResult = await sql`
-  SELECT r.id, r.language, r.status, r.price_paid, r.currency, r.ip_address, r.created_at, p.name as profile_name
+  SELECT r.id, r.language, r.status, r.price_paid, r.currency, r.ip_address, r.created_at, r.tokens_used, p.name as profile_name
   FROM reports r
   LEFT JOIN profiles p ON r.profile_id = p.id
   ORDER BY r.created_at DESC LIMIT 50
@@ -53,6 +60,15 @@ const totalRevenue = totalRevenueResult[0].total || 0;
           <span class="font-bold text-xl font-serif text-brand-navy">Mission Control</span>
         </div>
         <div class="flex items-center space-x-4">
+          <button @click="retryStuckReports()" class="text-sm font-medium text-brand-saffron hover:text-brand-saffron-dark bg-yellow-50 px-3 py-1.5 rounded-md" x-data="{
+            async retryStuckReports() {
+              if(!confirm('This will find reports stuck in processing for >30 mins and requeue them. Continue?')) return;
+              const res = await fetch('/api/admin/retry-stuck-reports', { method: 'POST' });
+              const data = await res.json();
+              alert(data.message || data.error);
+              if(data.success) window.location.reload();
+            }
+          }">Retry Stuck Reports</button>
           <a href="/" target="_blank" class="text-sm font-medium text-brand-text hover:text-brand-navy">View Site</a>
           <button @click="logout()" class="text-sm font-medium text-red-600 hover:text-red-800 bg-red-50 px-3 py-1.5 rounded-md" x-data="{
             async logout() {
@@ -103,7 +119,8 @@ const totalRevenue = totalRevenueResult[0].total || 0;
             <tr>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Mobile Number</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Email</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Token Balance</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Available Balance</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Total Usage History</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Joined</th>
             </tr>
           </thead>
@@ -115,6 +132,11 @@ const totalRevenue = totalRevenueResult[0].total || 0;
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     {user.token_balance} Tokens
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    {user.total_token_usage_history} Used
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text-muted">
@@ -139,6 +161,7 @@ const totalRevenue = totalRevenueResult[0].total || 0;
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Profile Name</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Language</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Status</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Tokens Used</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Revenue</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Date</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Actions</th>
@@ -153,6 +176,9 @@ const totalRevenue = totalRevenueResult[0].total || 0;
                   <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${report.status === 'completed' ? 'bg-green-100 text-green-800' : report.status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
                     {report.status}
                   </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text-muted">
+                  {report.tokens_used ? report.tokens_used.toLocaleString() : '-'}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">
                   {report.currency} {report.price_paid}

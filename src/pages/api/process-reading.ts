@@ -66,6 +66,7 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
     let textContent = '';
     let isComplete = false;
     let messages: any[] = [{ role: "user", content: [{ type: "text", text: userPrompt }] }];
+    let totalTokensUsed = 0;
 
     try {
       while (!isComplete) {
@@ -81,6 +82,10 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
           if (block.type === 'text') {
             textContent += block.text;
           }
+        }
+
+        if (msg.usage) {
+          totalTokensUsed += (msg.usage.input_tokens || 0) + (msg.usage.output_tokens || 0);
         }
 
         if (msg.stop_reason === 'max_tokens') {
@@ -108,7 +113,7 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
     // 5. Update Database with Completed Report
     await sql`
       UPDATE reports 
-      SET status = 'completed', raw_markdown_report = ${textContent}
+      SET status = 'completed', raw_markdown_report = ${textContent}, tokens_used = ${totalTokensUsed}
       WHERE id = ${report_id}
     `;
 
