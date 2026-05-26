@@ -45,6 +45,7 @@ async function main() {
       raw_markdown_report TEXT,
       price_paid DECIMAL(10,2),
       currency VARCHAR(10),
+      tokens_used INTEGER DEFAULT 0,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
     )
   `;
