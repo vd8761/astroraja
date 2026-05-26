@@ -65,6 +65,14 @@ export const GET: APIRoute = async ({ request }) => {
       text, font: 'Tamil', fontSize: 9, ...extra,
     });
 
+    const parseText = (rawText: string) => {
+      if (typeof rawText !== 'string') return rawText;
+      const clean = rawText.replace(/\*\*/g, '');
+      const parts = clean.split(/([\u0B80-\u0BFF]+)/);
+      if (parts.length === 1) return clean;
+      return parts.map(p => p.match(/[\u0B80-\u0BFF]/) ? { text: p, font: 'Tamil' } : { text: p });
+    };
+
     // ── Design components ─────────────────────────────────────────────────
     const sectionHeader = (num: number, title: string, subtitle?: string, breakBefore = false) => {
       const color = sectionColors[num - 1] || C.navy;
@@ -224,7 +232,7 @@ export const GET: APIRoute = async ({ request }) => {
               border: [false, false, false, false],
             })),
             ...rows.map((row, ri) => row.map((cell, ci) => ({
-              text: cell,
+              text: parseText(cell),
               font: 'Outfit', fontSize: 8.5,
               color: ci === 0 ? C.navy : C.text,
               bold: ci === 0,
@@ -400,18 +408,18 @@ export const GET: APIRoute = async ({ request }) => {
             if (hdrs.length > 0 && rws.length > 0) realContent.push(table(hdrs, rws));
             continue;
           } else if (l.match(/^[-*] /)) {
-            const items: string[] = [];
-            while (mi < md.length && md[mi].match(/^[-*] /)) { items.push(md[mi].replace(/^[-*] /, '').replace(/\*\*/g, '').trim()); mi++; }
+            const items: any[] = [];
+            while (mi < md.length && md[mi].match(/^[-*] /)) { items.push(parseText(md[mi].replace(/^[-*] /, '').replace(/\*\*/g, '').trim())); mi++; }
             if (items.length > 0) realContent.push({ ul: items, font: 'Outfit', fontSize: 9.5, color: C.text, margin: [8, 4, 0, 10] });
             continue;
           } else if (l.match(/^\d+\.\s/)) {
-            const items: string[] = [];
-            while (mi < md.length && md[mi].match(/^\d+\.\s/)) { items.push(md[mi].replace(/^\d+\.\s+/, '').replace(/\*\*/g, '').trim()); mi++; }
+            const items: any[] = [];
+            while (mi < md.length && md[mi].match(/^\d+\.\s/)) { items.push(parseText(md[mi].replace(/^\d+\.\s+/, '').replace(/\*\*/g, '').trim())); mi++; }
             if (items.length > 0) realContent.push({ ol: items, font: 'Outfit', fontSize: 9.5, color: C.text, margin: [8, 4, 0, 10] });
             continue;
           } else if (l.trim() && !l.match(/^#{1,6} /) && !l.match(/^[-=]{3,}/)) {
             const clean = l.trim().replace(/\*\*/g, '').replace(/\*/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-            if (clean) realContent.push({ text: clean, font: 'Outfit', fontSize: 9.5, color: C.text, lineHeight: 1.45, margin: [0, 2, 0, 6] });
+            if (clean) realContent.push({ text: parseText(clean), font: 'Outfit', fontSize: 9.5, color: C.text, lineHeight: 1.45, margin: [0, 2, 0, 6] });
           }
           mi++;
         }
