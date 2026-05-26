@@ -362,6 +362,7 @@ export const GET: APIRoute = async ({ request }) => {
     let reportLagnam = 'Kanni';
     let reportNakshatra = 'Puram';
     let reportRulingPlanet = 'Sun + Mercury';
+    let reportSubtitle = '';
     let useRealContent = false;
     let realContent: any[] = [];
 
@@ -415,7 +416,6 @@ export const GET: APIRoute = async ({ request }) => {
         reportRulingPlanet = getRulingPlanet(reportRaasi, reportLagnam);
         useRealContent = true;
         // ── Markdown → pdfmake parser ─────────────────────────────────────
-        let reportSubtitle = '';
         const md = (row.raw_markdown_report || '').split('\n');
         let secNum = 0;
         let mi = 0;
