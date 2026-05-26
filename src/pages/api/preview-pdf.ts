@@ -415,6 +415,7 @@ export const GET: APIRoute = async ({ request }) => {
         reportRulingPlanet = getRulingPlanet(reportRaasi, reportLagnam);
         useRealContent = true;
         // ── Markdown → pdfmake parser ─────────────────────────────────────
+        let reportSubtitle = '';
         const md = (row.raw_markdown_report || '').split('\n');
         let secNum = 0;
         let mi = 0;
@@ -450,7 +451,14 @@ export const GET: APIRoute = async ({ request }) => {
             continue;
           } else if (l.trim() && !l.match(/^#{1,6} /) && !l.match(/^[-=]{3,}/)) {
             const clean = l.trim().replace(/\*\*/g, '').replace(/\*/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-            if (clean) realContent.push({ text: parseText(clean), font: 'Outfit', fontSize: 9.5, color: C.text, lineHeight: 1.45, margin: [0, 2, 0, 6] });
+            if (clean) {
+              if (!reportSubtitle && secNum === 0) {
+                // Extract the very first non-heading text as the report subtitle
+                reportSubtitle = clean;
+              } else {
+                realContent.push({ text: parseText(clean), font: 'Outfit', fontSize: 9.5, color: C.text, lineHeight: 1.45, margin: [0, 2, 0, 6] });
+              }
+            }
           }
           mi++;
         }
@@ -491,6 +499,16 @@ export const GET: APIRoute = async ({ request }) => {
         margin: [0, -210, 0, 0],
         // position over the rect
       },
+
+      // Extracted AI Subtitle
+      ...(reportSubtitle ? [{
+        text: reportSubtitle,
+        font: 'Lora',
+        fontSize: 14,
+        color: C.saffron,
+        alignment: 'center',
+        margin: [0, 24, 0, 14]
+      }] : []),
 
       // Astro key summary bar — navy background, white label, saffron value
       {
