@@ -545,6 +545,8 @@ document.addEventListener('alpine:init', () => {
           handler: (response) => {
             this.hasPaid = true;
             this.isPaying = false;
+            this.formData.price_paid = orderData.amount / 100;
+            this.formData.currency = orderData.currency;
             this.step++;
             window.scrollTo({ top: 0, behavior: 'smooth' });
           },

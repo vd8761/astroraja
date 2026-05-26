@@ -121,9 +121,8 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
     if (report.email) {
       try {
         // Build the internal URL to the premium PDF generator
-        const baseUrl = process.env.VERCEL_URL
-          ? 'https://' + process.env.VERCEL_URL
-          : (import.meta.env.SITE || 'http://localhost:4321');
+        const requestUrl = new URL(request.url);
+        const baseUrl = requestUrl.origin;
         const pdfUrl = baseUrl + '/api/preview-pdf?report_id=' + report_id;
 
         const pdfRes = await fetch(pdfUrl);
