@@ -453,18 +453,10 @@ export const GET: APIRoute = async ({ request }) => {
           { canvas: [{ type: 'line', x1: 100, y1: 0, x2: 415, y2: 0, lineWidth: 1, lineColor: C.saffron }], margin: [0, 0, 0, 16] },
           { text: reportName, font: 'Lora', bold: true, fontSize: 20, color: '#e0e7ff', alignment: 'center', margin: [0, 0, 0, 10] },
           {
-            text: [
-              { text: 'Simbha Raasi (', font: 'Outfit', fontSize: 10, color: C.white },
-              T('சிம்மம்', { fontSize: 10, color: C.white }),
-              { text: ')  +  Kanni Lagnam (', font: 'Outfit', fontSize: 10, color: C.white },
-              T('கன்னி', { fontSize: 10, color: C.white }),
-              { text: ')  +  Puram 4th Padam (', font: 'Outfit', fontSize: 10, color: C.white },
-              T('பூரம்', { fontSize: 10, color: C.white }),
-              { text: ')', font: 'Outfit', fontSize: 10, color: C.white },
-            ],
-            alignment: 'center', margin: [0, 0, 0, 8],
+            text: parseText(`${reportRaasi} Raasi   |   ${reportLagnam} Lagnam   |   ${reportNakshatra}`),
+            font: 'Outfit', fontSize: 10, color: C.white, alignment: 'center', margin: [0, 0, 0, 8],
           },
-          { text: 'The King Trapped in the Perfectionist\'s Prison', font: 'Lora', italics: true, fontSize: 11, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 0] },
+          { text: 'Your Comprehensive Cosmic Blueprint', font: 'Lora', italics: true, fontSize: 11, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 0] },
         ],
         margin: [0, -210, 0, 0],
         // position over the rect
@@ -479,7 +471,7 @@ export const GET: APIRoute = async ({ request }) => {
               body: [[{
                 stack: [
                   { text: 'RAASI', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: 'Simbham (Leo)', font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: parseText(reportRaasi), font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
@@ -493,7 +485,7 @@ export const GET: APIRoute = async ({ request }) => {
               body: [[{
                 stack: [
                   { text: 'LAGNAM', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: 'Kanni (Virgo)', font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: parseText(reportLagnam), font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
@@ -507,21 +499,7 @@ export const GET: APIRoute = async ({ request }) => {
               body: [[{
                 stack: [
                   { text: 'NAKSHATRA', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: 'Puram 4th Padam', font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
-                ],
-                fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
-              }]],
-            },
-            layout: 'noBorders',
-          },
-          { width: 6, text: '' },
-          {
-            table: {
-              widths: ['*'],
-              body: [[{
-                stack: [
-                  { text: 'RULING PLANET', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: 'Sun + Mercury', font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: parseText(reportNakshatra), font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
