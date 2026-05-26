@@ -152,6 +152,10 @@ import Layout from '../layouts/Layout.astro';
       <p class="text-brand-text-muted mb-6 leading-relaxed max-w-2xl">What challenges are you facing right now? Select all that apply.</p>
       
       <div class="flex flex-wrap gap-3">
+        <button type="button" @click="formData.struggles.length === struggleOpts.length ? formData.struggles = [] : formData.struggles = [...struggleOpts]" class="px-5 py-3 rounded-full border transition-all text-sm font-bold bg-brand-light-bg text-brand-navy border-brand-border hover:border-brand-saffron shadow-sm flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12" x-show="formData.struggles.length === struggleOpts.length" style="display: none;"/><path d="M5 13l4 4L19 7" x-show="formData.struggles.length !== struggleOpts.length"/></svg>
+          <span x-text="formData.struggles.length === struggleOpts.length ? 'Deselect All' : 'Select All'"></span>
+        </button>
         <template x-for="opt in struggleOpts" :key="opt">
           <button type="button" @click="toggleArray('struggles', opt)" class="px-5 py-3 rounded-full border transition-all text-sm font-medium" :class="[
             formData.struggles.includes(opt) ? 'bg-brand-saffron text-white border-brand-saffron shadow-md' : 'bg-white border-brand-border text-brand-navy hover:border-brand-saffron'
@@ -192,6 +196,10 @@ import Layout from '../layouts/Layout.astro';
       <p class="text-brand-text-muted mb-6 leading-relaxed max-w-2xl">What do you most want to achieve or experience in your life? Select all that apply.</p>
       
       <div class="flex flex-wrap gap-3">
+        <button type="button" @click="formData.goals.length === goalOpts.length ? formData.goals = [] : formData.goals = [...goalOpts]" class="px-5 py-3 rounded-full border transition-all text-sm font-bold bg-brand-light-bg text-brand-navy border-brand-border hover:border-brand-saffron shadow-sm flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12" x-show="formData.goals.length === goalOpts.length" style="display: none;"/><path d="M5 13l4 4L19 7" x-show="formData.goals.length !== goalOpts.length"/></svg>
+          <span x-text="formData.goals.length === goalOpts.length ? 'Deselect All' : 'Select All'"></span>
+        </button>
         <template x-for="opt in goalOpts" :key="opt">
           <button type="button" @click="toggleArray('goals', opt)" class="px-5 py-3 rounded-full border transition-all text-sm font-medium" :class="[
             formData.goals.includes(opt) ? 'bg-brand-saffron text-white border-brand-saffron shadow-md' : 'bg-white border-brand-border text-brand-navy hover:border-brand-saffron'
