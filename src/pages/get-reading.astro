@@ -149,14 +149,12 @@ import Layout from '../layouts/Layout.astro';
     <div x-show="step === 1 && !isComplete" x-transition.opacity.duration.300ms style="display: none;">
       <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 2 of 6</div>
       <h2 class="text-4xl font-bold text-brand-navy mb-4">Current <span class="text-brand-saffron italic">struggles</span></h2>
-      <p class="text-brand-text-muted mb-2 leading-relaxed max-w-2xl">What is hurting you the most right now?</p>
-      <p class="text-brand-saffron-dark font-bold text-sm mb-6 uppercase tracking-wider">Select up to 3 core struggles (<span x-text="formData.struggles.length"></span>/3 selected)</p>
+      <p class="text-brand-text-muted mb-6 leading-relaxed max-w-2xl">What challenges are you facing right now? Select all that apply.</p>
       
       <div class="flex flex-wrap gap-3">
         <template x-for="opt in struggleOpts" :key="opt">
-          <button type="button" @click="toggleArray('struggles', opt, 3)" class="px-5 py-3 rounded-full border transition-all text-sm font-medium" :class="[
-            formData.struggles.includes(opt) ? 'bg-brand-saffron text-white border-brand-saffron shadow-md' : 'bg-white border-brand-border text-brand-navy hover:border-brand-saffron',
-            !formData.struggles.includes(opt) && formData.struggles.length >= 3 ? 'opacity-50 cursor-not-allowed hover:border-brand-border' : ''
+          <button type="button" @click="toggleArray('struggles', opt)" class="px-5 py-3 rounded-full border transition-all text-sm font-medium" :class="[
+            formData.struggles.includes(opt) ? 'bg-brand-saffron text-white border-brand-saffron shadow-md' : 'bg-white border-brand-border text-brand-navy hover:border-brand-saffron'
           ]">
             <span x-text="opt"></span>
           </button>
@@ -191,14 +189,12 @@ import Layout from '../layouts/Layout.astro';
     <div x-show="step === 3 && !isComplete" x-transition.opacity.duration.300ms style="display: none;">
       <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 4 of 6</div>
       <h2 class="text-4xl font-bold text-brand-navy mb-4">Your life <span class="text-brand-saffron italic">goals</span></h2>
-      <p class="text-brand-text-muted mb-2 leading-relaxed max-w-2xl">What do you most want to achieve or experience in your life?</p>
-      <p class="text-brand-saffron-dark font-bold text-sm mb-6 uppercase tracking-wider">Select up to 3 core goals (<span x-text="formData.goals.length"></span>/3 selected)</p>
+      <p class="text-brand-text-muted mb-6 leading-relaxed max-w-2xl">What do you most want to achieve or experience in your life? Select all that apply.</p>
       
       <div class="flex flex-wrap gap-3">
         <template x-for="opt in goalOpts" :key="opt">
-          <button type="button" @click="toggleArray('goals', opt, 3)" class="px-5 py-3 rounded-full border transition-all text-sm font-medium" :class="[
-            formData.goals.includes(opt) ? 'bg-brand-saffron text-white border-brand-saffron shadow-md' : 'bg-white border-brand-border text-brand-navy hover:border-brand-saffron',
-            !formData.goals.includes(opt) && formData.goals.length >= 3 ? 'opacity-50 cursor-not-allowed hover:border-brand-border' : ''
+          <button type="button" @click="toggleArray('goals', opt)" class="px-5 py-3 rounded-full border transition-all text-sm font-medium" :class="[
+            formData.goals.includes(opt) ? 'bg-brand-saffron text-white border-brand-saffron shadow-md' : 'bg-white border-brand-border text-brand-navy hover:border-brand-saffron'
           ]">
             <span x-text="opt"></span>
           </button>
@@ -461,15 +457,11 @@ document.addEventListener('alpine:init', () => {
       this.$watch('formData.spiritual', (val) => { if(val) this.errors.spiritual = false; });
     },
 
-    toggleArray(field, val, maxLimit = null) {
+    toggleArray(field, val) {
       const idx = this.formData[field].indexOf(val);
       if (idx > -1) {
         this.formData[field].splice(idx, 1);
       } else {
-        if (maxLimit && this.formData[field].length >= maxLimit) {
-          // Highlight the limit Reached (Optional UX feedback)
-          return;
-        }
         this.formData[field].push(val);
       }
     },
