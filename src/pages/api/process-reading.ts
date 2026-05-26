@@ -1,4 +1,4 @@
-import type { APIRoute } from 'astro';
+﻿import type { APIRoute } from 'astro';
 import sql from '../../lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import nodemailer from 'nodemailer';
@@ -47,7 +47,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // 4. Generate AI Report
     const apiKey = import.meta.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
-    const claudeModel = import.meta.env.ANTHROPIC_MODEL || process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20250620';
+    const claudeModel = import.meta.env.ANTHROPIC_MODEL || process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5';
     const anthropic = new Anthropic({ apiKey: apiKey });
 
     const userPrompt = `

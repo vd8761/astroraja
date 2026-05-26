@@ -1,4 +1,4 @@
-import type { APIRoute } from 'astro';
+﻿import type { APIRoute } from 'astro';
 import sql from '../../../lib/db';
 import { verifyAuthHeader } from '../../../lib/auth';
 import Anthropic from '@anthropic-ai/sdk';
@@ -53,7 +53,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // 4. Call Claude AI
     const anthropic = new Anthropic();
-    const claudeModel = import.meta.env.ANTHROPIC_MODEL || process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20250620';
+    const claudeModel = import.meta.env.ANTHROPIC_MODEL || process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5';
     const systemPrompt = `You are Astro Raja AI, an expert, deeply empathetic astrologer. 
 Your goal is to answer the user's specific question based strictly on the Astrological Context provided below.
 CRITICAL INSTRUCTIONS:
