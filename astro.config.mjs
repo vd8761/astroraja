@@ -11,7 +11,7 @@ export default defineConfig({
   site: 'https://askastroraja.com',
   output: 'server',
   adapter: vercel({
-    maxDuration: 300
+    maxDuration: 900
   }),
   vite: {
     plugins: [tailwindcss()]
