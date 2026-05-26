@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import sql from '../../../lib/db';
 import { verifyAuthHeader } from '../../../lib/auth';
 import Anthropic from '@anthropic-ai/sdk';
+import { sendAdminAlert, isModelDeprecatedError } from '../../../lib/adminAlert';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -52,6 +53,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // 4. Call Claude AI
     const anthropic = new Anthropic();
+    const claudeModel = import.meta.env.ANTHROPIC_MODEL || process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20250620';
     const systemPrompt = `You are Astro Raja AI, an expert, deeply empathetic astrologer. 
 Your goal is to answer the user's specific question based strictly on the Astrological Context provided below.
 CRITICAL INSTRUCTIONS:
@@ -63,15 +65,30 @@ CRITICAL INSTRUCTIONS:
 
 ${contextString}`;
 
-    const message = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20240620",
-      max_tokens: 1500,
-      temperature: 0.7,
-      system: systemPrompt,
-      messages: [
-        { role: "user", content: query }
-      ]
-    });
+    let message;
+    try {
+      message = await anthropic.messages.create({
+        model: claudeModel,
+        max_tokens: 1500,
+        temperature: 0.7,
+        system: systemPrompt,
+        messages: [
+          { role: "user", content: query }
+        ]
+      });
+    } catch (aiError: any) {
+      if (isModelDeprecatedError(aiError)) {
+        await sendAdminAlert(
+          'Claude Model Deprecated — Chat API Broken',
+          'The Claude AI model used in the Chat API has been deprecated.\n\n' +
+          'Deprecated Model: ' + claudeModel + '\n' +
+          'Error: ' + aiError.error.message + '\n\n' +
+          'Fix: Update ANTHROPIC_MODEL in your Vercel Environment Variables\n' +
+          'Latest Models: https://docs.anthropic.com/en/docs/about-claude/models'
+        );
+      }
+      throw aiError;
+    }
 
     const aiResponse = message.content[0].type === 'text' ? message.content[0].text : 'No text generated';
     const inputTokens = message.usage.input_tokens;

@@ -2,12 +2,14 @@ import type { APIRoute } from 'astro';
 import sql from '../../lib/db';
 import Anthropic from '@anthropic-ai/sdk';
 import nodemailer from 'nodemailer';
+import { sendAdminAlert, isModelDeprecatedError } from '../../lib/adminAlert';
 import { marked } from 'marked';
 import skillTemplate from '../../lib/skill.md?raw';
 
-// @ts-ignore
-import PdfPrinterPkg from 'pdfmake/src/printer.js';
+import PdfPrinterPkg from 'pdfmake/js/Printer.js';
 const PdfPrinter = PdfPrinterPkg.default || PdfPrinterPkg;
+import URLResolverPkg from 'pdfmake/js/URLResolver.js';
+const URLResolver = URLResolverPkg.default || URLResolverPkg;
 import htmlToPdfmake from 'html-to-pdfmake';
 import { parseHTML } from 'linkedom';
 import fs from 'fs';
@@ -45,6 +47,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // 4. Generate AI Report
     const apiKey = import.meta.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
+    const claudeModel = import.meta.env.ANTHROPIC_MODEL || process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20250620';
     const anthropic = new Anthropic({ apiKey: apiKey });
 
     const userPrompt = `
@@ -70,13 +73,28 @@ CRITICAL LANGUAGE INSTRUCTION: The user has requested the report in ${report.lan
 
 CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables required in the sections. Use Markdown H1 (#) for the main title, H2 (##) for sections, and blockquotes (>) for quotes.`;
 
-    const msg = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20241022",
-      max_tokens: 8192,
-      temperature: 0.7,
-      system: systemPrompt,
-      messages: [{ role: "user", content: [{ type: "text", text: userPrompt }] }]
-    });
+    let msg;
+    try {
+      msg = await anthropic.messages.create({
+        model: claudeModel,
+        max_tokens: 8192,
+        temperature: 0.7,
+        system: systemPrompt,
+        messages: [{ role: "user", content: [{ type: "text", text: userPrompt }] }]
+      });
+    } catch (aiError: any) {
+      if (isModelDeprecatedError(aiError)) {
+        await sendAdminAlert(
+          'Claude Model Deprecated — Immediate Action Required',
+          'The Claude AI model has been deprecated by Anthropic and is returning a 404 error.\n\n' +
+          'Deprecated Model: ' + claudeModel + '\n' +
+          'Error: ' + aiError.error.message + '\n\n' +
+          'Fix: Update ANTHROPIC_MODEL in your Vercel Environment Variables\n' +
+          'Latest Models: https://docs.anthropic.com/en/docs/about-claude/models'
+        );
+      }
+      throw aiError;
+    }
 
     let textContent = '';
     for (const block of msg.content) {
@@ -107,138 +125,144 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
             italics: path.join(fontsDir, 'NotoSans-Regular.ttf'),
             bolditalics: path.join(fontsDir, 'NotoSans-Bold.ttf')
           },
-          Tamil: {
-            normal: path.join(fontsDir, 'NotoSansTamil-Regular.ttf'),
-            bold: path.join(fontsDir, 'NotoSansTamil-Bold.ttf'),
-            italics: path.join(fontsDir, 'NotoSansTamil-Regular.ttf'),
-            bolditalics: path.join(fontsDir, 'NotoSansTamil-Bold.ttf')
-          }
+          NotoSans: {
+            normal:      path.join(fontsDir, 'NotoSans-Regular.ttf'),
+            bold:        path.join(fontsDir, 'NotoSans-Bold.ttf'),
+            italics:     path.join(fontsDir, 'NotoSans-Regular.ttf'),
+            bolditalics: path.join(fontsDir, 'NotoSans-Bold.ttf'),
+          },
+          NotoSerif: {
+            normal:      path.join(fontsDir, 'NotoSerif-Regular.ttf'),
+            bold:        path.join(fontsDir, 'NotoSerif-Bold.ttf'),
+            italics:     path.join(fontsDir, 'NotoSerif-Regular.ttf'),
+            bolditalics: path.join(fontsDir, 'NotoSerif-Bold.ttf'),
+          },
         };
 
-        const printer = new PdfPrinter(fonts);
-        
-        // We must pass a JSDOM window to html-to-pdfmake to parse the HTML string
         const { window } = parseHTML("<html><body></body></html>");
-        const pdfContent = htmlToPdfmake(parsedMarkdown, { window });
+        const pdfContent = htmlToPdfmake(parsedMarkdown, { 
+          window,
+          tableAutoSize: true 
+        });
 
-        const fontFamily = report.language === 'Tamil' ? 'Tamil' : 'Roboto';
+        const colors = {
+          primary: '#0F2027',
+          secondary: '#203A43',
+          accent: '#D4AF37',
+          textMain: '#334155',
+          textLight: '#64748B',
+          bgLight: '#F8FAFC',
+          white: '#FFFFFF',
+        };
 
         const docDefinition: any = {
           pageSize: 'A4',
-          pageMargins: [50, 60, 50, 60],
+          pageMargins: [50, 80, 50, 70],
           header: (currentPage: number, pageCount: number) => ({
+            margin: [50, 30, 50, 0],
             columns: [
               {
-                text: '✦ Ask Astro Raja — Life Transformation Report',
+                text: '✦ ASK ASTRO RAJA',
+                font: 'NotoSerif',
                 fontSize: 9,
-                color: '#2E6B9E',
+                color: colors.accent,
                 bold: true,
-                margin: [50, 18, 0, 0],
+                letterSpacing: 2,
               },
               {
-                text: `${report.name}  |  Page ${currentPage} of ${pageCount}`,
-                fontSize: 9,
-                color: '#94A3B8',
+                text: `${report.name.toUpperCase()}  |  PAGE ${currentPage} OF ${pageCount}`,
+                font: 'NotoSerif',
+                fontSize: 8,
+                color: colors.textLight,
                 alignment: 'right',
-                margin: [0, 18, 50, 0],
+                letterSpacing: 1,
+              }
+            ],
+            canvas: [{ type: 'line', x1: 50, y1: 20, x2: 545, y2: 20, lineWidth: 0.5, lineColor: colors.accent }]
+          }),
+          footer: (currentPage: number, _pageCount: number) => ({
+            margin: [50, 20, 50, 0],
+            stack: [
+              { canvas: [{ type: 'line', x1: 50, y1: 0, x2: 545, y2: 0, lineWidth: 0.5, lineColor: '#E2E8F0' }], margin: [0, 0, 0, 10] },
+              {
+                text: `${report.raasi} (Raasi) · ${report.lagnam} (Lagnam) · ${report.nakshatra} (Nakshatra)`,
+                font: 'NotoSerif',
+                fontSize: 8,
+                color: colors.textLight,
+                alignment: 'center',
+                letterSpacing: 0.5,
               }
             ]
-          }),
-          footer: (_currentPage: number, _pageCount: number) => ({
-            text: `${report.raasi || ''} · ${report.lagnam || ''} · ${report.nakshatra || ''}  —  Confidential & Personalized`,
-            fontSize: 8,
-            color: '#CBD5E1',
-            alignment: 'center',
-            margin: [50, 0, 50, 18],
           }),
           content: [
             {
               stack: [
-                { text: 'LIFE TRANSFORMATION REPORT', fontSize: 10, color: '#C5952A', bold: true, letterSpacing: 2, margin: [0, 0, 0, 8] },
-                { text: report.name, fontSize: 28, bold: true, color: '#1A3C5E', font: fontFamily, margin: [0, 0, 0, 6] },
+                { text: 'THE LIFE TRANSFORMATION', font: 'NotoSerif', fontSize: 10, color: colors.accent, bold: true, letterSpacing: 3, margin: [0, 0, 0, 8] },
+                { text: 'Karmic Blueprint & Action Plan', font: 'NotoSerif', fontSize: 26, bold: true, color: colors.primary, margin: [0, 0, 0, 15] },
                 {
                   columns: [
-                    { text: `Raasi: ${report.raasi || '—'}`, fontSize: 12, color: '#475569' },
-                    { text: `Lagnam: ${report.lagnam || '—'}`, fontSize: 12, color: '#475569' },
-                    { text: `Nakshatra: ${report.nakshatra || '—'}`, fontSize: 12, color: '#475569' },
+                    { text: `RAASI: ${report.raasi}`, font: 'NotoSans', fontSize: 10, color: colors.secondary, bold: true },
+                    { text: `LAGNAM: ${report.lagnam}`, font: 'NotoSans', fontSize: 10, color: colors.secondary, bold: true },
+                    { text: `NAKSHATRA: ${report.nakshatra}`, font: 'NotoSans', fontSize: 10, color: colors.secondary, bold: true },
                   ],
-                  margin: [0, 0, 0, 4],
+                  margin: [0, 0, 0, 25],
                 },
-                { text: `Language: ${report.language || 'English'}`, fontSize: 11, color: '#94A3B8', margin: [0, 0, 0, 20] },
-                { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 495, y2: 0, lineWidth: 1.5, lineColor: '#C5952A' }] },
+                { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 495, y2: 0, lineWidth: 2, lineColor: colors.accent }] },
               ],
-              margin: [0, 20, 0, 24],
+              margin: [0, 10, 0, 35],
             },
-            pdfContent,
+            ...pdfContent,
           ],
           defaultStyle: {
-            font: fontFamily,
-            fontSize: 11,
-            lineHeight: 1.55,
-            color: '#1e293b',
+            font: 'NotoSans',
+            fontSize: 10.5,
+            lineHeight: 1.6,
+            color: colors.textMain,
           },
           styles: {
             'html-h1': {
+              font: 'NotoSerif',
               fontSize: 18,
               bold: true,
-              color: '#1A3C5E',
-              margin: [0, 20, 0, 8],
-              decoration: 'underline',
-              decorationColor: '#C5952A',
-              font: fontFamily,
+              color: colors.primary,
+              margin: [0, 30, 0, 12],
+              textTransform: 'uppercase',
+              letterSpacing: 1,
             },
             'html-h2': {
-              fontSize: 14,
+              font: 'NotoSerif',
+              fontSize: 15,
               bold: true,
-              color: '#2E6B9E',
-              margin: [0, 16, 0, 6],
-              font: fontFamily,
+              color: colors.secondary,
+              margin: [0, 25, 0, 10],
+              textTransform: 'uppercase',
+              letterSpacing: 1,
             },
             'html-h3': {
-              fontSize: 12,
+              font: 'NotoSerif',
+              fontSize: 13,
               bold: true,
-              color: '#475569',
-              margin: [0, 12, 0, 4],
+              color: colors.accent,
+              margin: [0, 15, 0, 8],
             },
-            'html-p': {
-              margin: [0, 4, 0, 8],
-              lineHeight: 1.6,
-            },
-            'html-blockquote': {
-              margin: [12, 6, 0, 12],
-              italics: true,
-              color: '#1A3C5E',
-              fontSize: 12,
-              bold: true,
-            },
-            'html-strong': {
-              bold: true,
-              color: '#1A3C5E',
-            },
-            'html-table': {
-              margin: [0, 6, 0, 14],
-            },
-            'html-th': {
-              bold: true,
-              fillColor: '#1A3C5E',
-              color: '#FFFFFF',
-              fontSize: 10,
-            },
-            'html-td': {
-              fontSize: 10,
-              margin: [4, 4, 4, 4],
-            },
-            'html-li': {
-              margin: [0, 3, 0, 3],
-            },
+            'html-p': { margin: [0, 5, 0, 12], alignment: 'justify' },
+            'html-blockquote': { margin: [20, 15, 20, 15], font: 'NotoSerif', italics: true, color: colors.primary, fontSize: 13, lineHeight: 1.5, alignment: 'center' },
+            'html-strong': { bold: true, color: colors.primary },
+            'html-em': { italics: true, color: colors.secondary },
+            'html-table': { margin: [0, 10, 0, 20] },
+            'html-th': { font: 'NotoSans', bold: true, fillColor: colors.primary, color: colors.white, fontSize: 10, margin: [8, 8, 8, 8], alignment: 'left', textTransform: 'uppercase' },
+            'html-td': { font: 'NotoSans', fontSize: 10, margin: [8, 8, 8, 8], color: colors.textMain },
+            'html-li': { margin: [0, 4, 0, 4] },
           },
         };
 
+        const urlResolver = new URLResolver();
+        const printer = new PdfPrinter(fonts, null, urlResolver);
         const pdfDoc = await printer.createPdfKitDocument(docDefinition as any);
-        const chunks: Buffer[] = [];
         
+        const chunks: Buffer[] = [];
         const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
-          pdfDoc.on('data', chunk => chunks.push(chunk));
+          pdfDoc.on('data', (chunk: Buffer) => chunks.push(chunk));
           pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
           pdfDoc.on('error', reject);
           pdfDoc.end();

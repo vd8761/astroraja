@@ -1,167 +1,29 @@
-// @ts-ignore
-import PdfPrinterPkg from 'pdfmake/src/printer.js';
+import PdfPrinterPkg from 'pdfmake/js/Printer.js';
 const PdfPrinter = PdfPrinterPkg.default || PdfPrinterPkg;
-import htmlToPdfmake from 'html-to-pdfmake';
-import { parseHTML } from 'linkedom';
-import { marked } from 'marked';
+import URLResolverPkg from 'pdfmake/js/URLResolver.js';
+const URLResolver = URLResolverPkg.default || URLResolverPkg;
 import path from 'path';
 
 export const GET = async () => {
   try {
-    // ── Sample Content for Layout Testing ─────────────────────────────────────────
-    const sampleMarkdown = `
-# 1. ASTRO FOUNDATION
-
-| Feature | Inner World (Raasi) | Outer Approach (Lagnam) |
-|---|---|---|
-| **Sign** | Thulam *(Libra)* | Thulam *(Libra)* |
-| **Element** | Air | Air |
-| **Ruling Planet**| Venus | Venus |
-| **Core Nature** | Balance | Balance |
-
-> "The scales that measure everything, but struggle to measure their own worth."
-
-The influence of Swathi Nakshatra brings a restless ambition to this Double Thulam combination. You are driven by a need for independence and often find yourself caught between wanting to please others and needing to forge your own path.
-
-## 2. CORE COMBINATION TRUTH
-
-| Inner World | Outer Approach |
-|---|---|
-| Craves harmony at all costs | Projects diplomacy and fairness |
-| Fears making the wrong choice | Analyzes every angle endlessly |
-| Needs aesthetic beauty and peace | Builds environments of comfort |
-
-The core conflict here is the loop of overthinking. Because your inner and outer worlds are identical, there is no counterbalance. You weigh every option until the opportunity passes.
-
-> "I am the judge who listens to every argument but refuses to drop the gavel."
-
-## 3. CHARACTER PROFILE
-
-| Strengths | Shadow Weaknesses |
-|---|---|
-| Incredible diplomacy | Inability to take a hard stance |
-| Deep sense of justice | Judgmental when others fail |
-| Highly adaptable | Loses own identity in groups |
-| Peacemaker | Avoids necessary conflict |
-
-## 4. LIFE AREA IMPACT
-
-| Life Area | How it Shows Up | Hidden Cost |
-|---|---|---|
-| **Career** | Excellent team player, well-liked | Passed over for leadership due to hesitation |
-| **Money** | Enjoys luxury, spends on comfort | Lack of aggressive wealth building |
-| **Relationships**| Bends over backwards to keep peace | Slowly builds resentment over time |
-
-## 5. CORE LIFE LOOP
-
-| # | Stage | What's Really Happening |
-|---|---|---|
-| 1 | **The Ideal** | You envision the perfect, balanced outcome |
-| 2 | **The Analysis** | You research and weigh every possible variable |
-| 3 | **The Paralysis** | Overwhelmed by options, you freeze |
-| 4 | **The Compromise**| You let someone else decide or take the easiest path |
-| 5 | **The Resentment**| You feel dissatisfied with the outcome |
-| 6 | **The Vow** | You promise next time will be different (Restart) |
-
-Because Thulam is an Air sign ruled by Venus, your mind is constantly seeking the most beautiful, harmonious outcome. But perfection does not exist, so you trap yourself in the analysis phase.
-
-> "To decide is to kill all other options. You must learn to be a killer of options."
-
-## 6. KARMIC PATTERN ANALYSIS
-
-**The Peacekeeper's Burden**
-Trigger (Conflict arises) → Behavior (You absorb the anger to keep peace) → Consequence (You carry the stress physically) → Trigger (You become exhausted and withdraw).
-
-## 7. ROOT PROBLEMS
-
-| Problem | How It Shows Up |
-|---|---|
-| **Analysis Paralysis** | Taking weeks to make decisions others make in minutes |
-| **People Pleasing** | Saying yes when every bone in your body screams no |
-| **Avoidance** | Ghosting situations instead of confronting them |
-
-## 8. WHAT MUST BE LET GO
-
-| Let Go Of | Wrong Belief | Truth | Daily Practice |
-|---|---|---|---|
-| The Perfect Choice | "If I think longer, I'll find the flawless path." | Action creates clarity. | Make one trivial decision in 5 seconds daily. |
-| Keeping Everyone Happy| "Conflict means I failed." | Conflict is the price of boundaries. | Say no to one small request weekly. |
-
-> "Your peace is not found in their approval."
-
-## 9. REACT VS CREATE
-
-| React Mode | Create Mode |
-|---|---|
-| Waiting for others to lead | Initiating the conversation |
-| Absorbing their stress | Setting a hard boundary |
-| Overthinking | Executing the first step immediately |
-
-## 10. COMPLETE SOLUTION SYSTEM
-
-### A. Mind Rules
-| # | Rule |
-|---|---|
-| 1 | I will not negotiate my boundaries. |
-| 2 | Done is better than perfect. |
-
-### B. Daily System
-| Time | Activity | Purpose |
-|---|---|---|
-| 7:00 AM | 10 Min Silent Walk | Ground the Air energy |
-| 8:00 AM | Brain Dump | Get the overthinking out of the head |
-
-## 11. KARMIC BREAK METHOD
-
-1. **Recognize:** Catch yourself weighing options for more than 5 minutes.
-2. **Opposite Action:** Flip a coin if the decision is low-stakes. Just move.
-3. **90-Day Commitment:** Practice aggressive decision making.
-
-## 12. IDENTITY SHIFT
-
-| Old Identity | New Identity |
-|---|---|
-| "I need everyone to be okay." | "I am responsible for my own peace first." |
-| "I am confused." | "I know exactly what I want." |
-
-## 13. FINAL TRUTHS
-
-| # | Truth |
-|---|---|
-| 1 | Your inability to decide is a decision to fail. |
-| 2 | People respect boundaries more than they respect compliance. |
-
-## 14. DAILY CHECKLIST
-
-| Morning & Work | Evening & Mindset |
-|---|---|
-| [ ] Wrote down top 3 priorities | [ ] Disconnected from work emails |
-| [ ] Made one fast decision | [ ] Did not agree to anything out of guilt |
-
-***
-
-REMEMBER THIS EVERY SINGLE DAY
-
-I am not here to balance everyone else's scales.
-I am here to weigh my own worth.
-The air must move to have power.
-
-**THE SCALES MEASURE. THE WIND BLOWS. THE SWORD CUTS.**
-
-START TODAY.
-`;
-
-    // ── PDF Generation Logic ──────────────────────────────────────────────────
-    const parsedMarkdown = await marked.parse(sampleMarkdown);
     const fontsDir = path.join(process.cwd(), 'public', 'fonts');
 
     const fonts = {
-      Roboto: {
+      // Heading font — Serif, premium editorial feel
+      Lora: {
+        normal:      path.join(fontsDir, 'NotoSerif-Regular.ttf'),
+        bold:        path.join(fontsDir, 'NotoSerif-Bold.ttf'),
+        italics:     path.join(fontsDir, 'NotoSerif-Regular.ttf'),
+        bolditalics: path.join(fontsDir, 'NotoSerif-Bold.ttf'),
+      },
+      // Body font — clean, modern
+      Outfit: {
         normal:      path.join(fontsDir, 'NotoSans-Regular.ttf'),
         bold:        path.join(fontsDir, 'NotoSans-Bold.ttf'),
         italics:     path.join(fontsDir, 'NotoSans-Regular.ttf'),
         bolditalics: path.join(fontsDir, 'NotoSans-Bold.ttf'),
       },
+      // Tamil font for Tamil text spans
       Tamil: {
         normal:      path.join(fontsDir, 'NotoSansTamil-Regular.ttf'),
         bold:        path.join(fontsDir, 'NotoSansTamil-Bold.ttf'),
@@ -170,124 +32,814 @@ START TODAY.
       },
     };
 
-    const printer = new PdfPrinter(fonts);
-    const { window } = parseHTML('<html><body></body></html>');
-    const pdfContent = htmlToPdfmake(parsedMarkdown, { window });
+    // ── Brand Color System (matches website exactly) ──────────────────────
+    const C = {
+      navy:       '#1e1b4b',   // brand-navy (headings, headers)
+      navyLight:  '#312e81',   // brand-navy-light
+      purple:     '#4c1d95',   // brand-purple
+      purpleLight:'#7c3aed',   // brand-purple-light
+      saffron:    '#f59e0b',   // brand-saffron (gold accents)
+      saffronDark:'#d97706',   // brand-saffron-dark
+      text:       '#334155',   // brand-text
+      textDark:   '#0f172a',   // brand-text-dark
+      muted:      '#64748b',   // brand-text-muted
+      border:     '#e2e8f0',   // brand-border
+      bg:         '#faf8f5',   // brand-light-bg
+      white:      '#ffffff',
+      // Section header colors — all deep navy/indigo family for consistency
+      sec1:  '#1e1b4b', sec2: '#1e1b4b', sec3: '#1e1b4b',
+      sec4:  '#1e1b4b', sec5: '#1e1b4b', sec6: '#1e1b4b',
+      sec7:  '#1e1b4b', sec8: '#1e1b4b', sec9: '#1e1b4b',
+      sec10: '#1e1b4b', sec11:'#1e1b4b', sec12:'#1e1b4b',
+      sec13: '#1e1b4b', sec14:'#1e1b4b',
+    };
 
-    const docDefinition: any = {
-      pageSize: 'A4',
-      pageMargins: [50, 60, 50, 60],
-      header: (currentPage: number, pageCount: number) => ({
-        columns: [
+    const sectionColors = [
+      C.sec1, C.sec2, C.sec3, C.sec4, C.sec5, C.sec6, C.sec7,
+      C.sec8, C.sec9, C.sec10, C.sec11, C.sec12, C.sec13, C.sec14,
+    ];
+
+    // ── Tamil-aware inline text ───────────────────────────────────────────
+    const T = (text: string, extra: any = {}) => ({
+      text, font: 'Tamil', fontSize: 9, ...extra,
+    });
+
+    // ── Design components ─────────────────────────────────────────────────
+    const sectionHeader = (num: number, title: string, subtitle?: string, breakBefore = false) => {
+      const color = sectionColors[num - 1] || C.navy;
+      const numStr = String(num).padStart(2, '0');
+      return {
+        table: {
+          widths: [4, '*'],
+          body: [[
+            { text: '', fillColor: C.saffron, border: [false, false, false, false], margin: [0, 0, 0, 0] },
+            {
+              stack: [
+                {
+                  text: [
+                    { text: numStr + '  ', font: 'Lora', fontSize: 13, color: C.saffron, bold: true },
+                    { text: title.toUpperCase(), font: 'Lora', fontSize: 13, color: C.white, bold: true },
+                  ],
+                },
+                subtitle ? { text: subtitle, font: 'Outfit', fontSize: 8.5, color: '#c4b5fd', margin: [0, 4, 0, 0] } : null,
+              ].filter(Boolean),
+              fillColor: color,
+              border: [false, false, false, false],
+              margin: [10, 9, 10, 9],
+            },
+          ]],
+        },
+        layout: {
+          hLineWidth: () => 0,
+          vLineWidth: () => 0,
+          paddingLeft: () => 0,
+          paddingRight: () => 0,
+          paddingTop: () => 0,
+          paddingBottom: () => 0,
+        },
+        margin: [0, 20, 0, 10],
+        pageBreak: breakBefore ? 'before' : undefined,
+      } as any;
+    };
+
+    const keyValue = (label: string, value: string | any[]) => ({
+      columns: [
+        { text: label, font: 'Outfit', bold: true, fontSize: 9, color: C.navy, width: 120 },
+        { text: value, font: 'Outfit', fontSize: 9, color: C.text, width: '*' },
+      ],
+      margin: [0, 2, 0, 2],
+    } as any);
+
+    const para = (text: string | any[], opts: any = {}) => ({
+      text,
+      font: 'Outfit', fontSize: 9.5, color: C.text,
+      lineHeight: 1.5, margin: [0, 0, 0, 8],
+      ...opts,
+    } as any);
+
+    const subHead = (text: string, color = C.navy) => ({
+      text,
+      font: 'Lora', bold: true, fontSize: 11.5, color,
+      margin: [0, 14, 0, 6],
+    } as any);
+
+    // Sub-label: for numbered sub-sections like A, B, C inside a section
+    const subLabel = (letter: string, title: string) => ({
+      table: {
+        widths: [18, '*'],
+        body: [[
           {
-            text: '✦ Ask Astro Raja — Life Transformation Report',
-            fontSize: 9,
-            color: '#2E6B9E',
-            bold: true,
-            margin: [50, 18, 0, 0],
+            text: letter,
+            font: 'Lora', bold: true, fontSize: 9, color: C.white,
+            fillColor: C.saffron,
+            alignment: 'center',
+            margin: [0, 5, 0, 0],
+            border: [false, false, false, false],
           },
           {
-            text: \`Mohanraaj (Preview)  |  Page \${currentPage} of \${pageCount}\`,
-            fontSize: 9,
-            color: '#94A3B8',
-            alignment: 'right',
-            margin: [0, 18, 50, 0],
-          }
-        ]
-      }),
-      footer: (_currentPage: number, _pageCount: number) => ({
-        text: \`Thulam · Thulam · Swathi  —  Confidential & Personalized\`,
-        fontSize: 8,
-        color: '#CBD5E1',
-        alignment: 'center',
-        margin: [50, 0, 50, 18],
-      }),
-      content: [
+            text: title.toUpperCase(),
+            font: 'Lora', bold: true, fontSize: 10, color: C.navy,
+            fillColor: '#fef9ee',
+            margin: [8, 5, 8, 5],
+            border: [false, false, false, false],
+          },
+        ]],
+      },
+      layout: { hLineWidth: () => 0, vLineWidth: () => 0 },
+      margin: [0, 12, 0, 6],
+    } as any);
+
+    const quoteBlock = (text: string) => ({
+      table: {
+        widths: [5, '*'],
+        body: [[
+          { text: '', fillColor: C.saffron, border: [false, false, false, false] },
+          {
+            text: [
+              { text: '\u201c', font: 'Lora', fontSize: 12, color: C.saffron, bold: true },
+              { text: text, font: 'Lora', italics: true, fontSize: 10.5, color: C.navy, bold: true },
+              { text: '\u201d', font: 'Lora', fontSize: 12, color: C.saffron, bold: true },
+            ],
+            fillColor: '#f5f3ff',
+            lineHeight: 1.35,
+            margin: [10, 10, 10, 10],
+            border: [false, false, false, false],
+          },
+        ]],
+      },
+      layout: {
+        hLineWidth: () => 0,
+        vLineWidth: () => 0,
+        paddingLeft: () => 0,
+        paddingRight: () => 0,
+        paddingTop: () => 0,
+        paddingBottom: () => 0,
+      },
+      margin: [0, 12, 0, 16],
+      unbreakable: true,
+    } as any);
+
+    const infoBox = (text: string, bgColor = '#f5f3ff') => ({
+      table: {
+        widths: [5, '*'],
+        body: [[
+          { text: '', fillColor: C.saffron, border: [false, false, false, false] },
+          {
+            text,
+            font: 'Outfit', fontSize: 9.5, color: C.navy,
+            fillColor: bgColor,
+            margin: [10, 9, 10, 9],
+            border: [false, false, false, false],
+            lineHeight: 1.5,
+          },
+        ]],
+      },
+      layout: {
+        hLineWidth: () => 0,
+        vLineWidth: () => 0,
+        paddingLeft: () => 0,
+        paddingRight: () => 0,
+        paddingTop: () => 0,
+        paddingBottom: () => 0,
+      },
+      margin: [0, 4, 0, 12],
+    } as any);
+
+    // Premium table builder
+    const table = (headers: string[], rows: (string | any[])[][], widths?: any[]) => {
+      const w = widths || headers.map(() => '*');
+      return {
+        table: {
+          widths: w,
+          headerRows: 1,
+          keepWithHeaderRows: 1,
+          dontBreakRows: true,
+          body: [
+            headers.map((h, i) => ({
+              text: h, font: 'Outfit', bold: true, fontSize: 8.5,
+              color: C.white,
+              fillColor: i === 0 ? C.navy : C.navyLight,
+              margin: [6, 5, 6, 5],
+              border: [false, false, false, false],
+            })),
+            ...rows.map((row, ri) => row.map((cell, ci) => ({
+              text: cell,
+              font: 'Outfit', fontSize: 8.5,
+              color: ci === 0 ? C.navy : C.text,
+              bold: ci === 0,
+              fillColor: ri % 2 === 0 ? C.white : '#f5f3ff',
+              margin: [6, 5, 6, 5],
+              border: [false, false, false, false],
+            }))),
+          ],
+        },
+        layout: {
+          hLineWidth: (i: number, node: any) => (i === 0 || i === node.table.body.length) ? 1.5 : 0.5,
+          vLineWidth: () => 0,
+          hLineColor: (i: number, node: any) => (i === 0 || i === node.table.body.length) ? C.navy : C.border,
+        },
+        margin: [0, 5, 0, 14],
+      } as any;
+    };
+
+    const divider = () => ({
+      canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: C.border }],
+      margin: [0, 6, 0, 6],
+    } as any);
+
+    const karmicLoop = (num: string, title: string, steps: string[]) => ({
+      stack: [
+        // Title band
+        {
+          table: {
+            widths: ['*'],
+            body: [[{
+              text: [
+                { text: 'LOOP #' + num + '  ', font: 'Outfit', fontSize: 8, color: C.saffron, bold: true },
+                { text: title, font: 'Outfit', fontSize: 10, color: C.white, bold: true },
+              ],
+              fillColor: C.navy,
+              margin: [10, 7, 10, 7],
+              border: [false, false, false, false],
+            }]],
+          },
+          layout: 'noBorders',
+          margin: [0, 0, 0, 0],
+        },
+        // Steps as flow rows
+        {
+          table: {
+            widths: [22, '*'],
+            headerRows: 0,
+            body: steps.map((step, i) => [
+              {
+                table: { widths: [18], body: [[{ text: String(i + 1), font: 'Outfit', bold: true, fontSize: 8, color: C.saffron, fillColor: '#1e1b4b', alignment: 'center', margin: [0, 3, 0, 0], border: [false, false, false, false] }]] },
+                layout: { hLineWidth: () => 0, vLineWidth: () => 0 },
+                fillColor: i % 2 === 0 ? C.white : '#f5f3ff',
+                border: [false, false, false, false],
+                margin: [4, 4, 0, 4],
+              },
+              {
+                text: step.trim(),
+                font: 'Outfit', fontSize: 9, color: C.text,
+                lineHeight: 1.4,
+                fillColor: i % 2 === 0 ? C.white : '#f5f3ff',
+                border: [false, false, false, false],
+                margin: [4, 5, 6, 5],
+              },
+            ]),
+          },
+          layout: {
+            hLineWidth: () => 0,
+            vLineWidth: () => 0,
+          },
+          margin: [0, 0, 0, 0],
+        },
+      ],
+      margin: [0, 8, 0, 14],
+      unbreakable: true,
+    } as any);
+
+    const numberedAction = (num: number, title: string, desc: string) => ({
+      columns: [
+        {
+          // Navy square badge with centered saffron number
+          table: {
+            widths: [28],
+            heights: [28],
+            body: [[{
+              text: String(num),
+              font: 'Lora', bold: true, fontSize: 12,
+              color: C.saffron,
+              fillColor: C.navy,
+              alignment: 'center',
+              margin: [0, 8, 0, 0],
+              border: [false, false, false, false],
+            }]],
+          },
+          layout: { hLineWidth: () => 0, vLineWidth: () => 0, paddingLeft: () => 0, paddingRight: () => 0, paddingTop: () => 0, paddingBottom: () => 0 },
+          width: 38,
+        },
         {
           stack: [
-            { text: 'LIFE TRANSFORMATION REPORT', fontSize: 10, color: '#C5952A', bold: true, letterSpacing: 2, margin: [0, 0, 0, 8] },
-            { text: 'Mohanraaj (Layout Preview)', fontSize: 28, bold: true, color: '#1A3C5E', font: 'Roboto', margin: [0, 0, 0, 6] },
-            {
-              columns: [
-                { text: \`Raasi: Thulam (Libra)\`, fontSize: 12, color: '#475569' },
-                { text: \`Lagnam: Thulam (Libra)\`, fontSize: 12, color: '#475569' },
-                { text: \`Nakshatra: Swathi\`, fontSize: 12, color: '#475569' },
-              ],
-              margin: [0, 0, 0, 4],
-            },
-            { text: \`Language: English\`, fontSize: 11, color: '#94A3B8', margin: [0, 0, 0, 20] },
-            { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 495, y2: 0, lineWidth: 1.5, lineColor: '#C5952A' }] },
+            { text: title, font: 'Lora', bold: true, fontSize: 10.5, color: C.navy, margin: [0, 2, 0, 3] },
+            { text: desc, font: 'Outfit', fontSize: 9.5, color: C.text, lineHeight: 1.5 },
           ],
-          margin: [0, 20, 0, 24],
+          width: '*',
         },
-        pdfContent,
       ],
-      defaultStyle: {
-        font: 'Roboto',
-        fontSize: 11,
-        lineHeight: 1.55,
-        color: '#1e293b',
+      margin: [0, 8, 0, 12],
+    } as any);
+
+    const checklist = (items: string[]) => ({
+      stack: items.map(item => ({
+        columns: [
+          {
+            canvas: [{ type: 'ellipse', x: 4, y: 5, r1: 3.5, r2: 3.5, color: C.saffron }],
+            width: 14,
+            margin: [0, 0, 0, 0],
+          },
+          { text: item, font: 'Outfit', fontSize: 9.5, color: C.text, width: '*', lineHeight: 1.4 },
+        ],
+        margin: [0, 4, 0, 4],
+      })),
+    } as any);
+
+    // ── DOCUMENT CONTENT ──────────────────────────────────────────────────
+    const content: any[] = [
+
+      // ══ COVER PAGE ═══════════════════════════════════════════════════════
+      {
+        canvas: [
+          { type: 'rect', x: 0, y: 0, w: 515, h: 220, r: 6, color: C.navy },
+        ],
       },
-      styles: {
-        'html-h1': {
-          fontSize: 18,
-          bold: true,
-          color: '#1A3C5E',
-          margin: [0, 20, 0, 8],
-          decoration: 'underline',
-          decorationColor: '#C5952A',
-          font: 'Roboto',
+      {
+        stack: [
+          // Stars / decorative
+          {
+            columns: [
+              { canvas: [{ type: 'line', x1: 0, y1: 4, x2: 140, y2: 4, lineWidth: 0.8, lineColor: C.saffron }], width: 140 },
+              { text: 'ASK ASTRO RAJA', font: 'Outfit', bold: true, fontSize: 8, color: C.saffron, alignment: 'center', letterSpacing: 4, width: '*' },
+              { canvas: [{ type: 'line', x1: 0, y1: 4, x2: 140, y2: 4, lineWidth: 0.8, lineColor: C.saffron }], width: 140 },
+            ],
+            margin: [0, 0, 0, 14],
+          },
+          { text: 'LIFE TRANSFORMATION', font: 'Lora', bold: true, fontSize: 26, color: C.white, alignment: 'center', margin: [0, 0, 0, 4] },
+          { text: 'REPORT', font: 'Lora', bold: true, fontSize: 26, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 16] },
+          // Gold line
+          { canvas: [{ type: 'line', x1: 100, y1: 0, x2: 415, y2: 0, lineWidth: 1, lineColor: C.saffron }], margin: [0, 0, 0, 16] },
+          { text: 'MOHANRAAJ', font: 'Lora', bold: true, fontSize: 20, color: '#e0e7ff', alignment: 'center', margin: [0, 0, 0, 10] },
+          {
+            text: [
+              { text: 'Simbha Raasi (', font: 'Outfit', fontSize: 10, color: C.white },
+              T('சிம்மம்', { fontSize: 10, color: C.white }),
+              { text: ')  +  Kanni Lagnam (', font: 'Outfit', fontSize: 10, color: C.white },
+              T('கன்னி', { fontSize: 10, color: C.white }),
+              { text: ')  +  Puram 4th Padam (', font: 'Outfit', fontSize: 10, color: C.white },
+              T('பூரம்', { fontSize: 10, color: C.white }),
+              { text: ')', font: 'Outfit', fontSize: 10, color: C.white },
+            ],
+            alignment: 'center', margin: [0, 0, 0, 8],
+          },
+          { text: 'The King Trapped in the Perfectionist\'s Prison', font: 'Lora', italics: true, fontSize: 11, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 0] },
+        ],
+        margin: [0, -210, 0, 0],
+        // position over the rect
+      },
+
+      // Astro key summary bar — navy background, white label, saffron value
+      {
+        columns: [
+          {
+            table: {
+              widths: ['*'],
+              body: [[{
+                stack: [
+                  { text: 'RAASI', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
+                  { text: 'Simbham (Leo)', font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                ],
+                fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
+              }]],
+            },
+            layout: 'noBorders',
+          },
+          { width: 6, text: '' },
+          {
+            table: {
+              widths: ['*'],
+              body: [[{
+                stack: [
+                  { text: 'LAGNAM', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
+                  { text: 'Kanni (Virgo)', font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                ],
+                fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
+              }]],
+            },
+            layout: 'noBorders',
+          },
+          { width: 6, text: '' },
+          {
+            table: {
+              widths: ['*'],
+              body: [[{
+                stack: [
+                  { text: 'NAKSHATRA', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
+                  { text: 'Puram 4th Padam', font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                ],
+                fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
+              }]],
+            },
+            layout: 'noBorders',
+          },
+          { width: 6, text: '' },
+          {
+            table: {
+              widths: ['*'],
+              body: [[{
+                stack: [
+                  { text: 'RULING PLANET', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
+                  { text: 'Sun + Mercury', font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                ],
+                fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
+              }]],
+            },
+            layout: 'noBorders',
+          },
+        ],
+        margin: [0, 14, 0, 6],
+      },
+
+      // ══ SECTION 1 ═════════════════════════════════════════════════════════
+      sectionHeader(1, 'Astro Foundation', 'Your cosmic blueprint — the stars that shape your inner and outer world'),
+      table(
+        ['Aspect', ['Raasi — Simbham (', T('சிம்மம்'), ')'], ['Lagnam — Kanni (', T('கன்னி'), ')']],
+        [
+          [['Sign'], ['Leo — ', T('சிம்மம்')], ['Virgo — ', T('கன்னி')]],
+          [['Symbol'], ['Lion — ', T('சிங்கம்')], ['Virgin / Maiden — ', T('கன்னி')]],
+          [['Element'], ['Fire — ', T('நெருப்பு')], ['Earth — ', T('பூமி')]],
+          [['Ruling Planet'], ['Sun / Surya — ', T('சூரியன்')], ['Mercury / Budhan — ', T('புதன்')]],
+          [['Nakshatra'], ['Puram 4th Padam — ', T('பூரம்'), '\n(Ruled by Venus — Royal star of luxury & creativity)'], ['']],
+          [['Core Nature'], ['Pride, leadership, warmth, generosity, craves recognition'], ['Analytical, perfectionist, critical, anxious, over-thinks everything']],
+          [['Thinking Style'], ['"I deserve this." — feels grand, thinks big, wants to be center'], ['"Is this good enough?" — analyzes every angle, finds every flaw']],
+        ]
+      ),
+      subHead('The Lion and The Maiden — Symbol Connection'),
+      para('The Lion is the king of the jungle. It walks with majesty, demands respect, and expects to be admired. It was BORN to rule. The Maiden is meticulous, careful, humble, always checking, always correcting, always worried about imperfection. Now put them in one body. Inside, Mohanraaj feels like a king — he KNOWS he\'s meant for something great. He has the vision, the warmth, the leadership instinct. Outside, the Maiden makes him second-guess every step, over-analyze every decision, and paralyze himself with perfectionism before the Lion can even roar.'),
+      subHead('Puram 4th Padam — The Royal Star in the House of Emotion'),
+      para('Puram nakshatra is the star of royalty, creativity, and public life. It\'s ruled by Venus, giving Mohanraaj a natural love for beauty, comfort, art, and meaningful connections. The 4th padam falls in Cancer navamsa — adding an emotional, nurturing, family-oriented depth to the royal energy. This means Mohanraaj doesn\'t just want success — he wants success that MEANS something. He wants recognition not for ego but for validation that his life MATTERS.'),
+      quoteBlock('I am a king who forgot his crown — because the perfectionist inside keeps telling him it\'s not polished enough to wear.'),
+
+      // ══ SECTION 2 ═════════════════════════════════════════════════════════
+      sectionHeader(2, 'Core Combination Truth', 'The painful gap between your inner world and outer appearance'),
+      table(
+        ['INNER WORLD (Simbha Raasi)', 'OUTER APPROACH (Kanni Lagnam)'],
+        [
+          ['Feels like a leader — born to shine, guide, and inspire', 'Appears analytical, careful, self-doubting, overly cautious'],
+          ['Craves recognition: "See me. Value me. Admire me."', 'Hides from the spotlight because "I\'m not ready yet"'],
+          ['Thinks big — grand visions, majestic plans', 'Thinks small — micro-details, flaws, risks, what could go wrong'],
+          ['Generous, warm, big-hearted', 'Critical, judgmental — of self first, then others'],
+          ['Wants to take bold action and lead', 'Over-analyzes until the moment passes. Then regrets.'],
+          ['Needs love, admiration, and emotional warmth', 'Pushes people away with criticism and emotional distance'],
+          ['"I am special. I have a gift."', '"Who am I to think I\'m special?"'],
+        ]
+      ),
+      subHead('The Conflict'),
+      para('This is one of the most PAINFUL combinations in the zodiac — because the gap between what Mohanraaj feels inside and what he shows outside is enormous. Inside, the Lion ROARS. He knows he\'s meant for greatness. Outside, the Maiden whispers: "But what if you fail? What if it\'s not perfect?" The Lion wants to leap. The Maiden wants to check the landing spot 47 times first. By the time the analysis is done, the opportunity is gone.'),
+      para('The deepest pain: Mohanraaj is MISUNDERSTOOD. People see the Virgo exterior — quiet, analytical, critical, reserved. They have no idea that inside there is a Lion starving for recognition, love, and a chance to shine.'),
+      quoteBlock('The world sees a quiet analyst. Inside lives a roaring king. The tragedy is not that I can\'t lead — it\'s that I won\'t let myself.'),
+
+      // ══ SECTION 3 ═════════════════════════════════════════════════════════
+      sectionHeader(3, 'Character Profile', 'Your strengths and uncomfortable truths side by side'),
+      table(
+        ['STRENGTHS', 'SHADOW WEAKNESSES'],
+        [
+          ['Natural leader — people WANT to follow him when he steps up', 'Rarely steps up because he\'s waiting to be "ready." Ready never comes.'],
+          ['Brilliant analytical mind — sees details others miss', 'Uses analysis as a disguise for fear. "I\'m still researching" = "I\'m too scared to start."'],
+          ['Deeply creative — Puram gives artistic, aesthetic sensibility', 'Creates in private but never shares because it\'s "not good enough yet."'],
+          ['Extremely loyal and devoted to family', 'Devotion becomes suffocation. Expectations become resentment.'],
+          ['High standards — everything he does has quality', 'Standards so high that nothing ever meets them. Perfectionism is his prison.'],
+          ['Warm and generous when comfortable', 'Cold and critical when stressed. The warmth vanishes.'],
+          ['Can see the big picture AND the small details', 'Gets lost in small details and forgets the big picture.'],
+          ['Deeply wants to serve and help others', 'Helps everyone except himself. Self-neglect is his default setting.'],
+          ['Resilient — quiet endurance under enormous pressure', 'Endures when he should exit. Stays in destroying situations hoping for better.'],
+        ]
+      ),
+
+      // ══ SECTION 4 ═════════════════════════════════════════════════════════
+      sectionHeader(4, 'Life Area Impact', 'How your combination shows up across every domain of life'),
+      table(
+        ['Life Area', 'How it Shows Up', 'The Hidden Cost'],
+        [
+          ['Career', 'No clear direction. Leo wants to lead but Virgo says "not yet." Overqualified for current reality.', 'Years pass. Talent wasted. The Lion gets smaller every year it doesn\'t roar.'],
+          ['Money', 'Leo wants luxury. Virgo anxious about every rupee. Earns inconsistently because career has no direction.', 'Financial anxiety is constant. Not because he can\'t earn — but never commits to ONE path.'],
+          ['Marriage', 'Leo wants admiration from partner. Virgo makes him critical. Wife feels she can never be good enough.', 'Emotional distance. Wife stops trying. Leo feels unloved. Virgo blames. Nobody wins.'],
+          ['Family', 'Deep duty (Puram 4th padam = family-oriented). Does everything for family, expects recognition.', 'Quiet resentment builds. "I sacrifice everything and nobody notices."'],
+          ['Health', 'Virgo rules nervous system. Overthinking = acidity, gut problems, sleep issues, anxiety.', 'The body whispers first, then shouts, then screams. By the time he listens — it\'s screaming.'],
+          ['Mental', 'Brutal inner critic attacking a sensitive ego. The mind is a courtroom with Mohanraaj always on trial.', 'Mental exhaustion. Loneliness. Nobody sees the Lion. He feels invisible in his own life.'],
+        ],
+        [60, '*', '*']
+      ),
+
+      // ══ SECTION 5 ═════════════════════════════════════════════════════════
+      sectionHeader(5, 'Core Life Loop', 'The cycle that keeps you trapped — not fate, not karma, a pattern you feed'),
+      table(
+        ['#', 'Stage Name', 'What\'s Really Happening'],
+        [
+          ['(1)', 'The Vision', 'Leo sees a grand possibility. The heart KNOWS this is right. "This could be my moment."'],
+          ['(2)', 'The Analysis', 'Virgo takes over. "But what about this risk? Let me make sure it\'s PERFECT before I start."'],
+          ['(3)', 'Paralysis', 'Weeks → months. Still planning. Still perfecting. Others who are less talented but more decisive move ahead.'],
+          ['(4)', 'Wounded Pride', '"I\'m better than them — why are THEY succeeding?" Frustration. Jealousy. Humiliation by inaction.'],
+          ['(5)', 'Self-Spiral', '"You\'re a fraud. You\'ll never do it." The inner critic destroys what\'s left of the Lion\'s confidence.'],
+          ['(6)', 'Retreat', 'Gives up. Goes quiet. Retreats into routine. Until the next vision appears. The graveyard of ideas grows.'],
+        ],
+        [35, 90, '*']
+      ),
+      subHead('Why this happens for Leo + Virgo + Puram:'),
+      para('Leo\'s Sun gives the VISION. Virgo\'s Mercury gives the DOUBT. Puram\'s Venus adds the desire for everything to be BEAUTIFUL and PERFECT before it\'s shared. Together: king-level vision, servant-level self-doubt, and artist-level perfectionism. The vision is grand. The standards are impossible. The gap is where life is stuck.'),
+      quoteBlock('I am not failing because I lack talent. I am failing because I won\'t let imperfect talent see the light of day. My perfectionism is not quality control — it is fear wearing a lab coat.'),
+
+      // ══ SECTION 6 ═════════════════════════════════════════════════════════
+      sectionHeader(6, 'Karmic Pattern Analysis', 'Behavioral grooves carved so deep they feel like destiny'),
+      para('These are not curses from past lives. These are patterns carved so deep they feel like fate.'),
+      karmicLoop('4', 'The Lonely Lion', [
+        'Want deep connection',
+        'Show Virgo exterior — critical, reserved',
+        'People feel judged, they withdraw',
+        '"Nobody gets me" — withdraw further',
+        'Loneliness deepens',
+        'Repeat. The warmth of the Lion is trapped behind the walls of the Maiden.',
+      ]),
+      infoBox('Root Cause: His inner Leo says "I am the Sun. I was born to shine." His outer Virgo says "But what if the light isn\'t bright enough?" This battle has run his entire life. The karma is simple: SHINE ANYWAY. Imperfectly. Messily. Humanly.'),
+      quoteBlock('My karma is not suffering. My karma is the refusal to shine until conditions are perfect. Conditions will NEVER be perfect. The Sun doesn\'t wait for a cloudless sky. It rises every day regardless.'),
+
+      // ══ SECTION 7 ═════════════════════════════════════════════════════════
+      sectionHeader(7, 'Root Problems', 'The core issues running every area of life'),
+      table(
+        ['Problem', 'How It Shows Up in Mohanraaj\'s Life'],
+        [
+          ['Analysis Paralysis', 'Can\'t make decisions. Over-researches everything. Uses "I need more information" as a shield against the fear of action.'],
+          ['Perfectionism', 'Nothing is ever good enough to ship, share, or start. The project is 90% done but the last 10% takes forever. Perfectionism is fear in a tuxedo.'],
+          ['Self-Criticism', 'The Virgo inner critic is merciless. "You\'re not good enough. You\'re a fraud." This voice is loudest at 2 AM.'],
+          ['Need for Recognition', 'Does good work but NEEDS someone to notice. No praise = no fuel. Motivation depends entirely on external validation.'],
+          ['Career Confusion', 'Has 10 ideas but can\'t commit to one. Talented enough for many paths but committed to none.'],
+          ['Relationship Criticism', 'Virgo sees every flaw in partner, family, friends. Points them out "for their own good." People feel judged, not loved.'],
+          ['Health Anxiety', 'Overthinking = physical symptoms: gut problems, headaches, sleep issues, chest tightness. Every symptom is googled and catastrophized.'],
+          ['Loneliness', 'Shows the Virgo exterior and wonders why people think he\'s cold. Wants warmth but projects walls.'],
+          ['Financial Anxiety', 'Wants a wealthy life, feels guilty about wanting it, can\'t build it because of career paralysis, stresses about money constantly.'],
+        ]
+      ),
+
+      // ══ SECTION 8 ═════════════════════════════════════════════════════════
+      sectionHeader(8, 'What Must Be Let Go', 'The beliefs to release and the practices to replace them'),
+      table(
+        ['Let Go Of', 'Wrong Belief', 'The Truth', 'Daily Practice'],
+        [
+          ['Perfectionism', '"It has to be perfect before I share it."', 'Done at 80% beats perfect at 0%. The world rewards shipped, not polished.', 'Ship ONE thing today — good enough, not perfect.'],
+          ['Needing Approval', '"If nobody notices, it wasn\'t worth doing."', 'Worth is not measured by applause.', 'Do one valuable thing without telling anyone.'],
+          ['Self-Criticism', '"I\'m not good enough. I\'m a fraud."', 'The inner critic is paralyzing, not protecting.', 'Write ONE thing you did well tonight.'],
+          ['Over-Analysis', '"I need more data before deciding."', 'After 70% information, more analysis is just delay.', '10-minute cap: research, then DECIDE.'],
+          ['Criticizing Others', '"I\'m helping them by pointing out mistakes."', 'Unsolicited criticism pushes people away.', 'For every flaw you see, say one strength out loud.'],
+          ['Hiding the Lion', '"People will judge me if I show who I really am."', 'Show the Lion — people will see warmth and heart.', 'Once per day: one genuine warm expression.'],
+          ['Comparing to Others', '"They\'re less talented but more successful."', 'They\'re not more talented. They\'re more DECISIVE.', 'Compete only with yesterday\'s version of yourself.'],
+        ],
+        [60, 85, 85, '*']
+      ),
+      quoteBlock('The Lion doesn\'t need a perfect mane to roar. It just needs to open its mouth. Mohanraaj — open yours.'),
+
+      // ══ SECTION 9 ═════════════════════════════════════════════════════════
+      sectionHeader(9, 'React Mode vs Create Mode', 'Where you are now — and where you must go'),
+      table(
+        ['REACT MODE — Current State', 'CREATE MODE — Required State'],
+        [
+          ['Waits for perfect conditions to start', 'Starts in imperfect conditions. Perfects along the way.'],
+          ['Needs validation before acting', 'Acts first. Validation comes from results, not applause.'],
+          ['Analyzes until the opportunity dies', 'Analyzes for 10 minutes, then MOVES. Adjusts in flight.'],
+          ['Criticizes self and others when stressed', 'Observes flaws but leads with encouragement.'],
+          ['Hides talent behind "I\'m not ready"', 'Shows talent before it\'s polished. Let the world see.'],
+          ['Compares to others and feels bitter', 'Competes only with yesterday\'s version of himself.'],
+        ]
+      ),
+      para('Virgo lagnam is the most analytically REACTIVE sign. Leo raasi COULD be the engine of action — Lions are born leaders and doers. But the Virgo gatekeeper won\'t let the Lion out until every variable is checked. The transformation: OPEN THE GATE. Let the Lion out. Messy, imperfect, unpolished. The world needs his roar, not his analysis.'),
+
+      // ══ SECTION 10 ════════════════════════════════════════════════════════
+      sectionHeader(10, 'Complete Solution System', 'The operating system to break every karmic loop'),
+
+      subLabel('A', 'Mind Rules — Non-Negotiable'),
+      table(
+        ['#', 'Rule'],
+        [
+          ['1', 'SHIP BEFORE IT\'S PERFECT. 80% done and shared beats 100% done and hidden. Every time. No exceptions.'],
+          ['2', 'The inner critic is NOT my friend. It\'s the Virgo cage. When it speaks: "Thank you. The Lion is driving now."'],
+          ['3', 'I don\'t need permission to shine. I need COURAGE. Courage is acting while the Virgo voice is still talking.'],
+          ['4', 'My worth is measured by what I CREATE today, not by other people\'s recognition.'],
+          ['5', 'Criticize less. Encourage more. Kindness to others = kindness to self.'],
+        ],
+        [32, '*']
+      ),
+
+      subLabel('B', 'Daily Operating System'),
+      table(
+        ['Time', 'Activity', 'Purpose'],
+        [
+          ['5:30 AM', 'Wake up', 'Claim the day before the critic wakes up'],
+          ['5:45–6:15 AM', 'Walk + sunlight. 30 min. No phone.', 'Leo is ruled by the Sun. Morning sunlight literally fuels this sign. Vitamin D + movement = anxiety down.'],
+          ['6:15–6:30 AM', 'Affirmation: "Today, the Lion leads." + Write 3 tasks.', 'Set the identity BEFORE the day tests it'],
+          ['9:00 AM–1:00 PM', 'TASK 1: The SCARY task. Do it FIRST.', 'Hardest action while willpower is highest. Once done, the day is already a win.'],
+          ['2:00–4:00 PM', 'TASK 2: Income / career progress.', 'Direction. Movement. Money follows action, not analysis.'],
+          ['4:00–5:30 PM', 'TASK 3: Creative / share something publicly.', 'The Lion needs a stage. Even a small one.'],
+          ['7:00–7:30 PM', 'Family time — ONE kind word. No criticism.', 'Retrain the Virgo eye to see beauty, not flaws.'],
+          ['9:00–9:15 PM', 'Night review: What did I SHIP? What was I kind?', 'Track courage, not perfection.'],
+          ['10:00 PM', 'Sleep. No phone after 9:30.', 'The anxious mind NEEDS shutdown time.'],
+        ],
+        [100, '*', '*']
+      ),
+
+      subLabel('C', 'Money System'),
+      infoBox('Current: No clear income path → no career commitment → earns inconsistently → financial anxiety.\n\nFix: COMMIT to one income path for 90 days. Stop researching alternatives. Pick the best option TODAY and go deep.\n\nPuram\'s Gift (Venus): Natural ability with aesthetics, creativity, people skills, luxury markets. Fields: design, consulting, content, hospitality, wellness, art, coaching, branding.\n\nDaily Rule: ONE income action per day. "Did I move closer to money today?" If yes, the day counts.'),
+
+      subLabel('D', 'Overthinking Control'),
+      infoBox('The 10-minute cap: Set a timer. Research for max 10 minutes. When it rings: DECIDE. Even if imperfect. Adjust tomorrow.\n\nThe body hack: When the Virgo spiral starts — STAND UP. Walk 5 minutes. Drink water. The spiral lives in stillness. Movement breaks it.\n\nThe truth mantra: "This thought is not a fact. It\'s just the Maiden worrying. The Lion has work to do."'),
+
+      subLabel('E', 'Loneliness Fix'),
+      infoBox('The cause: Shows Virgo exterior (critical, reserved) while Leo inside starves for connection.\n\nThe fix: Show the Lion. Once per day — compliment someone genuinely, share something personal, laugh loudly, express affection directly. Each warm act is a crack in the Virgo wall.\n\nThe rule: "If I want warmth from others, I must radiate it first. The Sun doesn\'t wait for someone else to shine."'),
+
+      // ══ SECTION 11 ════════════════════════════════════════════════════════
+      sectionHeader(11, 'How to Break the Karmic Pattern', '5 steps to permanently end the loops'),
+      numberedAction(1, 'Recognize the Maiden taking over',
+        'When you hear: "I need more time, it\'s not ready, what if it fails, let me check one more thing" — say OUT LOUD: "The Maiden is worried. But the Lion is ready. I\'m going." Then act within 60 seconds.'),
+      numberedAction(2, 'Ship something imperfect every day',
+        'Every day, put something into the world that is not 100%. A message. A post. An email. A conversation. A decision. After 30 days: imperfect shipped > perfect imagined.'),
+      numberedAction(3, 'Stop tracking who noticed',
+        'Create for the work, not for the applause. When you stop needing recognition, ironically, recognition finds you. Do the work. Let go of the scoreboard.'),
+      numberedAction(4, 'Replace criticism with curiosity',
+        'When the Virgo eye spots a flaw, ask: "What can I learn?" instead of judging. 90 days of this rewires the critical brain into a growth brain. The inner critic becomes an inner coach.'),
+      numberedAction(5, 'Claim the throne',
+        'Stop waiting to be invited. Stop waiting for permission. YOU are the king of your life. Nobody is going to crown you. Crown yourself. Imperfect crown. Messy throne. But YOURS. Today.'),
+      quoteBlock('My karma breaks the day I stop waiting to be perfect and start choosing to be present. The Sun doesn\'t apologize for its spots. It just shines.'),
+
+      // ══ SECTION 12 ════════════════════════════════════════════════════════
+      sectionHeader(12, 'Identity Shift', 'The old identity to bury — the new one to build daily'),
+      table(
+        ['OLD IDENTITY — Let This Die', 'NEW IDENTITY — Build This Daily'],
+        [
+          ['"I\'m not ready yet"', '"I start before I\'m ready. Readiness is an illusion."'],
+          ['"Nobody sees my talent"', '"I haven\'t shown my talent. That\'s on me, not them."'],
+          ['"It has to be perfect"', '"Done and shared beats perfect and hidden. Every time."'],
+          ['"I\'m a critic who sees what\'s wrong"', '"I\'m a leader who sees what\'s possible."'],
+          ['"I\'m misunderstood — nobody gets me"', '"I haven\'t shown the real me. When I do, the right people will see."'],
+          ['"I need recognition to feel worthy"', '"My worth comes from what I create, not what others applaud."'],
+          ['"I\'m an analyst"', '"I\'m a king who uses analysis as a tool — not a cage."'],
+          ['"I\'m a failure"', '"I\'m a man of immense potential who is finally choosing to ACT."'],
+        ]
+      ),
+
+      // ══ SECTION 13 ════════════════════════════════════════════════════════
+      sectionHeader(13, 'Final Truths', 'Read these every morning — before the Maiden wakes up'),
+      para('Read these while the Lion is still in charge.', { bold: true, color: C.navy }),
+      table(
+        ['#', 'Truth'],
+        [
+          ['1', 'Perfectionism is not quality control. It is FEAR wearing a lab coat. I see it now.'],
+          ['2', 'The people succeeding ahead of me are not more talented. They are more DECISIVE. They shipped at 60% while I polished at 95%.'],
+          ['3', 'Nobody will crown me. I must crown myself. Imperfect crown. Messy throne. But MINE.'],
+          ['4', 'The world doesn\'t need a perfect version of me. It needs a PRESENT version of me.'],
+          ['5', 'My inner critic has had the microphone for years. Today I take it back. The Lion speaks now.'],
+          ['6', 'I am not invisible. I have been hiding. One is fate. The other is a choice I can change.'],
+          ['7', 'Criticism without kindness is cruelty with an alibi. I will lead with warmth.'],
+          ['8', 'The Sun doesn\'t wait for a cloudless sky. It rises every morning regardless. I am the Sun. I rise today.'],
+          ['9', 'My body is screaming because my feelings have been whispering for too long.'],
+          ['10', 'Today I choose to be imperfect, visible, and alive — rather than perfect, hidden, and dying slowly.'],
+        ],
+        [32, '*']
+      ),
+
+      // ══ SECTION 14 ════════════════════════════════════════════════════════
+      sectionHeader(14, 'Daily Checklist', 'Your non-negotiable daily accountability system'),
+      {
+        columns: [
+          {
+            stack: [
+              subHead('MORNING & WORK EXECUTION', C.saffron),
+              checklist([
+                'Wrote down top 3 priorities',
+                'Said affirmation: "The Lion leads today"',
+                'Walked + got morning sunlight (30 min)',
+                'Made one fast, aggressive decision',
+                'Task 1 (Scary action) completed',
+                'Task 2 (Income/career) completed',
+                'Task 3 (Creative/share publicly) completed',
+                'Shipped something imperfect today',
+                'One income action done',
+                'Did NOT compare myself to anyone',
+              ]),
+            ],
+            width: '*',
+          },
+          { width: 16, text: '' },
+          {
+            stack: [
+              subHead('EVENING & MINDSET PROTECTION', C.saffron),
+              checklist([
+                'Said one kind word to wife/family — no criticism',
+                'Quality family time (30 min, phone off)',
+                'Wrote ONE thing I did well today',
+                'Stopped analysis in 10 min — then decided',
+                'Did NOT seek validation before acting',
+                'Showed warmth to someone',
+                'Replaced one criticism with one encouragement',
+                'Chose imperfect action over perfect paralysis',
+                'Sleep by 10 PM, no phone after 9:30',
+                'Let the Lion lead, not the Maiden',
+              ]),
+            ],
+            width: '*',
+          },
+        ],
+        margin: [0, 0, 0, 16],
+      },
+
+      // ══ CLOSING PANEL — built as a table so content is guaranteed inside the box
+      {
+        table: {
+          widths: ['*'],
+          body: [[
+            {
+              stack: [
+                // Top gold accent bar via canvas
+                { canvas: [{ type: 'rect', x: 0, y: 0, w: 435, h: 3, color: C.saffron }], margin: [0, 0, 0, 12] },
+                { text: 'MOHANRAAJ — REMEMBER THIS EVERY SINGLE DAY', font: 'Lora', bold: true, fontSize: 12, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 8] },
+                { canvas: [{ type: 'line', x1: 40, y1: 0, x2: 435, y2: 0, lineWidth: 0.5, lineColor: '#4338ca' }], margin: [0, 0, 0, 10] },
+                { text: 'I am not a perfectionist. I am a king who forgot his crown.\nThe crown was never missing. I was just too busy polishing it to put it on.', font: 'Outfit', fontSize: 10, color: '#e0e7ff', alignment: 'center', lineHeight: 1.55, margin: [0, 0, 0, 12] },
+                { text: '"The Sun does not wait for a cloudless sky. It rises every morning. I am the Sun."', font: 'Lora', italics: true, fontSize: 9.5, color: '#a5b4fc', alignment: 'center', margin: [0, 0, 0, 4] },
+                { text: '"Done and shared beats perfect and hidden. Every single time."', font: 'Lora', italics: true, fontSize: 9.5, color: '#a5b4fc', alignment: 'center', margin: [0, 0, 0, 4] },
+                { text: '"My life is not what I analyze — it\'s what I create."', font: 'Lora', italics: true, fontSize: 9.5, color: '#a5b4fc', alignment: 'center', margin: [0, 0, 0, 12] },
+                { canvas: [{ type: 'line', x1: 40, y1: 0, x2: 435, y2: 0, lineWidth: 0.5, lineColor: '#4338ca' }], margin: [0, 0, 0, 10] },
+                { text: 'THE LION LEADS  |  THE MAIDEN ADVISES  |  THE SUN RISES', font: 'Lora', bold: true, fontSize: 11, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 10] },
+                // Bottom gold accent bar
+                { canvas: [{ type: 'rect', x: 0, y: 0, w: 435, h: 3, color: C.saffron }], margin: [0, 0, 0, 0] },
+              ],
+              fillColor: C.navy,
+              margin: [20, 12, 20, 12],
+              border: [false, false, false, false],
+            }
+          ]],
         },
-        'html-h2': {
-          fontSize: 14,
-          bold: true,
-          color: '#2E6B9E',
-          margin: [0, 16, 0, 6],
-          font: 'Roboto',
-        },
-        'html-h3': {
-          fontSize: 12,
-          bold: true,
-          color: '#475569',
-          margin: [0, 12, 0, 4],
-        },
-        'html-p': {
-          margin: [0, 4, 0, 8],
-          lineHeight: 1.6,
-        },
-        'html-blockquote': {
-          margin: [12, 6, 0, 12],
-          italics: true,
-          color: '#1A3C5E',
-          fontSize: 12,
-          bold: true,
-        },
-        'html-strong': {
-          bold: true,
-          color: '#1A3C5E',
-        },
-        'html-table': {
-          margin: [0, 6, 0, 14],
-        },
-        'html-th': {
-          bold: true,
-          fillColor: '#1A3C5E',
-          color: '#FFFFFF',
-          fontSize: 10,
-        },
-        'html-td': {
-          fontSize: 10,
-          margin: [4, 4, 4, 4],
-        },
-        'html-li': {
-          margin: [0, 3, 0, 3],
-        },
+        layout: 'noBorders',
+        margin: [0, 16, 0, 0],
+      },
+    ];
+
+    // ── Document Definition ───────────────────────────────────────────────
+    const docDefinition: any = {
+      pageSize: 'A4',
+      pageBreakBefore: function(currentNode, followingNodesOnPage) {
+        if (currentNode.id === 'sectionHeader' && followingNodesOnPage.length === 0) {
+          return true;
+        }
+        return false;
+      },
+      // top=65 reserves space for header bar, bottom=55 reserves space for footer bar
+      pageMargins: [40, 65, 40, 55],
+
+      header: (currentPage: number, pageCount: number) => currentPage === 1 ? null : ({
+        // margin: [left, top, right, bottom] — positions the header block
+        margin: [40, 20, 40, 0],
+        stack: [
+          {
+            columns: [
+              { text: 'Ask Astro Raja  |  Life Transformation Report', font: 'Outfit', fontSize: 8, color: C.saffron, bold: true, width: '*' },
+              { text: 'MOHANRAAJ  |  Personalized Report', font: 'Outfit', fontSize: 8, color: C.muted, alignment: 'right', width: 'auto' },
+            ],
+            margin: [0, 0, 0, 6],
+          },
+          // Thin separator line drawn relative to header block (x1=0, x2=full usable width)
+          { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: C.border }] },
+        ],
+      }),
+
+      footer: (currentPage: number, pageCount: number) => ({
+        // margin positions footer block from bottom of page
+        margin: [40, 10, 40, 0],
+        stack: [
+          // Thin separator line
+          { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: C.border }], margin: [0, 0, 0, 5] },
+          {
+            columns: [
+              {
+                // Break Tamil into simple segments to prevent wrapping
+                text: [
+                  { text: 'Simbha (', font: 'Outfit', fontSize: 7.5, color: C.muted },
+                  T('சிம்மம்', { fontSize: 7.5, color: C.muted }),
+                  { text: ')  Kanni (', font: 'Outfit', fontSize: 7.5, color: C.muted },
+                  T('கன்னி', { fontSize: 7.5, color: C.muted }),
+                  { text: ')  Puram (', font: 'Outfit', fontSize: 7.5, color: C.muted },
+                  T('பூரம்', { fontSize: 7.5, color: C.muted }),
+                  { text: ')  |  Confidential & Personalized', font: 'Outfit', fontSize: 7.5, color: C.muted },
+                ],
+                width: '*',
+              },
+              { text: currentPage + ' / ' + pageCount, font: 'Outfit', fontSize: 7.5, color: C.muted, alignment: 'right', width: 40 },
+            ],
+          },
+        ],
+      }),
+
+      content,
+
+      defaultStyle: {
+        font: 'Outfit',
+        fontSize: 9.5,
+        lineHeight: 1.4,
+        color: C.text,
       },
     };
 
+    const urlResolver = new URLResolver();
+    const printer = new PdfPrinter(fonts, null, urlResolver);
     const pdfDoc = await printer.createPdfKitDocument(docDefinition);
-    const chunks: Buffer[] = [];
 
+    const chunks: Buffer[] = [];
     const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
       pdfDoc.on('data', (chunk: Buffer) => chunks.push(chunk));
       pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
@@ -299,7 +851,7 @@ START TODAY.
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': 'inline; filename="Preview_Template.pdf"',
+        'Content-Disposition': 'inline; filename="Mohanraaj_Life_Transformation_Premium.pdf"',
         'Content-Length': String(pdfBuffer.length),
         'Cache-Control': 'no-store',
       },
