@@ -44,10 +44,7 @@ const report = rows[0];
 const formData = report.form_data || {};
 
 // ── Render Markdown → HTML ────────────────────────────────────────────────────
-let htmlContent = '';
-if (report.raw_markdown_report) {
-  htmlContent = await marked.parse(report.raw_markdown_report);
-}
+let hasContent = !!report.raw_markdown_report;
 
 const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
   dateStyle: 'long', timeStyle: 'short'
@@ -235,112 +232,23 @@ const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
 
     /* ── Report Content Card ─────────────────────────────────────── */
     .report-card {
-      background: #fff;
+      background: #e2e8f0;
       border-radius: 16px;
-      padding: 40px 44px;
+      padding: 0;
+      overflow: hidden;
       box-shadow: 0 4px 24px rgba(0,0,0,0.06);
       border: 1px solid var(--border);
+      height: 1000px;
     }
-
-    /* ── Markdown Styles ─────────────────────────────────────────── */
-    .report-content h1 {
-      font-family: 'Lora', serif;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--navy);
-      border-bottom: 2px solid var(--gold);
-      padding-bottom: 10px;
-      margin: 36px 0 16px;
-    }
-    .report-content h1:first-child { margin-top: 0; }
-
-    .report-content h2 {
-      font-family: 'Lora', serif;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--navy2);
-      margin: 28px 0 12px;
-      padding-left: 12px;
-      border-left: 3px solid var(--gold);
-    }
-
-    .report-content h3 {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--slate);
-      margin: 20px 0 8px;
-    }
-
-    .report-content p {
-      margin: 10px 0;
-      color: #334155;
-      line-height: 1.75;
-    }
-
-    .report-content strong { color: var(--navy); }
-
-    .report-content blockquote {
-      border-left: 4px solid var(--navy2);
-      background: #EEF4FA;
-      padding: 14px 20px;
-      margin: 16px 0;
-      border-radius: 0 8px 8px 0;
-      font-style: italic;
-      color: var(--navy);
-      font-size: 15px;
-      font-weight: 500;
-    }
-
-    .report-content table {
+    
+    .report-iframe {
       width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0 24px;
-      font-size: 14px;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
-    }
-    .report-content table thead tr {
-      background: var(--navy);
-      color: #fff;
-    }
-    .report-content table thead th {
-      padding: 12px 14px;
-      text-align: left;
-      font-weight: 600;
-      font-size: 13px;
-      letter-spacing: 0.3px;
-    }
-    .report-content table tbody tr {
-      border-bottom: 1px solid #e9e2d4;
-    }
-    .report-content table tbody tr:nth-child(even) {
-      background: var(--amber);
-    }
-    .report-content table tbody tr:hover {
-      background: #FFF3D6;
-    }
-    .report-content table td {
-      padding: 11px 14px;
-      vertical-align: top;
-      line-height: 1.6;
-    }
-
-    .report-content ul, .report-content ol {
-      padding-left: 22px;
-      margin: 10px 0;
-    }
-    .report-content li {
-      margin-bottom: 6px;
-      color: #334155;
-      line-height: 1.7;
-    }
-
-    .report-content hr {
+      height: 100%;
       border: none;
-      border-top: 1px solid var(--border);
-      margin: 28px 0;
+      display: block;
     }
+
+
 
     /* ── Empty State ─────────────────────────────────────────────── */
     .empty-state {
@@ -462,10 +370,10 @@ const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
 
     <!-- Report Content -->
     <div class="report-card">
-      {htmlContent ? (
-        <div class="report-content" set:html={htmlContent} />
+      {hasContent ? (
+        <iframe src={`/api/preview-pdf?report_id=${report.id}#toolbar=0&navpanes=0&view=FitH`} class="report-iframe" title="PDF Preview"></iframe>
       ) : (
-        <div class="empty-state">
+        <div class="empty-state" style="padding-top: 120px;">
           <div class="icon">📭</div>
           <h3>No report content yet</h3>
           <p>This report has not been generated yet (status: <strong>{report.status}</strong>).<br/>
