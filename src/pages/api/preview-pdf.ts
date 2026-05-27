@@ -52,12 +52,15 @@ export const GET: APIRoute = async ({ request }) => {
       sec4:  '#1e1b4b', sec5: '#1e1b4b', sec6: '#1e1b4b',
       sec7:  '#1e1b4b', sec8: '#1e1b4b', sec9: '#1e1b4b',
       sec10: '#1e1b4b', sec11:'#1e1b4b', sec12:'#1e1b4b',
-      sec13: '#1e1b4b', sec14:'#1e1b4b',
+      sec13: '#1e1b4b', sec14:'#1e1b4b', sec15:'#1e1b4b',
+      sec16: '#1e1b4b', sec17:'#1e1b4b', sec18:'#1e1b4b',
+      sec19: '#1e1b4b', sec20:'#1e1b4b'
     };
 
     const sectionColors = [
       C.sec1, C.sec2, C.sec3, C.sec4, C.sec5, C.sec6, C.sec7,
       C.sec8, C.sec9, C.sec10, C.sec11, C.sec12, C.sec13, C.sec14,
+      C.sec15, C.sec16, C.sec17, C.sec18, C.sec19, C.sec20
     ];
 
     // ── Tamil-aware inline text ───────────────────────────────────────────
