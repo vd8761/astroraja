@@ -85,8 +85,16 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
         model: claudeModel,
         max_tokens: 8192,
         temperature: 0.7,
-        system: systemPrompt,
+        system: [
+          {
+            type: "text",
+            text: systemPrompt,
+            cache_control: { type: "ephemeral" }
+          }
+        ],
         messages: messages
+      }, {
+        headers: { "anthropic-beta": "prompt-caching-2024-07-31" }
       });
 
       for (const block of msg.content) {
