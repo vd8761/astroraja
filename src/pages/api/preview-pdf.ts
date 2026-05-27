@@ -234,15 +234,19 @@ export const GET: APIRoute = async ({ request }) => {
               margin: [6, 5, 6, 5],
               border: [false, false, false, false],
             })),
-            ...rows.map((row, ri) => row.map((cell, ci) => ({
-              text: parseText(cell),
-              font: 'Outfit', fontSize: 8.5,
-              color: ci === 0 ? C.navy : C.text,
-              bold: ci === 0,
-              fillColor: ri % 2 === 0 ? C.white : '#f5f3ff',
-              margin: [6, 5, 6, 5],
-              border: [false, false, false, false],
-            }))),
+            ...rows.map((row, ri) => {
+              const paddedRow = [...row];
+              while (paddedRow.length < headers.length) paddedRow.push('');
+              return paddedRow.slice(0, headers.length).map((cell, ci) => ({
+                text: parseText(cell),
+                font: 'Outfit', fontSize: 8.5,
+                color: ci === 0 ? C.navy : C.text,
+                bold: ci === 0,
+                fillColor: ri % 2 === 0 ? C.white : '#f5f3ff',
+                margin: [6, 5, 6, 5],
+                border: [false, false, false, false],
+              }));
+            }),
           ],
         },
         layout: {
