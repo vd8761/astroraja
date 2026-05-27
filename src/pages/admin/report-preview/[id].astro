@@ -415,13 +415,13 @@ const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
         ✉ Send Email
       </button>
       <a
-        href={`/api/admin/report-pdf?id=${report.id}`}
+        href={`/api/preview-pdf?report_id=${report.id}`}
         class="btn btn-download"
         download={`AstroRaja_Report_${report.name?.replace(/\s+/g,'_')}.pdf`}
       >
         ↓ Download PDF
       </a>
-      <a class="btn" style="background:rgba(255,255,255,0.1);color:#fff;" href={`/api/admin/report-pdf?id=${report.id}`} target="_blank" title="Print PDF directly">
+      <a class="btn" style="background:rgba(255,255,255,0.1);color:#fff;" href={`/api/preview-pdf?report_id=${report.id}`} target="_blank" title="Print PDF directly">
         🖨 Print PDF
       </a>
     </div>
@@ -484,9 +484,9 @@ const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
     </div>
 
     <!-- Report Content -->
-    <div class="report-card">
+    <div class="report-card" style="padding: 0; overflow: hidden;">
       {htmlContent ? (
-        <div class="report-content" set:html={htmlContent} />
+        <iframe src={`/api/preview-pdf?report_id=${report.id}#toolbar=0&view=FitH`} style="width: 100%; height: 1000px; border: none;" title="PDF Preview"></iframe>
       ) : (
         <div class="empty-state">
           <div class="icon">📭</div>

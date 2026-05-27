@@ -165,12 +165,12 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
     // 6. Generate Premium PDF via preview-pdf endpoint & Send Email
     if (report.email) {
       try {
-        // Build the internal URL to the premium PDF generator
-        const requestUrl = new URL(request.url);
-        const baseUrl = requestUrl.origin;
-        const pdfUrl = baseUrl + '/api/preview-pdf?report_id=' + report_id;
-
-        const pdfRes = await fetch(pdfUrl);
+        // Build the internal URL to the premium PDF generator and invoke it directly 
+        // to bypass serverless loopback/HTTP firewall restrictions.
+        const fakeReq = new Request(new URL('/api/preview-pdf?report_id=' + report_id, request.url));
+        const { GET: getPreviewPdf } = await import('./preview-pdf');
+        
+        const pdfRes = await getPreviewPdf({ request: fakeReq, cookies: request.headers } as any);
         if (!pdfRes.ok) {
           throw new Error('PDF generation endpoint returned ' + pdfRes.status);
         }
