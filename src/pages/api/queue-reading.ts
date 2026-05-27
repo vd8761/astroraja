@@ -42,9 +42,12 @@ export const POST: APIRoute = async ({ request }) => {
     const profile_id = profiles[0].id;
 
     // 3. Create Report entry (status: queued)
+    const enableMultiLanguage = import.meta.env.ENABLE_MULTI_LANGUAGE === 'true' || process.env.ENABLE_MULTI_LANGUAGE === 'true';
+    const finalLanguage = enableMultiLanguage ? (data.language || 'English') : 'English';
+
     const reports = await sql`
       INSERT INTO reports (profile_id, user_id, language, form_data, status, price_paid, currency, ip_address)
-      VALUES (${profile_id}, ${user_id}, ${data.language || 'English'}, ${JSON.stringify(data)}, 'queued', ${data.price_paid || 0}, ${data.currency || 'INR'}, ${clientIp})
+      VALUES (${profile_id}, ${user_id}, ${finalLanguage}, ${JSON.stringify(data)}, 'queued', ${data.price_paid || 0}, ${data.currency || 'INR'}, ${clientIp})
       RETURNING id
     `;
     const report_id = reports[0].id;

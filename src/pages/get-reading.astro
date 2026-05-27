@@ -284,13 +284,15 @@ import Layout from '../layouts/Layout.astro';
         </div>
       </div>
 
-      <div class="mb-4">
-        <label class="block text-sm font-bold text-brand-navy uppercase tracking-wider mb-3">Select Final Report Language <span class="text-brand-saffron">*</span></label>
-        <div class="grid grid-cols-2 gap-4">
-          <button type="button" @click="formData.language = 'English'" class="p-4 rounded-xl border-2 transition-all text-center font-bold" :class="formData.language === 'English' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-brand-navy border-brand-border hover:border-brand-navy/50'">English</button>
-          <button type="button" @click="formData.language = 'Tamil'" class="p-4 rounded-xl border-2 transition-all text-center font-bold" :class="formData.language === 'Tamil' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-brand-navy border-brand-border hover:border-brand-navy/50'">Tamil (தமிழ்)</button>
+      {import.meta.env.ENABLE_MULTI_LANGUAGE === 'true' && (
+        <div class="mb-4">
+          <label class="block text-sm font-bold text-brand-navy uppercase tracking-wider mb-3">Select Final Report Language <span class="text-brand-saffron">*</span></label>
+          <div class="grid grid-cols-2 gap-4">
+            <button type="button" @click="formData.language = 'English'" class="p-4 rounded-xl border-2 transition-all text-center font-bold" :class="formData.language === 'English' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-brand-navy border-brand-border hover:border-brand-navy/50'">English</button>
+            <button type="button" @click="formData.language = 'Tamil'" class="p-4 rounded-xl border-2 transition-all text-center font-bold" :class="formData.language === 'Tamil' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-brand-navy border-brand-border hover:border-brand-navy/50'">Tamil (தமிழ்)</button>
+          </div>
         </div>
-      </div>
+      )}
 
     </div>
 
