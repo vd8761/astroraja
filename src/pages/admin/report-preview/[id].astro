@@ -503,17 +503,17 @@ const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
   <div id="toast"></div>
 
   <script define:vars={{ reportId: report.id, reportName: report.name, reportEmail: report.email }}>
-    function showToast(msg, duration = 3000) {
+    window.showToast = function(msg, duration = 3000) {
       const t = document.getElementById('toast');
       t.textContent = msg;
       t.classList.add('show');
       setTimeout(() => t.classList.remove('show'), duration);
-    }
+    };
 
-    async function sendEmail() {
+    window.sendEmail = async function() {
       const btn = document.getElementById('emailBtn');
       if (!reportEmail) {
-        showToast('⚠️ No email address on file for this user.');
+        window.showToast('⚠️ No email address on file for this user.');
         return;
       }
       if (!confirm(`Send report email to ${reportEmail}?`)) return;
@@ -527,17 +527,17 @@ const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
         });
         const json = await res.json();
         if (res.ok) {
-          showToast('✅ Email sent successfully!');
+          window.showToast('✅ Email sent successfully!');
           btn.textContent = '✔ Sent';
         } else {
           throw new Error(json.error || 'Unknown error');
         }
       } catch (err) {
-        showToast('❌ Email failed: ' + err.message, 5000);
+        window.showToast('❌ Email failed: ' + err.message, 5000);
         btn.disabled = false;
         btn.textContent = '✉ Send Email';
       }
-    }
+    };
   </script>
 
 </body>

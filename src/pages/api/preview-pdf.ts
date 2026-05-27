@@ -5,6 +5,10 @@ const URLResolver = URLResolverPkg.default || URLResolverPkg;
 import path from 'path';
 import type { APIRoute } from 'astro';
 
+export const config = {
+  maxDuration: 300,
+};
+
 export const GET: APIRoute = async ({ request }) => {
   try {
     const fontsDir = path.join(process.cwd(), 'public', 'fonts');

@@ -3,6 +3,10 @@ import crypto from 'crypto';
 import sql from '../../../lib/db';
 import nodemailer from 'nodemailer';
 
+export const config = {
+  maxDuration: 300,
+};
+
 export const POST: APIRoute = async ({ request, cookies }) => {
   // ── Auth Guard ─────────────────────────────────────────────────────────────
   const adminPassword = import.meta.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
