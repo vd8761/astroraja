@@ -389,10 +389,12 @@ The report is now structured around 4 named framework blocks that span the 18 se
 | Framework Block | Sections | Act |
 |----------------|----------|-----|
 | BLOCK 1: The Cosmic Blueprint of Your Life | Sections 1–2 | Act 1 |
-| BLOCK 2: The Karmic Loop & Root Patterns | Sections 3–7 | Act 1 |
+| BLOCK 2: The Karmic Loop & Root Patterns | Sections 3–7 + 7B | Act 1 |
 | BLOCK 3: The 4-Step Karmic Action Plan | Sections 8–11 | Acts 2 & 3 |
 | BLOCK 4: Summary Table + Situation Handling via Soul Purpose | Sections 12–14 | Act 3 |
-| Closing Sections | Sections 15–18 | Act 3 |
+| Closing Sections | Sections 15–17 | Act 3 |
+
+**REMOVED:** Section 11 (90-Day Commitment), Section 18 (90-Day Roadmap), Section 10D (Emotional Control), Section 10E (Relationship System) — folded into Step 2 of Section 9
 
 ---
 
@@ -487,6 +489,69 @@ CRITICAL: Every combination has a DIFFERENT loop — never reuse. Examples:
 ### BLOCK 3: THE 4-STEP KARMIC ACTION PLAN
 *Purpose: Give the reader a clear, step-by-step system to clear karma and unblock material and financial growth.*
 *This is the MOST ACTIONABLE block. Every step must be specific to THIS combination — not generic self-help.*
+
+#### Section 7B: CAREER KARMA & WEALTH ACTIVATION
+*(New dedicated section — appears after Root Problems, before What Must Be Let Go)*
+*(Half a page to one page maximum — clean, precise, high impact)*
+
+**This section derives entirely from the D9 Navamsa sign.**
+Use the D9 Reference Table below to generate all three blocks.
+Every sentence must be specific to THIS person's D9 — never generic.
+
+---
+
+**FORMAT — Three blocks, one clean section:**
+
+**BLOCK 1 — YOUR KARMIC BLOCK IN CAREER**
+- 3–4 sentences: the specific career pattern this D9 creates
+- 3 bullet points: exactly where this block shows up in daily work/income
+- Must be recognisable — the reader should wince slightly
+
+**BLOCK 2 — YOUR D9 WEALTH ACTIVATION**
+- 3–4 sentences: the exact condition under which wealth opens for this D9
+- One bold activation statement: the precise shift required
+- Name which planet activates (from D10 if birth time available, from D9 dominant planet if not)
+
+**BLOCK 3 — YOUR IDEAL CAREER DIRECTION**
+- Two-column table: Work That Clears Karma | Work That Blocks Karma (4–5 rows each)
+- One sentence naming the specific field/type of work
+- One closing quote block — the single wealth activation line
+
+---
+
+### D9 CAREER KARMA REFERENCE TABLE
+*(Use this to generate Section 7B for every report)*
+
+| D9 Sign | Karmic Block in Career | D9 Wealth Activation | Ideal Career Direction |
+|---------|----------------------|---------------------|----------------------|
+| **Aries** | Acts impulsively — burns opportunities before they mature. Leads aggressively, people don't follow sustainably. Charges ahead without building the foundation. Income bursts then crashes. | Courageous pioneering — first mover energy used with discipline. Wealth opens when action serves others, not just personal ambition. The courage must have a mission beyond the self. | Entrepreneurship, crisis leadership, surgery, defence, competitive sports, new ventures, innovation |
+| **Taurus** | Hoards skills and opportunities — waits for perfect security before building. Refuses to invest in growth. Charges too little, holds too long. Income stagnates in comfort. | Patient value creation — builds slowly, permanently, beautifully. Wealth opens when resources are released into growth, not stored in fear. The patience must serve creation, not avoidance. | Finance, land, luxury goods, agriculture, music, architecture, food, long-term wealth management |
+| **Gemini** | Communicates to impress — clever, witty, surface-level. Teaching without depth. Multiple income streams started, none consolidated. Credibility is wide but not deep. | Truth-based communication — teaches with clarity and genuine precision. Wealth opens when communication serves real understanding, not performance. One channel, deep and trusted. | Teaching, writing, media, consulting, technology, sales with integrity, knowledge platforms |
+| **Cancer** | Over-nurtures — undercharges, cannot say no, creates dependency in clients. Gives care freely then resents the lack of financial return. Income tied to emotional approval. | Wise nurturing as a premium product — genuine emotional safety and care charged correctly. Wealth opens when boundaries are set inside the care. The nurturing must empower, not enable. | Healthcare, counselling, hospitality, food, real estate, childcare, community building |
+| **Leo** | Performs to be seen — builds personal brand over actual substance. Needs recognition before delivering full capacity. Charges for image, not for transformation. | Authentic leadership — inspires through genuine vision, not image management. Wealth opens when the work is done without the audience in mind. The lion must lead from truth, not from throne. | Creative direction, education, performing arts, brand leadership, executive coaching, politics |
+| **Virgo** | Perfects endlessly — never launches. Undervalues precision as a commodity. Works harder than anyone, charges less than the quality deserves. Invisible excellence. | Mastery as a premium service — precision and systems thinking sold at full value. Wealth opens when the standard is applied to the output, not the launch condition. | Healthcare, engineering, data analysis, quality consulting, editing, process design, research |
+| **Libra** | People-pleases — discounts, over-delivers, avoids difficult money conversations. Partnerships drain more than they build. Cannot hold the price when client pushes back. | Fair value exchange — creates genuine harmony as a product. Wealth opens when the fee reflects the balance created, not the approval sought. Every collaboration must be equal. | Law, design, diplomacy, luxury aesthetics, HR, mediation, partnership-based business |
+| **Scorpio** | Controls through depth — uses intensity to create dependency in clients or colleagues. Charges too little because the transformation feels too sacred to price commercially. | Transformative depth as premium work — genuine change delivered with clear boundaries. Wealth opens when the depth is offered without the need to control the outcome. | Psychology, research, investigation, wealth management, surgery, occult sciences, crisis transformation |
+| **Sagittarius** | Teaches theory without lived experience — loses credibility at the depth level. Charges less because wisdom feels like it should be free. Stalls at the same income ceiling despite genuine capability. | Wisdom through experience — teaches only what has been personally walked through. Wealth opens when the teaching comes from transformation, not from accumulated knowledge. Saturn demands authenticity before rewarding. | Coaching, philosophy, publishing, spiritual guidance, international business, transformative education |
+| **Capricorn** | Builds for personal power — creates structures that serve ambition, not the collective. Works with relentless discipline but without dharmic direction. Income grows then hits a structural ceiling. | Integrity-based institution building — creates systems others genuinely depend on. Wealth opens when the structure serves the collective mission, not the personal legacy. | Government, corporate leadership, infrastructure, law, engineering, long-term institution building |
+| **Aquarius** | Serves the idea, not the person — disconnected from what people actually need right now. Innovates without a paying market. Vision is genuine but the human connection is missing. | Collective value creation — innovates for genuine, present human need. Wealth opens when the vision touches real people in real situations, not just concepts and systems. | Technology, social enterprise, research, humanitarian work, community platforms, futurism |
+| **Pisces** | Escapes into creativity — produces without monetising. Gives without charging. Confuses spiritual service with financial avoidance. The gift is real but the exchange is broken. | Sacred creative economy — creates from genuine depth and charges for real transformation. Wealth opens when receiving is accepted as part of the spiritual exchange, not a contradiction of it. | Art, music, healing, filmmaking, spiritual services, depth psychology, creative transformation |
+
+---
+
+### WRITING RULES FOR SECTION 7B
+
+1. **Never copy the reference table verbatim.** Use it as the source — write the section fresh for this person's combination.
+2. **Add the Nakshatra texture.** The D9 gives the direction. The Nakshatra ruler adds the flavour. Example: D9 Sagittarius + Ayilyam (Mercury-ruled) = the karmic block involves sharp, clever teaching that sounds wise but lacks the Saturn-tested depth of lived experience.
+3. **Name the specific income pattern.** Not "undercharges" — but "charges ₹X for work worth ₹3X because the Cancer Moon cannot separate care from commerce."
+4. **The wealth activation statement must be one sentence, bold, quotable.** Something the person will remember and repeat to themselves.
+5. **Career direction is a type of work, not a job title.** "Work where genuine transformation is the product" is more useful than "become a life coach."
+6. **If birth time is available — name the specific D10 planet that activates.** Example: "D10 Jupiter in Cancer activates — the wealth channel for nurturing wisdom at scale opens fully."
+7. **If birth time is NOT available — name the D9 dominant planet.** Example: "Jupiter as the D9 Sagittarius ruler activates when the teaching comes from lived truth."
+8. **Connect to the karmic loop.** The career block must be shown as the same loop running in the career arena — not a separate problem.
+
+
+---
 
 #### Section 8: WHAT MUST BE LET GO
 *(Pre-work before the action plan — clears the ground)*
@@ -808,6 +873,82 @@ Format: Five-column table
 | 15–18 | Act 3 | Closing: Identity, Truths, Checklist, Roadmap |
 
 
+---
+
+## PAGE CONSTRAINT — MAXIMUM 25 PAGES
+
+**This is a hard limit. Every report must stay within 25 pages.**
+
+### Section Budget (strict — do not exceed):
+
+| Section | Max Pages | Content Rule |
+|---------|-----------|-------------|
+| Title Page | 1 | Title + subtitle + chart summary + three acts |
+| Preamble | 1 | Fixed philosophical text — never expand |
+| Cosmic Blueprint Visual | 1 | Three-pillar table only — no extra paragraphs |
+| Section 1: Astro Foundation | 1.5 | Foundation table + nakshatra paragraph + Gana sentence + one quote |
+| Section 2: Core Combination | 1.5 | Contrast table (6 rows max) + one paragraph + one quote |
+| Section 3: Character Profile | 1.5 | Strength/Shadow table (7 rows max) |
+| Section 4: Life Area Impact | 1.5 | Life area table (6 rows max — pick most relevant) |
+| Section 5: Core Life Loop | 1.5 | Loop table (6 rows) + one paragraph only |
+| Section 6: Karmic Patterns | 1 | 2 patterns only — 3 sentences each |
+| Section 7: Root Problems | 1 | Table — 5 rows max |
+| Section 7B: Career Karma | 1 | Three blocks — strictly half page each |
+| Section 9: 4-Step Action Plan | 2 | All 4 steps — 3-4 sentences each, one table |
+| Section 10: Solution System | 2 | Mind Rules (5 rows) + Daily System (8 rows) + Money (4 rows) only — remove D and E |
+| Section 10F: Daily Task Planner | 1 | Simple table — 7 rows, one task per day |
+| Section 12: Summary Table | 1 | Five-row table + one paragraph |
+| Section 13: D9 Navigation | 1.5 | Three Voices table + Dharma rule + Business signal — no sub-paragraphs |
+| Section 14: React vs Create | 0.5 | Table only (6 rows) + one question |
+| Section 15: Identity Shift | 1 | Table (7 rows max) |
+| Section 16: Final Truths | 0.5 | 7 truths max — not 10 |
+| Section 17: Daily Checklist | 0.5 | Two columns — 6 rows max |
+| Closing | 0.5 | Three sentences + mantra + START TODAY |
+| **TOTAL** | **~25 pages** | |
+
+---
+
+### SECTIONS REMOVED FROM REPORT (too long, lower impact):
+- ❌ Section 11: 90-Day Karmic Break Commitment — REMOVED
+- ❌ Section 18: 90-Day Transformation Roadmap — REMOVED
+- ❌ Section 10 sub-sections D (Emotional Control) and E (Relationship System) — REMOVED (folded into Section 9 Step 2)
+
+---
+
+### TRIMMING RULES (apply to every section):
+
+1. **Tables: maximum rows as specified above.** Pick the most combination-specific rows — not all possible rows.
+2. **Paragraphs: maximum 4 sentences each.** If it needs more — it is two points, not one.
+3. **Quote blocks: one per section maximum.** The most powerful line only.
+4. **Karmic Patterns: 2 only — not 4.** The two most central patterns for this combination.
+5. **Life Areas: 6 only — not 8.** Pick the areas the user flagged as struggles + the most combination-specific ones.
+6. **Gana: one sentence per section.** Name how the Gana shows up in THIS context — no explanations.
+7. **No repetition across sections.** If a point was made in Section 2, do not restate it in Section 5.
+8. **Daily Task Planner: 7 rows — one per day of week.** One task per day. One sentence. No labels or karmic why column — just the task.
+9. **Section 13: Three sub-sections only** — Three Voices table + Dharma Rule (2 sentences) + Business Signal (2 sentences + Stop/Start/Build table). No long paragraphs.
+10. **Final Truths: 7 lines maximum.** Short, hard-hitting, combination-specific.
+
+---
+
+### GANA USAGE RULE (applies throughout entire report):
+
+- **Derive Gana from Nakshatra — never ask for it separately**
+- **Use only THIS person's Gana — never explain or compare to other Ganas**
+- **Write Gana naturally — as a descriptor, not as a concept**
+- **Maximum one Gana sentence per section**
+- **Never use the words "Deva Gana", "Manushya Gana", or "Rakshasa Gana" in the report body** — just describe the behaviour: "your calculating nature", "your all-or-nothing intensity", "your idealistic waiting"
+
+---
+
+### QUALITY CHECK FOR PAGE COUNT:
+
+Before finalising — mentally count:
+- How many tables? Each table row = ~0.15 pages
+- How many paragraphs? Each paragraph = ~0.2 pages
+- How many quote blocks? Each = ~0.15 pages
+- If count exceeds budget — cut the weakest rows/paragraphs first
+
+
 ## TECHNICAL SPECS
 
 ### Document Format
@@ -833,6 +974,14 @@ Format: Five-column table
 ---
 
 ## WRITING STYLE RULES
+
+### GANA WRITING RULE (Critical)
+Never explain Gana as a concept. Never compare to other Ganas. Never use the labels "Deva Gana", "Manushya Gana", "Rakshasa Gana" in the report body.
+Instead — describe the behaviour naturally:
+- Deva → "your idealistic nature", "your tendency to wait and hope", "your instinct to seek the higher meaning"
+- Manushya → "your calculating nature", "your habit of weighing the emotional cost first", "your tendency to delay until certainty arrives"
+- Rakshasa → "your all-or-nothing intensity", "your instinct to go completely in or walk away", "your fierce, uncompromising nature"
+One sentence per section. Woven in naturally. Never as a header or label.
 
 1. **Direct, not philosophical.** Write like a personal coach who won't sugarcoat.
 2. **Uncomfortable truths required.** If the weakness section doesn't make the reader wince, it's too soft.
@@ -926,6 +1075,20 @@ Before delivering, verify:
 - [ ] Section 16 Final Truths are specific to THIS combination — not applicable to everyone?
 - [ ] Section 17 checklist covers items from all 4 framework blocks?
 - [ ] Section 18 90-Day Roadmap tied to THIS combination's karmic patterns — not generic?
+
+### Section 7B — Career Karma & Wealth Activation Checks
+- [ ] Section 7B present in report — between Root Problems and What Must Be Let Go?
+- [ ] D9 Career Karma derived from D9 Reference Table — not invented?
+- [ ] Karmic Block written fresh for this person — not copied verbatim from table?
+- [ ] Nakshatra ruler added to the D9 block description?
+- [ ] Specific income pattern named — not generic "undercharges"?
+- [ ] Wealth Activation names the EXACT condition under which wealth opens?
+- [ ] Wealth Activation statement is one bold quotable sentence?
+- [ ] Career Direction table has both columns — Work That Clears AND Work That Blocks?
+- [ ] Closing quote block present — the single wealth activation line?
+- [ ] If birth time available — D10 planet named in Wealth Activation?
+- [ ] If birth time NOT available — D9 dominant planet named instead?
+- [ ] Career block connected to the karmic loop — shown as same pattern in career arena?
 - [ ] Section 10F Planetary Day Guide: Power Days identified and marked (planet matches pillar ruler)?
 - [ ] Section 10F Planetary Day Guide: every task labelled [INTERRUPT] / [ANCHOR] / [ACTIVATE]?
 - [ ] Section 10F Planetary Day Guide: every task connected to D9 soul direction — not generic productivity?
@@ -938,6 +1101,18 @@ Before delivering, verify:
 - [ ] Section 10F Sunday Review: all 5 questions present — each naming the specific combination default?
 - [ ] SOUL-PURPOSE ALIGNMENT CHECK: does every everyday task in the report connect to the D9 soul direction — not just to fixing the karmic loop?
 - [ ] No generic filler anywhere — every sentence specific enough that swapping names would make it wrong?
+
+### Page Count Checks
+- [ ] Report stays within 25 pages maximum?
+- [ ] Each section within its page budget (see Page Constraint table)?
+- [ ] Tables trimmed to maximum rows specified?
+- [ ] Karmic patterns limited to 2 — not 4?
+- [ ] Life areas limited to 6 — not 8?
+- [ ] Final Truths 7 lines maximum?
+- [ ] Section 11, Section 18, Section 10D, Section 10E removed?
+- [ ] Gana appears as natural descriptor — never explained or compared?
+- [ ] No repetition across sections — each section adds new content only?
+- [ ] Daily Task Planner is 7 rows — one task per day, one sentence each?
 
 ---
 
