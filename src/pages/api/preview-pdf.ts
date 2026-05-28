@@ -74,7 +74,11 @@ export const GET: APIRoute = async ({ request }) => {
 
     const parseText = (rawText: string) => {
       if (typeof rawText !== 'string') return rawText;
-      const clean = rawText.replace(/\*\*/g, '');
+      const clean = rawText
+        .replace(/\*\*/g, '')
+        .replace(/\*/g, '')
+        .replace(/☐/g, '[  ]')
+        .replace(/☑/g, '[x]');
       const parts = clean.split(/([\u0B80-\u0BFF]+)/);
       if (parts.length === 1) return clean;
       return parts.map(p => p.match(/[\u0B80-\u0BFF]/) ? { text: p, font: 'Tamil' } : { text: p });
@@ -165,24 +169,30 @@ export const GET: APIRoute = async ({ request }) => {
       margin: [0, 12, 0, 6],
     } as any);
 
-    const quoteBlock = (text: string) => ({
-      table: {
-        widths: [5, '*'],
-        body: [[
-          { text: '', fillColor: C.saffron, border: [false, false, false, false] },
-          {
-            text: [
-              { text: '\u201c', font: 'Lora', fontSize: 12, color: C.saffron, bold: true },
-              { text: text, font: 'Lora', italics: true, fontSize: 10.5, color: C.navy, bold: true },
-              { text: '\u201d', font: 'Lora', fontSize: 12, color: C.saffron, bold: true },
-            ],
-            fillColor: '#f5f3ff',
-            lineHeight: 1.35,
-            margin: [10, 10, 10, 10],
-            border: [false, false, false, false],
-          },
-        ]],
-      },
+    const quoteBlock = (text: string) => {
+      const parsed = parseText(text);
+      const styledText = Array.isArray(parsed)
+        ? parsed.map(p => ({ ...p, font: p.font === 'Tamil' ? 'Tamil' : 'Lora', italics: true, fontSize: 10.5, color: C.navy, bold: true }))
+        : { text: parsed, font: 'Lora', italics: true, fontSize: 10.5, color: C.navy, bold: true };
+
+      return {
+        table: {
+          widths: [5, '*'],
+          body: [[
+            { text: '', fillColor: C.saffron, border: [false, false, false, false] },
+            {
+              text: [
+                { text: '\u201c', font: 'Lora', fontSize: 12, color: C.saffron, bold: true },
+                ...(Array.isArray(styledText) ? styledText : [styledText]),
+                { text: '\u201d', font: 'Lora', fontSize: 12, color: C.saffron, bold: true },
+              ],
+              fillColor: '#f5f3ff',
+              lineHeight: 1.35,
+              margin: [10, 10, 10, 10],
+              border: [false, false, false, false],
+            },
+          ]],
+        },
       layout: {
         hLineWidth: () => 0,
         vLineWidth: () => 0,
@@ -193,7 +203,8 @@ export const GET: APIRoute = async ({ request }) => {
       },
       margin: [0, 12, 0, 16],
       unbreakable: true,
-    } as any);
+      } as any;
+    };
 
     const infoBox = (text: string, bgColor = '#f5f3ff') => ({
       table: {
@@ -231,13 +242,13 @@ export const GET: APIRoute = async ({ request }) => {
           keepWithHeaderRows: 1,
           dontBreakRows: true,
           body: [
-            headers.map((h, i) => ({
-              text: h, font: 'Outfit', bold: true, fontSize: 8.5,
-              color: C.white,
-              fillColor: i === 0 ? C.navy : C.navyLight,
-              margin: [6, 5, 6, 5],
-              border: [false, false, false, false],
-            })),
+            headers.map((h, i) => {
+              const parsed = parseText(h);
+              const applyStyle = (t: any) => ({ ...t, font: t.font === 'Tamil' ? 'Tamil' : 'Outfit', bold: true, fontSize: 8.5, color: C.white, fillColor: i === 0 ? C.navy : C.navyLight, margin: [6, 5, 6, 5], border: [false, false, false, false] });
+              return {
+                text: Array.isArray(parsed) ? parsed.map(applyStyle) : [applyStyle({ text: parsed })],
+              };
+            }),
             ...rows.map((row, ri) => {
               const paddedRow = [...row];
               while (paddedRow.length < headers.length) paddedRow.push('');
@@ -441,7 +452,7 @@ export const GET: APIRoute = async ({ request }) => {
           } else if (l.match(/^#### /)) {
             realContent.push({ text: l.replace(/^#### /, '').trim(), font: 'Outfit', bold: true, fontSize: 10, color: C.navy, margin: [0, 8, 0, 4] });
           } else if (l.startsWith('> ')) {
-            const q = l.replace(/^> /, '').trim();
+            const q = l.replace(/^> /, '').replace(/^["'\s*]+|["'\s*]+$/g, '').trim();
             if (q) realContent.push(quoteBlock(q));
           } else if (l.startsWith('|') && mi + 1 < md.length && md[mi + 1].match(/^\|[-:\s|]+\|/)) {
             const hdrs = l.split('|').filter(h => h.trim()).map(h => h.trim());
