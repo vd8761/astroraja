@@ -35,8 +35,8 @@ export const POST: APIRoute = async ({ request }) => {
 
     // 2. Create Profile
     const profiles = await sql`
-      INSERT INTO profiles (user_id, name, raasi, lagnam, nakshatra, relationship)
-      VALUES (${user_id}, ${data.name}, ${data.raasi}, ${data.lagnam}, ${data.nakshatra || null}, 'Self')
+      INSERT INTO profiles (user_id, name, raasi, lagnam, nakshatra, padam, relationship)
+      VALUES (${user_id}, ${data.name}, ${data.raasi}, ${data.lagnam}, ${data.nakshatra || null}, ${data.padam || null}, 'Self')
       RETURNING id
     `;
     const profile_id = profiles[0].id;
