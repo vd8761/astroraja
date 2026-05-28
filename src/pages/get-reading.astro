@@ -107,40 +107,54 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Nakshatra (Birth Star) <span class="text-brand-saffron">*</span></label>
-          <select x-model="formData.nakshatra" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all appearance-none" :class="{'border-red-500': errors.nakshatra}">
-            <option value="">Select your Nakshatra</option>
-            <option value="Ashwini">Ashwini (அஸ்வினி)</option>
-            <option value="Bharani">Bharani (பரணி)</option>
-            <option value="Karthikai">Karthikai (கார்த்திகை)</option>
-            <option value="Rohini">Rohini (ரோகிணி)</option>
-            <option value="Mrigashira">Mrigashira (மிருகசீரிடம்)</option>
-            <option value="Ardra">Ardra / Thiruvadhirai (திருவாதிரை)</option>
-            <option value="Punarvasu">Punarvasu / Punarpoosam (புனர்பூசம்)</option>
-            <option value="Pushya">Pushya / Poosam (பூசம்)</option>
-            <option value="Ashlesha">Ashlesha / Ayilyam (ஆயில்யம்)</option>
-            <option value="Magha">Magha / Magam (மகம்)</option>
-            <option value="Purva Phalguni">Purva Phalguni / Pooram (பூரம்)</option>
-            <option value="Uttara Phalguni">Uttara Phalguni / Uthiram (உத்திரம்)</option>
-            <option value="Hasta">Hasta / Astham (அஸ்தம்)</option>
-            <option value="Chitra">Chitra / Chithirai (சித்திரை)</option>
-            <option value="Swathi">Swathi / Swati (சுவாதி)</option>
-            <option value="Vishakha">Vishakha / Visakam (விசாகம்)</option>
-            <option value="Anuradha">Anuradha / Anusham (அனுஷம்)</option>
-            <option value="Jyeshta">Jyeshta / Kettai (கேட்டை)</option>
-            <option value="Mula">Mula / Moolam (மூலம்)</option>
-            <option value="Purva Ashadha">Purva Ashadha / Pooradam (பூராடம்)</option>
-            <option value="Uttara Ashadha">Uttara Ashadha / Uthiradam (உத்திராடம்)</option>
-            <option value="Shravana">Shravana / Thiruvonam (திருவோணம்)</option>
-            <option value="Dhanishta">Dhanishta / Avittam (அவிட்டம்)</option>
-            <option value="Shatabhisha">Shatabhisha / Sadayam (சதயம்)</option>
-            <option value="Purva Bhadrapada">Purva Bhadrapada / Poorattadhi (பூரட்டாதி)</option>
-            <option value="Uttara Bhadrapada">Uttara Bhadrapada / Uthirattadhi (உத்திரட்டாதி)</option>
-            <option value="Revathi">Revathi (ரேவதி)</option>
-          </select>
-          <p class="text-brand-text-muted text-xs mt-2">Tamil name shown in brackets. Select the one you know by either name.</p>
-          <p x-show="errors.nakshatra" class="text-red-500 text-xs mt-1">Please select your Nakshatra.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Nakshatra (Birth Star) <span class="text-brand-saffron">*</span></label>
+            <select x-model="formData.nakshatra" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all appearance-none" :class="{'border-red-500': errors.nakshatra}">
+              <option value="">Select your Nakshatra</option>
+              <option value="Ashwini">Ashwini (அஸ்வினி)</option>
+              <option value="Bharani">Bharani (பரணி)</option>
+              <option value="Karthikai">Karthikai (கார்த்திகை)</option>
+              <option value="Rohini">Rohini (ரோகிணி)</option>
+              <option value="Mrigashira">Mrigashira (மிருகசீரிடம்)</option>
+              <option value="Ardra">Ardra / Thiruvadhirai (திருவாதிரை)</option>
+              <option value="Punarvasu">Punarvasu / Punarpoosam (புனர்பூசம்)</option>
+              <option value="Pushya">Pushya / Poosam (பூசம்)</option>
+              <option value="Ashlesha">Ashlesha / Ayilyam (ஆயில்யம்)</option>
+              <option value="Magha">Magha / Magam (மகம்)</option>
+              <option value="Purva Phalguni">Purva Phalguni / Pooram (பூரம்)</option>
+              <option value="Uttara Phalguni">Uttara Phalguni / Uthiram (உத்திரம்)</option>
+              <option value="Hasta">Hasta / Astham (அஸ்தம்)</option>
+              <option value="Chitra">Chitra / Chithirai (சித்திரை)</option>
+              <option value="Swathi">Swathi / Swati (சுவாதி)</option>
+              <option value="Vishakha">Vishakha / Visakam (விசாகம்)</option>
+              <option value="Anuradha">Anuradha / Anusham (அனுஷம்)</option>
+              <option value="Jyeshta">Jyeshta / Kettai (கேட்டை)</option>
+              <option value="Mula">Mula / Moolam (மூலம்)</option>
+              <option value="Purva Ashadha">Purva Ashadha / Pooradam (பூராடம்)</option>
+              <option value="Uttara Ashadha">Uttara Ashadha / Uthiradam (உத்திராடம்)</option>
+              <option value="Shravana">Shravana / Thiruvonam (திருவோணம்)</option>
+              <option value="Dhanishta">Dhanishta / Avittam (அவிட்டம்)</option>
+              <option value="Shatabhisha">Shatabhisha / Sadayam (சதயம்)</option>
+              <option value="Purva Bhadrapada">Purva Bhadrapada / Poorattadhi (பூரட்டாதி)</option>
+              <option value="Uttara Bhadrapada">Uttara Bhadrapada / Uthirattadhi (உத்திரட்டாதி)</option>
+              <option value="Revathi">Revathi (ரேவதி)</option>
+            </select>
+            <p class="text-brand-text-muted text-xs mt-2">Tamil name shown in brackets.</p>
+            <p x-show="errors.nakshatra" class="text-red-500 text-xs mt-1">Please select your Nakshatra.</p>
+          </div>
+          
+          <div>
+            <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Padam (Quarter)</label>
+            <select x-model="formData.padam" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all appearance-none">
+              <option value="">Don't know</option>
+              <option value="1">Padam 1</option>
+              <option value="2">Padam 2</option>
+              <option value="3">Padam 3</option>
+              <option value="4">Padam 4</option>
+            </select>
+            <p class="text-brand-text-muted text-xs mt-2">Optional, but highly recommended for accuracy.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -249,7 +263,7 @@ import Layout from '../layouts/Layout.astro';
           <button @click="step = 0" class="absolute top-4 right-4 text-brand-saffron text-xs font-semibold hover:underline">Edit</button>
           <div class="text-brand-saffron-dark text-[10px] tracking-widest uppercase mb-1">Raasi / Lagnam / Star</div>
           <div class="font-bold text-brand-navy text-base" x-text="`${formData.raasi} / ${formData.lagnam}`"></div>
-          <div class="text-brand-text-muted text-sm mt-1" x-text="formData.nakshatra"></div>
+          <div class="text-brand-text-muted text-sm mt-1" x-text="formData.padam ? formData.nakshatra + ' (Padam ' + formData.padam + ')' : formData.nakshatra"></div>
         </div>
       </div>
 
@@ -379,7 +393,7 @@ document.addEventListener('alpine:init', () => {
     step: 0,
     stepLabels: ['Your Details', 'Current Struggles', 'Daily Life', 'Life Goals', 'Spiritual Orientation'],
     formData: {
-      name: '', email: '', countryCode: '+91', mobile: '', language: 'English', raasi: '', lagnam: '', nakshatra: '',
+      name: '', email: '', countryCode: '+91', mobile: '', language: 'English', raasi: '', lagnam: '', nakshatra: '', padam: '',
       struggles: [], dailyLife: '', goals: [], spiritual: ''
     },
     errors: {

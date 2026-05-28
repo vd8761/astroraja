@@ -57,7 +57,7 @@ Generate a life transformation report:
 Name: ${report.name}
 Raasi: ${report.raasi}
 Lagnam: ${report.lagnam}
-Nakshatra: ${report.nakshatra}
+Nakshatra: ${report.nakshatra}${data.padam ? ` (Padam ${data.padam})` : ''}
 Struggles: ${data.struggles?.join(', ') || 'None specified'}
 Daily Life: ${data.dailyLife || 'Not specified'}
 Biggest Goal: ${data.goals?.join(', ') || 'Not specified'}

@@ -447,7 +447,7 @@ const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
         </div>
         <div class="meta-item">
           <label>Nakshatra</label>
-          <div class="val">{report.nakshatra || '—'}</div>
+          <div class="val">{report.nakshatra || '—'}{report.form_data?.padam ? ` (Padam ${report.form_data.padam})` : ''}</div>
         </div>
         <div class="meta-item">
           <label>Language</label>
