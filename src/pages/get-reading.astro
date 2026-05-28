@@ -645,8 +645,14 @@ document.addEventListener('alpine:init', () => {
         // --- Simulated Loading Process (35 seconds) ---
         const messages = [
           'Analyzing your Vedic parameters...', 
+          'Analyzing your Raasi and Lagnam combination...',
+          'Mapping Nakshatra behavioral themes...',
           'Validating your core struggles and goals...', 
+          'Structuring your Life Transformation Report...',
           'Connecting to Ask Astro Raja AI...',
+          'Consulting with Ask Astro Raja AI...',
+          'Translating complex Vedic concepts...',
+          'Drafting your personalized action system...',
           'Passing data into the deep analysis queue...', 
           'Securing your priority generation slot...',
           'Finalizing request initialization...'
@@ -654,13 +660,13 @@ document.addEventListener('alpine:init', () => {
         
         let msgIndex = 0;
         
-        // Update messages every 5 seconds
+        // Update messages every 3 seconds
         const msgInterval = setInterval(() => {
           if (msgIndex < messages.length - 1) {
             msgIndex++;
             this.loadingMessage = messages[msgIndex];
           }
-        }, 5000);
+        }, 3000);
         
         // Update progress bar over 35 seconds to reach 99%
         const durationMs = 35000; 
