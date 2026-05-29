@@ -518,64 +518,6 @@ export const GET: APIRoute = async ({ request }) => {
           mi++;
         }
       }
-        const introMessage = [
-          // 1. The Quote Box (On the Cover Page)
-          {
-            table: {
-              widths: ['*'],
-              dontBreakRows: true,
-              body: [
-                [
-                  {
-                    stack: [
-                      { 
-                        text: parseText('"We are responsible for what we are, and whatever we wish ourselves to be, we have the power to make ourselves. If what we are now has been the result of our own past actions, it certainly follows that whatever we wish to be in future can be produced by our present actions; so we have to know how to act."'), 
-                        font: 'Lora', 
-                        italics: true, 
-                        fontSize: 12, 
-                        color: C.navy, 
-                        alignment: 'center', 
-                        lineHeight: 1.6,
-                        margin: [0, 0, 0, 12]
-                      },
-                      { 
-                        text: '— Swami Vivekananda', 
-                        font: 'Outfit', 
-                        bold: true, 
-                        fontSize: 10, 
-                        color: C.saffronDark, 
-                        alignment: 'center',
-                        letterSpacing: 1
-                      }
-                    ],
-                    fillColor: C.bg,
-                    margin: [20, 20, 20, 20],
-                    border: [true, true, true, true]
-                  }
-                ]
-              ]
-            },
-            layout: {
-              hLineWidth: () => 1,
-              vLineWidth: () => 1,
-              hLineColor: () => C.saffron,
-              vLineColor: () => C.saffron,
-            },
-            margin: [0, 10, 0, 10]
-          },
-          
-          // 2. The Preamble Text (On the Next Page)
-          { text: 'A Message Before You Begin', font: 'Lora', bold: true, fontSize: 18, color: C.navy, alignment: 'center', margin: [0, 0, 0, 20], pageBreak: 'before' },
-          { text: 'The whole idea behind this report is not just to provide astrological guidance or simply reflect your characteristics.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
-          { text: 'One important assumption is that astrology is a gift deeply rooted in Indian tradition. If we look back from ancient times, a vast amount of knowledge has been embedded within it. In many ways, we can say this is a combination of mathematics and science.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
-          { text: 'When you observe how numbers have been used and interpreted in astrology, it almost feels magical. Considering the world\'s massive population, this mathematical system has worked in such a way that every individual can still be understood as unique.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
-          { text: 'The purpose of this report goes beyond predicting events. We believe that every person has a soul purpose. When you identify that purpose clearly and begin to align your life with it, your karmic patterns gradually start to clear.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
-          { text: 'Going to temples and performing remedies may help on one side, but beyond all that, the best way is to consciously neutralize our karmic actions through awareness and right action.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
-          { text: 'This report has been designed with that intention — to help you understand these deeper aspects of your life. Use this guidance, take action, and move forward with clarity.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
-          { text: 'Our best wishes to you. But remember — without taking action, it is impossible to achieve meaningful change.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 15] },
-          { text: '— Thank you.', font: 'Outfit', bold: true, fontSize: 11, color: C.navy, margin: [0, 0, 0, 10] }
-        ];
-        realContent.unshift(...introMessage);
       } catch (dbErr) { console.error('DB fetch for PDF failed:', dbErr); }
     }
 
