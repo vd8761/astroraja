@@ -520,6 +520,7 @@ export const GET: APIRoute = async ({ request }) => {
           {
             table: {
               widths: ['*'],
+              dontBreakRows: true,
               body: [
                 [
                   {
@@ -545,7 +546,7 @@ export const GET: APIRoute = async ({ request }) => {
                       }
                     ],
                     fillColor: C.bg,
-                    margin: [30, 25, 30, 25],
+                    margin: [20, 20, 20, 20],
                     border: [true, true, true, true]
                   }
                 ]
@@ -582,22 +583,22 @@ export const GET: APIRoute = async ({ request }) => {
       {
         stack: [
           // Top branding
-          { text: 'ASK ASTRO RAJA', font: 'Outfit', bold: true, fontSize: 10, color: C.saffronDark, alignment: 'center', letterSpacing: 4, margin: [0, 0, 0, 40] },
+          { text: 'ASK ASTRO RAJA', font: 'Outfit', bold: true, fontSize: 10, color: C.saffronDark, alignment: 'center', letterSpacing: 4, margin: [0, 0, 0, 20] },
           
           // Main Title
           { text: 'LIFE TRANSFORMATION', font: 'Lora', bold: true, fontSize: 32, color: C.navy, alignment: 'center', margin: [0, 0, 0, 8] },
-          { text: 'REPORT', font: 'Lora', bold: true, fontSize: 32, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 30] },
+          { text: 'REPORT', font: 'Lora', bold: true, fontSize: 32, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 20] },
           
           // Separator
-          { canvas: [{ type: 'line', x1: 157.5, y1: 0, x2: 357.5, y2: 0, lineWidth: 1, lineColor: C.border }], margin: [0, 0, 0, 30] },
+          { canvas: [{ type: 'line', x1: 157.5, y1: 0, x2: 357.5, y2: 0, lineWidth: 1, lineColor: C.border }], margin: [0, 0, 0, 20] },
           
           // For Label
           { text: 'PREPARED EXCLUSIVELY FOR', font: 'Outfit', fontSize: 9, color: C.muted, alignment: 'center', letterSpacing: 2, margin: [0, 0, 0, 10] },
           
           // Name
-          { text: reportName, font: 'Lora', bold: true, fontSize: 24, color: C.navy, alignment: 'center', margin: [0, 0, 0, 40] },
+          { text: reportName, font: 'Lora', bold: true, fontSize: 24, color: C.navy, alignment: 'center', margin: [0, 0, 0, 20] },
         ],
-        margin: [0, 40, 0, 10],
+        margin: [0, 20, 0, 10],
       },
 
       // Extracted AI Subtitle
