@@ -479,13 +479,66 @@ After the table — **REMEMBER THIS EVERY SINGLE DAY** closing block:
 
 ---
 
-## STEP 5: MARKDOWN FORMATTING
+## STEP 5: DOCX FORMATTING
 
-- Output the report strictly in plain Markdown format.
-- Use ##  for section headers.
-- Use standard Markdown tables for all tables.
-- Use blockquotes (> ) for quotes.
-- Do NOT output any code blocks, json, or binary files. Just the Markdown text.
+Read `/mnt/skills/public/docx/SKILL.md` before writing any code.
+
+### Page Setup
+- US Letter (12240 × 15840 DXA), 1" margins all sides
+- Font: Aptos (body), Arial (headings)
+- Install: `npm install -g docx`
+
+### Color Palette
+| Element | Color |
+|---------|-------|
+| Primary heading | #1A3C5E (dark navy) |
+| Section heading | #2E75B6 (medium blue) |
+| Table header | #1A3C5E bg, white text |
+| Alternate row | #E8F0F8 |
+| Quote block border | #2E75B6 |
+| Quote block bg | #F0F4F8 |
+| Strength header | #155724 bg, white text |
+| Weakness header | #7B1818 bg, white text |
+| React column header | #7B1818 bg, white text |
+| Create column header | #1A3C5E bg, white text |
+
+### Heading Style
+- Report title: Centered, 36pt bold, #1A3C5E
+- Subtitle (identity sentence): Centered, 18pt italic, #2E75B6
+- Astro detail line: Centered, 12pt, #2C2C2C
+- SECTION headers: 18pt bold, #1A3C5E, with thick left border bar
+- Sub-section headers: 14pt bold, #2E75B6
+
+### Table Formatting
+- All tables: full-width (9360 DXA), `WidthType.DXA`, dual widths (table + each cell)
+- Cell padding: `{ top: 80, bottom: 80, left: 120, right: 120 }`
+- Use `ShadingType.CLEAR` — never SOLID
+- Header rows: shaded per color palette, white bold text
+- Alternate body rows: #E8F0F8 and white
+
+### Quote Blocks
+```javascript
+// Left border bar style for quote blocks
+paragraph: {
+  border: { left: { style: BorderStyle.THICK, size: 12, color: "2E75B6" } },
+  shading: { fill: "F0F4F8", type: ShadingType.CLEAR },
+  indent: { left: 360 },
+  spacing: { before: 200, after: 200 }
+}
+```
+
+### Section Structure
+- Each section starts on a new page (PageBreak before SECTION header)
+- Preamble: own page, centered italic
+- Section 14 Daily Checklist: own page, printed-ready formatting
+
+### Validation
+```bash
+python scripts/office/validate.py output.docx
+```
+Fix any validation errors before delivering.
+
+---
 
 ## QUALITY CHECKLIST (run before finalising)
 
