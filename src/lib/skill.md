@@ -217,44 +217,6 @@ Before writing a single word of the report, perform this analysis:
 
 ## STEP 4: BUILD THE REPORT
 
-### FIXED OPENING 1: SWAMI VIVEKANANDA QUOTE (very first element, before preamble)
-
-Appears on the title page immediately after the report title and subtitle — before the preamble page.
-Format: Centered, gold/cream shaded box, blue border, italic text.
-
-> *"We are responsible for what we are, and whatever we wish ourselves to be, we have the power to make ourselves. If what we are now has been the result of our own past actions, it certainly follows that whatever we wish to be in future can be produced by our present actions; so we have to know how to act."*
-> — Swami Vivekananda
-
-This quote appears in EVERY report without exception.
-
----
-
-### FIXED OPENING 2: PHILOSOPHICAL PREAMBLE (own page, after title page)
-
-Title: **"A Message Before You Begin"**
-Format: Centered italic text, blue top and bottom border (#1A3C5E).
-
----
-The whole idea behind this report is not just to provide astrological guidance or simply reflect your characteristics.
-
-One important assumption is that astrology is a gift deeply rooted in Indian tradition. If we look back from ancient times, a vast amount of knowledge has been embedded within it. In many ways, we can say this is a combination of mathematics and science.
-
-When you observe how numbers have been used and interpreted in astrology, it almost feels magical. Considering the world's massive population, this mathematical system has worked in such a way that every individual can still be understood as unique. Based on these mathematical calculations, various aspects are interpreted through general horoscope analysis.
-
-The purpose of this report goes beyond predicting events. We believe that every person has a soul purpose. When you identify that purpose clearly and begin to align your life with it, your karmic patterns gradually start to clear. And when these karmic blocks are neutralized, there is a greater possibility for positive transformations to happen in your life.
-
-Going to temples and performing remedies may help on one side, but beyond all that, the best way is to consciously neutralize our karmic actions through awareness and right action. The faster we understand ourselves and move towards our true path, the more meaningful our journey becomes.
-
-This report has been designed with that intention — to help you target and understand these deeper aspects of your life. It can definitely serve as a source of guidance for you. Use this guidance, take action, and move forward with clarity.
-
-Our best wishes to you. But remember, without taking action, it is impossible to achieve meaningful change.
-
-— Thank you.
-
----
-
----
-
 ### THE 12 SECTIONS (generate all 12, in this exact order)
 
 ---
