@@ -576,33 +576,24 @@ export const GET: APIRoute = async ({ request }) => {
 
       // ══ COVER PAGE ═══════════════════════════════════════════════════════
       {
-        canvas: [
-          { type: 'rect', x: 0, y: 0, w: 515, h: 220, r: 6, color: C.navy },
-        ],
-      },
-      {
         stack: [
-          // Stars / decorative
-          {
-            columns: [
-              { canvas: [{ type: 'line', x1: 0, y1: 4, x2: 140, y2: 4, lineWidth: 0.8, lineColor: C.saffron }], width: 140 },
-              { text: 'ASK ASTRO RAJA', font: 'Outfit', bold: true, fontSize: 8, color: C.saffron, alignment: 'center', letterSpacing: 4, width: '*' },
-              { canvas: [{ type: 'line', x1: 0, y1: 4, x2: 140, y2: 4, lineWidth: 0.8, lineColor: C.saffron }], width: 140 },
-            ],
-            margin: [0, 0, 0, 14],
-          },
-          { text: 'LIFE TRANSFORMATION', font: 'Lora', bold: true, fontSize: 26, color: C.white, alignment: 'center', margin: [0, 0, 0, 4] },
-          { text: 'REPORT', font: 'Lora', bold: true, fontSize: 26, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 16] },
-          // Gold line
-          { canvas: [{ type: 'line', x1: 100, y1: 0, x2: 415, y2: 0, lineWidth: 1, lineColor: C.saffron }], margin: [0, 0, 0, 16] },
-          { text: reportName, font: 'Lora', bold: true, fontSize: 20, color: '#e0e7ff', alignment: 'center', margin: [0, 0, 0, 10] },
-          {
-            text: parseText(`${reportRaasi} Raasi   |   ${reportLagnam} Lagnam   |   ${reportNakshatra}${reportPadam ? `   |   Patham ${reportPadam}` : ''}`),
-            font: 'Outfit', fontSize: 10, color: C.white, alignment: 'center', margin: [0, 0, 0, 8],
-          }
+          // Top branding
+          { text: 'ASK ASTRO RAJA', font: 'Outfit', bold: true, fontSize: 10, color: C.saffronDark, alignment: 'center', letterSpacing: 4, margin: [0, 0, 0, 40] },
+          
+          // Main Title
+          { text: 'LIFE TRANSFORMATION', font: 'Lora', bold: true, fontSize: 32, color: C.navy, alignment: 'center', margin: [0, 0, 0, 8] },
+          { text: 'REPORT', font: 'Lora', bold: true, fontSize: 32, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 30] },
+          
+          // Separator
+          { canvas: [{ type: 'line', x1: 157.5, y1: 0, x2: 357.5, y2: 0, lineWidth: 1, lineColor: C.border }], margin: [0, 0, 0, 30] },
+          
+          // For Label
+          { text: 'PREPARED EXCLUSIVELY FOR', font: 'Outfit', fontSize: 9, color: C.muted, alignment: 'center', letterSpacing: 2, margin: [0, 0, 0, 10] },
+          
+          // Name
+          { text: reportName, font: 'Lora', bold: true, fontSize: 24, color: C.navy, alignment: 'center', margin: [0, 0, 0, 40] },
         ],
-        margin: [0, -210, 0, 0],
-        // position over the rect
+        margin: [0, 40, 0, 10],
       },
 
       // Extracted AI Subtitle
