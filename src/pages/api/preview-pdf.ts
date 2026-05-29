@@ -39,27 +39,27 @@ export const GET: APIRoute = async ({ request }) => {
 
     // ── Brand Color System (matches website exactly) ──────────────────────
     const C = {
-      navy:       '#1A3C5E',   // classic navy
-      navyLight:  '#2E75B6',   // medium blue
-      purple:     '#1A3C5E',
-      purpleLight:'#2E75B6',
-      saffron:    '#C5952A',   // muted gold
-      saffronDark:'#A47820',
-      text:       '#2C2C2C',   // darker text for readability
-      textDark:   '#000000',
-      muted:      '#64748b',
-      border:     '#D1D9E6',
+      navy:       '#2B193D',   // Deep Cosmic Aubergine (Primary dark)
+      navyLight:  '#4A2C68',   // Rich Royal Purple (Secondary dark)
+      purple:     '#2B193D',
+      purpleLight:'#4A2C68',
+      saffron:    '#D4AF37',   // Premium Metallic Gold
+      saffronDark:'#AA8C2C',
+      text:       '#2D2331',   // Deep purple-tinted charcoal for text
+      textDark:   '#150D1C',
+      muted:      '#71637A',
+      border:     '#E2DCE6',
       bg:         '#ffffff',
       white:      '#ffffff',
-      rowAlt:     '#E8F0F8',   // light blue alternating row
+      rowAlt:     '#F4F1F8',   // Very soft lavender-tinted white for alternate rows
       // Section header colors
-      sec1:  '#1A3C5E', sec2: '#1A3C5E', sec3: '#1A3C5E',
-      sec4:  '#1A3C5E', sec5: '#1A3C5E', sec6: '#1A3C5E',
-      sec7:  '#1A3C5E', sec8: '#1A3C5E', sec9: '#1A3C5E',
-      sec10: '#1A3C5E', sec11:'#1A3C5E', sec12:'#1A3C5E',
-      sec13: '#1A3C5E', sec14:'#1A3C5E', sec15:'#1A3C5E',
-      sec16: '#1A3C5E', sec17:'#1A3C5E', sec18:'#1A3C5E',
-      sec19: '#1A3C5E', sec20:'#1A3C5E'
+      sec1:  '#2B193D', sec2: '#2B193D', sec3: '#2B193D',
+      sec4:  '#2B193D', sec5: '#2B193D', sec6: '#2B193D',
+      sec7:  '#2B193D', sec8: '#2B193D', sec9: '#2B193D',
+      sec10: '#2B193D', sec11:'#2B193D', sec12:'#2B193D',
+      sec13: '#2B193D', sec14:'#2B193D', sec15:'#2B193D',
+      sec16: '#2B193D', sec17:'#2B193D', sec18:'#2B193D',
+      sec19: '#2B193D', sec20:'#2B193D'
     };
 
     const sectionColors = [
