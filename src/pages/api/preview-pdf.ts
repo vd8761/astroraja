@@ -573,8 +573,7 @@ export const GET: APIRoute = async ({ request }) => {
               hLineColor: () => C.saffron,
               vLineColor: () => C.saffron,
             },
-            margin: [0, 20, 0, 20],
-            pageBreak: 'before' // Forces intro to its own page!
+            margin: [0, 20, 0, 20]
           }
         ];
         realContent.unshift(...introMessage);
