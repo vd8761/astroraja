@@ -468,8 +468,6 @@ End with one italicised closing sentence capturing the dharmic call for this spe
 
 ### Content
 - [ ] D9 derived from Nakshatra + Padam — not assumed
-- [ ] Vivekananda quote present on title page — exact wording, every report
-- [ ] Preamble present and formatted correctly on own page
 - [ ] All 12 sections present in order
 - [ ] Identity sentence uses animal metaphors specific to this combination
 - [ ] Section 1: Three Hidden Layers — 2-3 bullet points each for Gana, Padam, Navamsa
@@ -494,10 +492,8 @@ End with one italicised closing sentence capturing the dharmic call for this spe
 
 ### Format
 - [ ] Page breaks before each section header
-- [ ] Vivekananda quote in gold/cream shaded box with blue border
 - [ ] All tables have dual widths (table + cell)
 - [ ] Quote blocks have left border + shading
 - [ ] Strength/Weakness headers in green/red
 - [ ] Paragraph sections (4, 6, 10) have no tables — bold heading + text only
-- [ ] Preamble on its own page with blue borders
 - [ ] Validation passes
