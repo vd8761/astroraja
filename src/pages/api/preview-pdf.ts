@@ -480,7 +480,7 @@ export const GET: APIRoute = async ({ request }) => {
           if (l.match(/^## /)) {
             const title = l.replace(/^## /, '').replace(/^Section\s*\d+:?\s*/i, '').trim();
             // Skip the AI-generated intro sections to avoid duplicating the hardcoded preamble
-            if (title.toUpperCase().includes('A COMPLETE SOUL MAP') || title.toUpperCase().includes('A MESSAGE BEFORE YOU BEGIN')) {
+            if (title.toUpperCase().includes('A COMPLETE SOUL') || title.toUpperCase().includes('A MESSAGE BEFORE YOU BEGIN')) {
               skipCurrentSection = true;
               mi++;
               continue;
