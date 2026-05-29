@@ -67,9 +67,9 @@ Language: ${report.language || 'English'}
 
     const systemPrompt = skillTemplate + `
 
-CRITICAL INSTRUCTION: Output the final report as raw Markdown text. You MUST complete the entire report from Section 1 to Section 14 exactly as formatted in the skill guide. 
+CRITICAL INSTRUCTION: Output the final report as raw Markdown text. You MUST complete the entire report from Section 1 to Section 12 exactly as formatted in the skill guide. 
 You must be highly concise, deeply impactful, and synthesize the information beautifully. Compress the text, summarize details, and avoid unnecessary repetition or overly long paragraphs. Keep it tight and highly focused. 
-DO NOT STOP until Section 14 is fully generated.
+DO NOT STOP until Section 12 is fully generated.
 
 CRITICAL LANGUAGE INSTRUCTION: The user has requested the report in ${report.language || 'English'}. You MUST output the ENTIRE document (including all headings, tables, labels, advice, and paragraphs) flawlessly in ${report.language || 'English'}. If Tamil is requested, ensure the Tamil translation is deeply contextual, natural, and preserves the intense psychological tone without losing any meaning.
 
