@@ -114,7 +114,7 @@ export const GET: APIRoute = async ({ request }) => {
           paddingBottom: () => 0,
         },
         margin: [0, 25, 0, 25],
-        pageBreak: breakBefore || num > 1 ? 'before' : undefined, // Force a page break for every section to give it proper importance
+        pageBreak: breakBefore ? 'before' : undefined,
       } as any;
     };
 
@@ -143,6 +143,7 @@ export const GET: APIRoute = async ({ request }) => {
     const subLabel = (letter: string, title: string) => ({
       table: {
         widths: [18, '*'],
+        dontBreakRows: true,
         body: [[
           {
             text: letter,
@@ -174,6 +175,7 @@ export const GET: APIRoute = async ({ request }) => {
       return {
         table: {
           widths: [5, '*'],
+          dontBreakRows: true,
           body: [[
             { text: '', fillColor: C.saffron, border: [false, false, false, false] },
             {
@@ -205,6 +207,7 @@ export const GET: APIRoute = async ({ request }) => {
     const infoBox = (text: string, bgColor = '#f5f3ff') => ({
       table: {
         widths: [5, '*'],
+        dontBreakRows: true,
         body: [[
           { text: '', fillColor: C.saffron, border: [false, false, false, false] },
           {
