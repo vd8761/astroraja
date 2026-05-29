@@ -39,27 +39,27 @@ export const GET: APIRoute = async ({ request }) => {
 
     // ── Brand Color System (matches website exactly) ──────────────────────
     const C = {
-      navy:       '#0B132B',   // Ethereal Midnight (Very dark, rich blue-black)
-      navyLight:  '#1C2541',   // Deep Slate Blue
-      purple:     '#0B132B',
-      purpleLight:'#1C2541',
-      saffron:    '#C5A880',   // Champagne Gold (Premium, understated accent)
-      saffronDark:'#A68A61',
-      text:       '#1A1A1D',   // Deep charcoal for crisp readability
-      textDark:   '#000000',
-      muted:      '#6C757D',
-      border:     '#E2E8F0',
-      bg:         '#ffffff',
+      navy:       '#1e1b4b',   // brand-navy
+      navyLight:  '#312e81',   // brand-navy-light
+      purple:     '#4c1d95',   // brand-purple
+      purpleLight:'#7c3aed',   // brand-purple-light
+      saffron:    '#f59e0b',   // brand-saffron
+      saffronDark:'#d97706',   // brand-saffron-dark
+      text:       '#334155',   // brand-text
+      textDark:   '#0f172a',   // brand-text-dark
+      muted:      '#64748b',   // brand-text-muted
+      border:     '#e2e8f0',   // brand-border
+      bg:         '#faf8f5',   // brand-light-bg
       white:      '#ffffff',
-      rowAlt:     '#F4F5F7',   // Soft pearl gray for alternate rows
+      rowAlt:     '#faf8f5',   // use brand light bg for alternate rows
       // Section header colors
-      sec1:  '#0B132B', sec2: '#0B132B', sec3: '#0B132B',
-      sec4:  '#0B132B', sec5: '#0B132B', sec6: '#0B132B',
-      sec7:  '#0B132B', sec8: '#0B132B', sec9: '#0B132B',
-      sec10: '#0B132B', sec11:'#0B132B', sec12:'#0B132B',
-      sec13: '#0B132B', sec14:'#0B132B', sec15:'#0B132B',
-      sec16: '#0B132B', sec17:'#0B132B', sec18:'#0B132B',
-      sec19: '#0B132B', sec20:'#0B132B'
+      sec1:  '#1e1b4b', sec2: '#1e1b4b', sec3: '#1e1b4b',
+      sec4:  '#1e1b4b', sec5: '#1e1b4b', sec6: '#1e1b4b',
+      sec7:  '#1e1b4b', sec8: '#1e1b4b', sec9: '#1e1b4b',
+      sec10: '#1e1b4b', sec11:'#1e1b4b', sec12:'#1e1b4b',
+      sec13: '#1e1b4b', sec14:'#1e1b4b', sec15:'#1e1b4b',
+      sec16: '#1e1b4b', sec17:'#1e1b4b', sec18:'#1e1b4b',
+      sec19: '#1e1b4b', sec20:'#1e1b4b'
     };
 
     const sectionColors = [
@@ -87,20 +87,21 @@ export const GET: APIRoute = async ({ request }) => {
 
     // ── Design components ─────────────────────────────────────────────────
     const sectionHeader = (num: number, title: string, subtitle?: string, breakBefore = false) => {
-      const numStr = String(num);
+      const numStr = String(num).padStart(2, '0');
       return {
         table: {
-          widths: [4, '*'],
+          widths: [3, '*'],
           body: [[
-            { text: '', fillColor: C.navy, border: [false, false, false, false], margin: [0, 0, 0, 0] },
+            { text: '', fillColor: C.saffron, border: [false, false, false, false], margin: [0, 0, 0, 0] },
             {
               stack: [
-                { text: `SECTION ${numStr}: ${title.toUpperCase()}`, font: 'Outfit', fontSize: 16, color: C.navy, bold: true },
-                subtitle ? { text: subtitle, font: 'Outfit', fontSize: 10, color: C.navyLight, margin: [0, 4, 0, 0] } : null,
+                { text: `SECTION ${numStr}`, font: 'Outfit', fontSize: 9, color: C.saffronDark, bold: true, tracking: 1 },
+                { text: title.toUpperCase(), font: 'Lora', fontSize: 18, color: C.navy, bold: true, margin: [0, 2, 0, 0] },
+                subtitle ? { text: subtitle, font: 'Outfit', fontSize: 10, color: C.muted, margin: [0, 4, 0, 0] } : null,
               ].filter(Boolean),
-              fillColor: C.white,
+              fillColor: C.bg, // using brand-light-bg
               border: [false, false, false, false],
-              margin: [10, 0, 0, 6],
+              margin: [12, 10, 10, 10],
             },
           ]],
         },
@@ -112,7 +113,7 @@ export const GET: APIRoute = async ({ request }) => {
           paddingTop: () => 0,
           paddingBottom: () => 0,
         },
-        margin: [0, 20, 0, 15],
+        margin: [0, 25, 0, 15],
         pageBreak: breakBefore ? 'before' : undefined,
       } as any;
     };
@@ -239,7 +240,7 @@ export const GET: APIRoute = async ({ request }) => {
           body: [
             headers.map((h, i) => {
               const parsed = parseText(h);
-              const applyStyle = (t: any) => ({ ...t, font: t.font === 'Tamil' ? 'Tamil' : 'Outfit', bold: true, fontSize: 9.5, color: C.white, fillColor: C.navy, margin: [8, 8, 8, 8], border: [true, true, true, true] });
+              const applyStyle = (t: any) => ({ ...t, font: t.font === 'Tamil' ? 'Tamil' : 'Lora', bold: true, fontSize: 10.5, color: C.navy, fillColor: C.bg, margin: [8, 8, 8, 8], border: [false, false, false, true] });
               return {
                 text: Array.isArray(parsed) ? parsed.map(applyStyle) : [applyStyle({ text: parsed })],
               };
@@ -250,20 +251,19 @@ export const GET: APIRoute = async ({ request }) => {
               return paddedRow.slice(0, headers.length).map((cell, ci) => ({
                 text: parseText(cell),
                 font: 'Outfit', fontSize: 9.5,
-                color: ci === 0 ? C.white : C.text,
+                color: ci === 0 ? C.navy : C.text,
                 bold: ci === 0,
-                fillColor: ci === 0 ? C.navy : (ri % 2 === 0 ? C.white : C.rowAlt),
+                fillColor: ri % 2 === 0 ? C.white : C.rowAlt,
                 margin: [8, 8, 8, 8],
-                border: [true, true, true, true],
+                border: [false, false, false, true],
               }));
             }),
           ],
         },
         layout: {
-          hLineWidth: () => 1,
-          vLineWidth: () => 1,
-          hLineColor: () => '#FFFFFF', // Use white borders inside the tables to beautifully separate the navy and light blue cells
-          vLineColor: () => '#FFFFFF',
+          hLineWidth: (i: number, node: any) => (i === 0 || i === node.table.body.length) ? 0 : 1,
+          vLineWidth: () => 0, // No vertical lines for a cleaner, modern look
+          hLineColor: (i: number, node: any) => (i === 1) ? C.navy : C.border, // Dark line under header, light lines between rows
         },
         margin: [0, 10, 0, 20],
       } as any;
