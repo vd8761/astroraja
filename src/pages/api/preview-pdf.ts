@@ -39,27 +39,27 @@ export const GET: APIRoute = async ({ request }) => {
 
     // ── Brand Color System (matches website exactly) ──────────────────────
     const C = {
-      navy:       '#2B193D',   // Deep Cosmic Aubergine (Primary dark)
-      navyLight:  '#4A2C68',   // Rich Royal Purple (Secondary dark)
-      purple:     '#2B193D',
-      purpleLight:'#4A2C68',
-      saffron:    '#D4AF37',   // Premium Metallic Gold
-      saffronDark:'#AA8C2C',
-      text:       '#2D2331',   // Deep purple-tinted charcoal for text
-      textDark:   '#150D1C',
-      muted:      '#71637A',
-      border:     '#E2DCE6',
+      navy:       '#0B132B',   // Ethereal Midnight (Very dark, rich blue-black)
+      navyLight:  '#1C2541',   // Deep Slate Blue
+      purple:     '#0B132B',
+      purpleLight:'#1C2541',
+      saffron:    '#C5A880',   // Champagne Gold (Premium, understated accent)
+      saffronDark:'#A68A61',
+      text:       '#1A1A1D',   // Deep charcoal for crisp readability
+      textDark:   '#000000',
+      muted:      '#6C757D',
+      border:     '#E2E8F0',
       bg:         '#ffffff',
       white:      '#ffffff',
-      rowAlt:     '#F4F1F8',   // Very soft lavender-tinted white for alternate rows
+      rowAlt:     '#F4F5F7',   // Soft pearl gray for alternate rows
       // Section header colors
-      sec1:  '#2B193D', sec2: '#2B193D', sec3: '#2B193D',
-      sec4:  '#2B193D', sec5: '#2B193D', sec6: '#2B193D',
-      sec7:  '#2B193D', sec8: '#2B193D', sec9: '#2B193D',
-      sec10: '#2B193D', sec11:'#2B193D', sec12:'#2B193D',
-      sec13: '#2B193D', sec14:'#2B193D', sec15:'#2B193D',
-      sec16: '#2B193D', sec17:'#2B193D', sec18:'#2B193D',
-      sec19: '#2B193D', sec20:'#2B193D'
+      sec1:  '#0B132B', sec2: '#0B132B', sec3: '#0B132B',
+      sec4:  '#0B132B', sec5: '#0B132B', sec6: '#0B132B',
+      sec7:  '#0B132B', sec8: '#0B132B', sec9: '#0B132B',
+      sec10: '#0B132B', sec11:'#0B132B', sec12:'#0B132B',
+      sec13: '#0B132B', sec14:'#0B132B', sec15:'#0B132B',
+      sec16: '#0B132B', sec17:'#0B132B', sec18:'#0B132B',
+      sec19: '#0B132B', sec20:'#0B132B'
     };
 
     const sectionColors = [
