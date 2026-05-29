@@ -541,11 +541,11 @@ export const GET: APIRoute = async ({ request }) => {
                   {
                     stack: [
                       { 
-                        text: parseText('"We are responsible for what we are, and whatever we wish ourselves to be, we have the power to make ourselves. If what we are now has been the result of our own past actions, it certainly follows that whatever we wish to be in future can be produced by our present actions; so we have to know how to act."'), 
-                        font: 'Lora', 
-                        italics: true, 
-                        fontSize: 12, 
-                        color: C.navy, 
+                        text: [
+                          { text: '“', font: 'Lora', fontSize: 18, color: C.saffron, bold: true },
+                          { text: 'We are responsible for what we are, and whatever we wish ourselves to be, we have the power to make ourselves. If what we are now has been the result of our own past actions, it certainly follows that whatever we wish to be in future can be produced by our present actions; so we have to know how to act.', font: 'Lora', italics: true, fontSize: 12, color: C.navy },
+                          { text: '”', font: 'Lora', fontSize: 18, color: C.saffron, bold: true }
+                        ],
                         alignment: 'center', 
                         lineHeight: 1.6,
                         margin: [0, 0, 0, 12]
