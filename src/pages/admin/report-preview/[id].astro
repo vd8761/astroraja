@@ -28,6 +28,7 @@ const rows = await sql`
     p.raasi,
     p.lagnam,
     p.nakshatra,
+    p.padam,
     u.email
   FROM reports r
   JOIN profiles p ON r.profile_id = p.id
@@ -52,6 +53,38 @@ if (report.raw_markdown_report) {
 const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
   timeZone: 'Asia/Kolkata', dateStyle: 'long', timeStyle: 'short'
 });
+
+const getTamil = (str: any, type: string) => {
+  if (!str) return '';
+  const s = String(str).toLowerCase();
+  const maps: any = {
+    raasi: {
+      'mesham': 'மேஷம்', 'aries': 'மேஷம்', 'rishabam': 'ரிஷபம்', 'taurus': 'ரிஷபம்',
+      'mithunam': 'மிதுனம்', 'midhunam': 'மிதுனம்', 'gemini': 'மிதுனம்',
+      'kadagam': 'கடகம்', 'cancer': 'கடகம்', 'simbham': 'சிம்மம்', 'simbha': 'சிம்மம்', 'leo': 'சிம்மம்',
+      'kanni': 'கன்னி', 'virgo': 'கன்னி', 'thulam': 'துலாம்', 'thulaam': 'துலாம்', 'libra': 'துலாம்',
+      'vrichigam': 'விருச்சிகம்', 'viruchigam': 'விருச்சிகம்', 'scorpio': 'விருச்சிகம்',
+      'dhanusu': 'தனுசு', 'sagittarius': 'தனுசு', 'magaram': 'மகரம்', 'capricorn': 'மகரம்',
+      'kumbam': 'கும்பம்', 'aquarius': 'கும்பம்', 'meenam': 'மீனம்', 'pisces': 'மீனம்'
+    },
+    nakshatra: {
+      'ashwini': 'அஸ்வினி', 'bharani': 'பரணி', 'karthikai': 'கார்த்திகை', 'rohini': 'ரோகிணி', 'mrigashira': 'மிருகசீரிடம்',
+      'ardra': 'திருவாதிரை', 'thiruvadhirai': 'திருவாதிரை', 'punarvasu': 'புனர்பூசம்', 'punarpoosam': 'புனர்பூசம்',
+      'pushya': 'பூசம்', 'poosam': 'பூசம்', 'ashlesha': 'ஆயில்யம்', 'ayilyam': 'ஆயில்யம்', 'magha': 'மகம்', 'magam': 'மகம்',
+      'purva phalguni': 'பூரம்', 'pooram': 'பூரம்', 'uttara phalguni': 'உத்திரம்', 'uthiram': 'உத்திரம்',
+      'hasta': 'அஸ்தம்', 'astham': 'அஸ்தம்', 'chitra': 'சித்திரை', 'chithirai': 'சித்திரை', 'swathi': 'சுவாதி', 'swati': 'சுவாதி',
+      'vishakha': 'விசாகம்', 'visakam': 'விசாகம்', 'anuradha': 'அனுஷம்', 'anusham': 'அனுஷம்', 'jyeshta': 'கேட்டை', 'kettai': 'கேட்டை',
+      'mula': 'மூலம்', 'moolam': 'மூலம்', 'purva ashadha': 'பூராடம்', 'pooradam': 'பூராடம்', 'uttara ashadha': 'உத்திராடம்', 'uthiradam': 'உத்திராடம்',
+      'shravana': 'திருவோணம்', 'thiruvonam': 'திருவோணம்', 'dhanishta': 'அவிட்டம்', 'avittam': 'அவிட்டம்',
+      'shatabhisha': 'சதயம்', 'sadayam': 'சதயம்', 'purva bhadrapada': 'பூரட்டாதி', 'poorattadhi': 'பூரட்டாதி',
+      'uttara bhadrapada': 'உத்திரட்டாதி', 'uthirattadhi': 'உத்திரட்டாதி', 'revati': 'ரேவதி'
+    }
+  };
+  const map = maps[type];
+  if (!map) return '';
+  for (const k in map) { if (s.includes(k)) return map[k]; }
+  return '';
+};
 ---
 
 <!DOCTYPE html>
@@ -439,15 +472,19 @@ const createdAt = new Date(report.created_at).toLocaleString('en-IN', {
       <div class="meta-grid">
         <div class="meta-item">
           <label>Raasi (Moon Sign)</label>
-          <div class="val">{report.raasi || '—'}</div>
+          <div class="val">{report.raasi || '—'}{report.raasi && getTamil(report.raasi, 'raasi') ? ` (${getTamil(report.raasi, 'raasi')})` : ''}</div>
         </div>
         <div class="meta-item">
           <label>Lagnam (Ascendant)</label>
-          <div class="val">{report.lagnam || '—'}</div>
+          <div class="val">{report.lagnam || '—'}{report.lagnam && getTamil(report.lagnam, 'raasi') ? ` (${getTamil(report.lagnam, 'raasi')})` : ''}</div>
         </div>
         <div class="meta-item">
           <label>Nakshatra</label>
-          <div class="val">{report.nakshatra || '—'}{report.form_data?.padam ? ` (Padam ${report.form_data.padam})` : ''}</div>
+          <div class="val">{report.nakshatra || '—'}{report.nakshatra && getTamil(report.nakshatra, 'nakshatra') ? ` (${getTamil(report.nakshatra, 'nakshatra')})` : ''}</div>
+        </div>
+        <div class="meta-item">
+          <label>Patham</label>
+          <div class="val">{report.padam || report.form_data?.padam || '—'}{(report.padam || report.form_data?.padam) ? ` (${report.padam || report.form_data?.padam}ம் பாதம்)` : ''}</div>
         </div>
         <div class="meta-item">
           <label>Language</label>

@@ -383,6 +383,7 @@ export const GET: APIRoute = async ({ request }) => {
     let reportRaasi = 'Simbha';
     let reportLagnam = 'Kanni';
     let reportNakshatra = 'Puram';
+    let reportPadam = '4';
     let reportRulingPlanet = 'Sun + Mercury';
     let reportSubtitle = '';
     let useRealContent = false;
@@ -417,6 +418,38 @@ export const GET: APIRoute = async ({ request }) => {
       return '—';
     };
 
+    const getTamil = (str: string, type: string) => {
+      if (!str) return '';
+      const s = str.toLowerCase();
+      const maps: any = {
+        raasi: {
+          'mesham': 'மேஷம்', 'aries': 'மேஷம்', 'rishabam': 'ரிஷபம்', 'taurus': 'ரிஷபம்',
+          'mithunam': 'மிதுனம்', 'midhunam': 'மிதுனம்', 'gemini': 'மிதுனம்',
+          'kadagam': 'கடகம்', 'cancer': 'கடகம்', 'simbham': 'சிம்மம்', 'simbha': 'சிம்மம்', 'leo': 'சிம்மம்',
+          'kanni': 'கன்னி', 'virgo': 'கன்னி', 'thulam': 'துலாம்', 'thulaam': 'துலாம்', 'libra': 'துலாம்',
+          'vrichigam': 'விருச்சிகம்', 'viruchigam': 'விருச்சிகம்', 'scorpio': 'விருச்சிகம்',
+          'dhanusu': 'தனுசு', 'sagittarius': 'தனுசு', 'magaram': 'மகரம்', 'capricorn': 'மகரம்',
+          'kumbam': 'கும்பம்', 'aquarius': 'கும்பம்', 'meenam': 'மீனம்', 'pisces': 'மீனம்'
+        },
+        nakshatra: {
+          'ashwini': 'அஸ்வினி', 'bharani': 'பரணி', 'karthikai': 'கார்த்திகை', 'rohini': 'ரோகிணி', 'mrigashira': 'மிருகசீரிடம்',
+          'ardra': 'திருவாதிரை', 'thiruvadhirai': 'திருவாதிரை', 'punarvasu': 'புனர்பூசம்', 'punarpoosam': 'புனர்பூசம்',
+          'pushya': 'பூசம்', 'poosam': 'பூசம்', 'ashlesha': 'ஆயில்யம்', 'ayilyam': 'ஆயில்யம்', 'magha': 'மகம்', 'magam': 'மகம்',
+          'purva phalguni': 'பூரம்', 'pooram': 'பூரம்', 'uttara phalguni': 'உத்திரம்', 'uthiram': 'உத்திரம்',
+          'hasta': 'அஸ்தம்', 'astham': 'அஸ்தம்', 'chitra': 'சித்திரை', 'chithirai': 'சித்திரை', 'swathi': 'சுவாதி', 'swati': 'சுவாதி',
+          'vishakha': 'விசாகம்', 'visakam': 'விசாகம்', 'anuradha': 'அனுஷம்', 'anusham': 'அனுஷம்', 'jyeshta': 'கேட்டை', 'kettai': 'கேட்டை',
+          'mula': 'மூலம்', 'moolam': 'மூலம்', 'purva ashadha': 'பூராடம்', 'pooradam': 'பூராடம்', 'uttara ashadha': 'உத்திராடம்', 'uthiradam': 'உத்திராடம்',
+          'shravana': 'திருவோணம்', 'thiruvonam': 'திருவோணம்', 'dhanishta': 'அவிட்டம்', 'avittam': 'அவிட்டம்',
+          'shatabhisha': 'சதயம்', 'sadayam': 'சதயம்', 'purva bhadrapada': 'பூரட்டாதி', 'poorattadhi': 'பூரட்டாதி',
+          'uttara bhadrapada': 'உத்திரட்டாதி', 'uthirattadhi': 'உத்திரட்டாதி', 'revati': 'ரேவதி'
+        }
+      };
+      const map = maps[type];
+      if (!map) return '';
+      for (const k in map) { if (s.includes(k)) return map[k]; }
+      return '';
+    };
+
     if (reportId) {
       try {
         const { neon } = await import('@neondatabase/serverless');
@@ -424,7 +457,7 @@ export const GET: APIRoute = async ({ request }) => {
         if (!dbUrl) throw new Error('DATABASE_URL not set');
         const sql = neon(dbUrl);
         const rows = await sql`
-          SELECT r.raw_markdown_report, p.name, p.raasi, p.lagnam, p.nakshatra
+          SELECT r.raw_markdown_report, p.name, p.raasi, p.lagnam, p.nakshatra, p.padam
           FROM reports r
           JOIN profiles p ON r.profile_id = p.id
           WHERE r.id = ${reportId} AND r.status = 'completed'
@@ -435,6 +468,7 @@ export const GET: APIRoute = async ({ request }) => {
         reportRaasi = row.raasi || 'Simbha';
         reportLagnam = row.lagnam || 'Kanni';
         reportNakshatra = row.nakshatra || 'Puram';
+        reportPadam = row.padam || '';
         reportRulingPlanet = getRulingPlanet(reportRaasi, reportLagnam);
         useRealContent = true;
         // ── Markdown → pdfmake parser ─────────────────────────────────────
@@ -485,6 +519,59 @@ export const GET: APIRoute = async ({ request }) => {
           mi++;
         }
       }
+        const introMessage = [
+          {
+            table: {
+              widths: ['*'],
+              body: [
+                [
+                  {
+                    stack: [
+                      { 
+                        text: parseText('"We are responsible for what we are, and whatever we wish ourselves to be, we have the power to make ourselves. If what we are now has been the result of our own past actions, it certainly follows that whatever we wish to be in future can be produced by our present actions; so we have to know how to act."'), 
+                        font: 'Lora', 
+                        italics: true, 
+                        fontSize: 11, 
+                        color: C.navy, 
+                        alignment: 'center', 
+                        lineHeight: 1.5,
+                        margin: [0, 0, 0, 8]
+                      },
+                      { 
+                        text: '— Swami Vivekananda', 
+                        font: 'Outfit', 
+                        bold: true, 
+                        fontSize: 10, 
+                        color: C.navy, 
+                        alignment: 'center' 
+                      }
+                    ],
+                    fillColor: '#fdfbf7',
+                    margin: [20, 16, 20, 16],
+                    border: [true, true, true, true]
+                  }
+                ]
+              ]
+            },
+            layout: {
+              hLineWidth: () => 1.5,
+              vLineWidth: () => 1.5,
+              hLineColor: () => '#2b7fb3',
+              vLineColor: () => '#2b7fb3',
+            },
+            margin: [0, 20, 0, 20]
+          },
+          { text: 'A Message Before You Begin', font: 'Lora', bold: true, fontSize: 16, color: C.navy, margin: [0, 10, 0, 8] },
+          { text: 'The whole idea behind this report is not just to provide astrological guidance or simply reflect your characteristics.', font: 'Outfit', fontSize: 10, color: C.text, lineHeight: 1.5, margin: [0, 0, 0, 6] },
+          { text: 'One important assumption is that astrology is a gift deeply rooted in Indian tradition. If we look back from ancient times, a vast amount of knowledge has been embedded within it. In many ways, we can say this is a combination of mathematics and science.', font: 'Outfit', fontSize: 10, color: C.text, lineHeight: 1.5, margin: [0, 0, 0, 6] },
+          { text: 'When you observe how numbers have been used and interpreted in astrology, it almost feels magical. Considering the world\'s massive population, this mathematical system has worked in such a way that every individual can still be understood as unique.', font: 'Outfit', fontSize: 10, color: C.text, lineHeight: 1.5, margin: [0, 0, 0, 6] },
+          { text: 'The purpose of this report goes beyond predicting events. We believe that every person has a soul purpose. When you identify that purpose clearly and begin to align your life with it, your karmic patterns gradually start to clear.', font: 'Outfit', fontSize: 10, color: C.text, lineHeight: 1.5, margin: [0, 0, 0, 6] },
+          { text: 'Going to temples and performing remedies may help on one side, but beyond all that, the best way is to consciously neutralize our karmic actions through awareness and right action.', font: 'Outfit', fontSize: 10, color: C.text, lineHeight: 1.5, margin: [0, 0, 0, 6] },
+          { text: 'This report has been designed with that intention — to help you understand these deeper aspects of your life. Use this guidance, take action, and move forward with clarity.', font: 'Outfit', fontSize: 10, color: C.text, lineHeight: 1.5, margin: [0, 0, 0, 6] },
+          { text: 'Our best wishes to you. But remember — without taking action, it is impossible to achieve meaningful change.', font: 'Outfit', fontSize: 10, color: C.text, lineHeight: 1.5, margin: [0, 0, 0, 6] },
+          { text: '— Thank you.', font: 'Outfit', bold: true, fontSize: 10, color: C.navy, margin: [0, 0, 0, 20] }
+        ];
+        realContent.unshift(...introMessage);
       } catch (dbErr) { console.error('DB fetch for PDF failed:', dbErr); }
     }
 
@@ -514,7 +601,7 @@ export const GET: APIRoute = async ({ request }) => {
           { canvas: [{ type: 'line', x1: 100, y1: 0, x2: 415, y2: 0, lineWidth: 1, lineColor: C.saffron }], margin: [0, 0, 0, 16] },
           { text: reportName, font: 'Lora', bold: true, fontSize: 20, color: '#e0e7ff', alignment: 'center', margin: [0, 0, 0, 10] },
           {
-            text: parseText(`${reportRaasi} Raasi   |   ${reportLagnam} Lagnam   |   ${reportNakshatra}`),
+            text: parseText(`${reportRaasi} Raasi   |   ${reportLagnam} Lagnam   |   ${reportNakshatra}${reportPadam ? `   |   Patham ${reportPadam}` : ''}`),
             font: 'Outfit', fontSize: 10, color: C.white, alignment: 'center', margin: [0, 0, 0, 8],
           }
         ],
@@ -541,7 +628,7 @@ export const GET: APIRoute = async ({ request }) => {
               body: [[{
                 stack: [
                   { text: 'RAASI', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportRaasi), font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: parseText(reportRaasi + (getTamil(reportRaasi, 'raasi') ? `\n(${getTamil(reportRaasi, 'raasi')})` : '')), font: 'Lora', fontSize: 8.5, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
@@ -555,7 +642,7 @@ export const GET: APIRoute = async ({ request }) => {
               body: [[{
                 stack: [
                   { text: 'LAGNAM', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportLagnam), font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: parseText(reportLagnam + (getTamil(reportLagnam, 'raasi') ? `\n(${getTamil(reportLagnam, 'raasi')})` : '')), font: 'Lora', fontSize: 8.5, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
@@ -569,7 +656,7 @@ export const GET: APIRoute = async ({ request }) => {
               body: [[{
                 stack: [
                   { text: 'NAKSHATRA', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportNakshatra), font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: parseText(reportNakshatra + (getTamil(reportNakshatra, 'nakshatra') ? `\n(${getTamil(reportNakshatra, 'nakshatra')})` : '')), font: 'Lora', fontSize: 8.5, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
@@ -582,8 +669,8 @@ export const GET: APIRoute = async ({ request }) => {
               widths: ['*'],
               body: [[{
                 stack: [
-                  { text: 'RULING PLANET', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: reportRulingPlanet, font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: 'PATHAM', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
+                  { text: parseText(reportPadam ? `${reportPadam}\n(${reportPadam}ம் பாதம்)` : '—\n(—)'), font: 'Lora', fontSize: 8.5, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
