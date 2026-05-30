@@ -256,8 +256,10 @@ import Layout from '../layouts/Layout.astro';
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div class="bg-white border border-brand-border rounded-xl p-4 shadow-sm relative">
           <button @click="step = 0" class="absolute top-4 right-4 text-brand-saffron text-xs font-semibold hover:underline">Edit</button>
-          <div class="text-brand-saffron-dark text-[10px] tracking-widest uppercase mb-1">Name</div>
-          <div class="font-bold text-brand-navy text-lg" x-text="formData.name"></div>
+          <div class="text-brand-saffron-dark text-[10px] tracking-widest uppercase mb-1">Personal Details</div>
+          <div class="font-bold text-brand-navy text-lg mb-1" x-text="formData.name"></div>
+          <div class="text-brand-text-muted text-sm" x-text="formData.email"></div>
+          <div class="text-brand-text-muted text-sm" x-show="formData.mobile" x-text="`${formData.countryCode} ${formData.mobile}`"></div>
         </div>
         <div class="bg-white border border-brand-border rounded-xl p-4 shadow-sm relative">
           <button @click="step = 0" class="absolute top-4 right-4 text-brand-saffron text-xs font-semibold hover:underline">Edit</button>
