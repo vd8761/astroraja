@@ -200,6 +200,29 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
           to: report.email,
           subject: 'Your Astro Raja Life Transformation Report - ' + report.name,
           text: 'Hello ' + report.name + ',\n\nYour Astro Raja Life Transformation Report is ready! Please find the PDF document attached to this email.\n\nBest regards,\nAstro Raja Team',
+          html: `
+            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+              <div style="text-align: center; padding: 20px 0;">
+                <h2 style="color: #1A3C5E; margin: 0;">Astro Raja</h2>
+              </div>
+              <div style="background-color: #F0F4F8; padding: 30px; border-radius: 8px; border-top: 4px solid #2E75B6;">
+                <p style="font-size: 16px;">Hello <strong>${report.name}</strong>,</p>
+                <p style="font-size: 16px;">Your deeply personalized <strong>Life Transformation Report</strong> is ready.</p>
+                <p style="font-size: 16px;">We have securely attached your full report as a PDF document to this email. This report is based on your unique astrological blueprint and is designed to provide you with clarity, guidance, and actionable steps for your life.</p>
+                
+                <div style="background-color: #fff; padding: 20px; border-left: 4px solid #1A3C5E; margin: 25px 0;">
+                  <p style="margin: 0; font-size: 15px; color: #555;"><strong>How to read this report:</strong> Take your time. Find a quiet space, read through the sections carefully, and reflect on the insights provided. This isn't just a reading; it's a structural intervention for your life.</p>
+                </div>
+                
+                <p style="font-size: 16px;">If you have any questions or need further guidance, feel free to reply directly to this email.</p>
+                <p style="font-size: 16px; margin-top: 30px;">Best regards,<br><strong>Astro Raja Team</strong></p>
+              </div>
+              <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #999;">
+                <p>&copy; ${new Date().getFullYear()} Astro Raja. All rights reserved.</p>
+                <p>You are receiving this email because you requested a Life Transformation Report from Astro Raja.</p>
+              </div>
+            </div>
+          `,
           attachments: [{
             filename: 'AstroRaja_Life_Report_' + filenameSafeName + '.pdf',
             content: pdfBuffer,
