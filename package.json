@@ -29,6 +29,7 @@
     "nodemailer": "^8.0.7",
     "pdfmake": "^0.3.8",
     "razorpay": "^2.9.6",
+    "resend": "^6.12.4",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {

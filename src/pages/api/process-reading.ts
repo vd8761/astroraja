@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import sql from '../../lib/db';
 import Anthropic from '@anthropic-ai/sdk';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 export const config = {
   maxDuration: 300,
@@ -187,19 +187,13 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
 
         const filenameSafeName = report.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
 
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: 'askastroraja@gmail.com',
-            pass: import.meta.env.GMAIL_APP_PASSWORD || process.env.GMAIL_APP_PASSWORD
-          }
-        });
+        const resend = new Resend(import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY);
+        const fromEmail = import.meta.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || 'Astro Raja <reports@astroraja.com>';
 
-        await transporter.sendMail({
-          from: '"Astro Raja" <askastroraja@gmail.com>',
+        const { data: emailData, error: emailError } = await resend.emails.send({
+          from: fromEmail,
           to: report.email,
           subject: 'Your Astro Raja Life Transformation Report - ' + report.name,
-          text: 'Hello ' + report.name + ',\n\nYour Astro Raja Life Transformation Report is ready! Please find the PDF document attached to this email.\n\nBest regards,\nAstro Raja Team',
           html: `
             <div style="background-color: #faf8f5; padding: 40px 20px; font-family: 'Outfit', Arial, sans-serif; color: #334155; line-height: 1.6;">
               <style>
@@ -231,10 +225,13 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
           `,
           attachments: [{
             filename: 'AstroRaja_Life_Report_' + filenameSafeName + '.pdf',
-            content: pdfBuffer,
-            contentType: 'application/pdf'
+            content: pdfBuffer
           }]
         });
+
+        if (emailError) {
+          throw new Error(emailError.message);
+        }
       } catch (emailError) {
         console.error('Failed to generate/send premium PDF email:', emailError);
       }
