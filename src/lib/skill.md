@@ -1,6 +1,6 @@
 ---
 name: astro-life-report
-description: "Generate deeply personalized life transformation reports using a three-layer framework — Raasi (inner world), Lagnam (outer approach), and Nakshatra + Padam (search engine + D9 soul direction). Trigger when user provides Name + Raasi + Lagnam + Nakshatra + Padam and asks for any life report, transformation guide, karmic pattern analysis, soul purpose report, or situation handling guide. Auto-derives D9 Navamsa from Nakshatra + Padam. Opens with a Swami Vivekananda quote and fixed philosophical preamble. Produces a deeply personalized 12-section Word document (.docx)."
+description: "Generate deeply personalized life transformation reports using a three-layer framework — Raasi (inner world), Lagnam (outer approach), and Nakshatra + Padam (search engine + D9 soul direction). Trigger when user provides Name + Raasi + Lagnam + Nakshatra + Padam and asks for any life report, transformation guide, karmic pattern analysis, soul purpose report, or situation handling guide. Auto-derives D9 Navamsa from Nakshatra + Padam. Produces a deeply personalized 12-section document, starting immediately with SECTION 1: ASTRO FOUNDATION."
 ---
 
 # Astro Life Transformation Report — Skill Guide
