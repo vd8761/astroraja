@@ -75,7 +75,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
           </style>
           <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
             <div style="background-color: #1e1b4b; padding: 30px; text-align: center; border-bottom: 4px solid #f59e0b;">
-              <h2 style="color: #ffffff; margin: 0; font-family: 'Lora', Georgia, serif; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">Astro Raja</h2>
+              <h2 style="color: #ffffff; margin: 0; font-family: 'Lora', Georgia, serif; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">Ask Astro Raja</h2>
             </div>
             <div style="padding: 40px 30px;">
               <h3 style="margin-top: 0; color: #1e1b4b; font-family: 'Lora', Georgia, serif; font-size: 22px;">Hello <span style="color: #f59e0b;">${report.name}</span>,</h3>
