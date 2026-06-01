@@ -142,17 +142,35 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
       const requestUrl = new URL(request.url);
       const qstashUrl = `${process.env.QSTASH_URL}/v2/publish/${requestUrl.origin}/api/process-reading`;
       
-      const qstashRes = await fetch(qstashUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.QSTASH_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ report_id }),
-      });
+      try {
+        const qstashRes = await fetch(qstashUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.QSTASH_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ report_id }),
+        });
 
-      if (!qstashRes.ok) {
-        throw new Error('Failed to re-queue chunk to QStash: ' + await qstashRes.text());
+        if (!qstashRes.ok) {
+          throw new Error('Failed to re-queue chunk to QStash: ' + await qstashRes.text());
+        }
+      } catch (qstashError: any) {
+        console.warn('QStash re-queue failed, executing continuation locally:', qstashError.message || qstashError);
+        
+        // Run continuation locally in background
+        (async () => {
+          try {
+            const fakeReq = new Request(request.url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ report_id })
+            });
+            await POST({ request: fakeReq } as any);
+          } catch (recurseErr) {
+            console.error('Recursive local processing continuation failed:', recurseErr);
+          }
+        })();
       }
 
       // Return 200 immediately so this Vercel function invocation completes quickly!

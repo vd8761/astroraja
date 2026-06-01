@@ -25,12 +25,24 @@ export const POST: APIRoute = async ({ request }) => {
         user_id = existing[0].id;
         await sql`UPDATE users SET email = ${data.email} WHERE id = ${user_id}`;
       } else {
-        const inserted = await sql`INSERT INTO users (mobile_number, email) VALUES (${data.mobile}, ${data.email}) RETURNING id`;
-        user_id = inserted[0].id;
+        // Fallback: check if they already registered with this email
+        const existingEmail = await sql`SELECT id FROM users WHERE email = ${data.email} LIMIT 1`;
+        if (existingEmail.length > 0) {
+          user_id = existingEmail[0].id;
+          await sql`UPDATE users SET mobile_number = ${data.mobile} WHERE id = ${user_id}`;
+        } else {
+          const inserted = await sql`INSERT INTO users (mobile_number, email) VALUES (${data.mobile}, ${data.email}) RETURNING id`;
+          user_id = inserted[0].id;
+        }
       }
     } else {
-      const inserted = await sql`INSERT INTO users (email) VALUES (${data.email}) RETURNING id`;
-      user_id = inserted[0].id;
+      const existing = await sql`SELECT id FROM users WHERE email = ${data.email} LIMIT 1`;
+      if (existing.length > 0) {
+        user_id = existing[0].id;
+      } else {
+        const inserted = await sql`INSERT INTO users (email) VALUES (${data.email}) RETURNING id`;
+        user_id = inserted[0].id;
+      }
     }
 
     // 2. Create Profile
@@ -56,11 +68,35 @@ export const POST: APIRoute = async ({ request }) => {
     const baseUrl = new URL(request.url).origin;
     const processUrl = `${baseUrl}/api/process-reading`;
     
-    await qstash.publishJSON({
-      url: processUrl,
-      body: { report_id },
-      retries: 3
-    });
+    try {
+      await qstash.publishJSON({
+        url: processUrl,
+        body: { report_id },
+        retries: 3
+      });
+    } catch (qstashError: any) {
+      console.warn('QStash publish failed. Running report generation locally in the background:', qstashError.message || qstashError);
+      
+      // Async trigger of local process-reading in the background
+      (async () => {
+        try {
+          const { POST: processReading } = await import('./process-reading');
+          const fakeReq = new Request(processUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ report_id }),
+          });
+          const res = await processReading({ request: fakeReq } as any);
+          if (!res.ok) {
+            console.error('Local process-reading fallback failed with status:', res.status, await res.text());
+          }
+        } catch (localErr) {
+          console.error('Local process-reading fallback error:', localErr);
+        }
+      })();
+    }
 
     return new Response(JSON.stringify({ success: true, queued: true, report_id }), { 
       status: 200,
