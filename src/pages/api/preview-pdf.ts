@@ -86,37 +86,33 @@ export const GET: APIRoute = async ({ request }) => {
     };
 
     // ── Design components ─────────────────────────────────────────────────
-    const sectionHeader = (num: number, title: string, subtitle?: string, breakBefore = false) => {
-      const numStr = String(num).padStart(2, '0');
-      return {
-        table: {
-          widths: [3, '*'],
-          body: [[
-            { text: '', fillColor: C.saffron, border: [false, false, false, false], margin: [0, 0, 0, 0] },
+    const sectionHeader = (num: number, title: string, subtitle?: string, breakBefore = false) => ({
+      table: {
+        widths: ['*'],
+        dontBreakRows: true,
+        body: [
+          [
             {
               stack: [
-                { text: `SECTION ${numStr}`, font: 'Outfit', fontSize: 9, color: C.saffronDark, bold: true, tracking: 1 },
-                { text: title.toUpperCase(), font: 'Lora', fontSize: 18, color: C.navy, bold: true, margin: [0, 2, 0, 0] },
-                subtitle ? { text: subtitle, font: 'Outfit', fontSize: 10, color: C.muted, margin: [0, 4, 0, 0] } : null,
-              ].filter(Boolean),
-              fillColor: C.bg, // using brand-light-bg
-              border: [false, false, false, false],
-              margin: [12, 10, 10, 10],
-            },
-          ]],
-        },
-        layout: {
-          hLineWidth: () => 0,
-          vLineWidth: () => 0,
-          paddingLeft: () => 0,
-          paddingRight: () => 0,
-          paddingTop: () => 0,
-          paddingBottom: () => 0,
-        },
-        margin: [0, 25, 0, 25],
-        pageBreak: breakBefore ? 'before' : undefined,
-      } as any;
-    };
+                { text: `SECTION ${String(num).padStart(2, '0')}`, font: 'Outfit', bold: true, fontSize: 7, color: C.saffron, letterSpacing: 2, margin: [0, 0, 0, 4] },
+                { text: title.toUpperCase(), font: 'Lora', bold: true, fontSize: 14, color: C.navy, margin: [0, 0, 0, 2] },
+                ...(subtitle ? [{ text: subtitle, font: 'Outfit', italics: true, fontSize: 9.5, color: C.muted }] : []),
+              ],
+              border: [false, true, false, false],
+              margin: [0, 16, 0, 4],
+            }
+          ]
+        ],
+      },
+      layout: {
+        hLineWidth: (i: number) => i === 0 ? 1.5 : 0,
+        hLineColor: () => C.navy,
+        vLineWidth: () => 0,
+      },
+      margin: [0, 16, 0, 12],
+      id: 'sectionHeader',
+      pageBreak: breakBefore ? 'before' : undefined,
+    } as any);
 
     const keyValue = (label: string, value: string | any[]) => ({
       columns: [
@@ -166,32 +162,6 @@ export const GET: APIRoute = async ({ request }) => {
       margin: [0, 12, 0, 6],
     } as any);
 
-    const sectionHeader = (num: number, title: string, subtitle?: string) => ({
-      table: {
-        widths: ['*'],
-        dontBreakRows: true,
-        body: [
-          [
-            {
-              stack: [
-                { text: `SECTION ${String(num).padStart(2, '0')}`, font: 'Outfit', bold: true, fontSize: 7, color: C.saffron, letterSpacing: 2, margin: [0, 0, 0, 4] },
-                { text: title.toUpperCase(), font: 'Lora', bold: true, fontSize: 14, color: C.navy, margin: [0, 0, 0, 2] },
-                ...(subtitle ? [{ text: subtitle, font: 'Outfit', italics: true, fontSize: 9.5, color: C.muted }] : []),
-              ],
-              border: [false, true, false, false],
-              margin: [0, 16, 0, 4],
-            }
-          ]
-        ],
-      },
-      layout: {
-        hLineWidth: (i: number) => i === 0 ? 1.5 : 0,
-        hLineColor: () => C.navy,
-        vLineWidth: () => 0,
-      },
-      margin: [0, 16, 0, 12],
-      id: 'sectionHeader',
-    } as any);
 
     const quoteBlock = (text: string) => {
       const parsed = parseText(text);
