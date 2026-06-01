@@ -4,10 +4,40 @@ import { Resend } from 'resend';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { mobile, email } = await request.json();
+    const { mobile, email, type } = await request.json();
 
     if (!mobile && !email) {
       return new Response(JSON.stringify({ error: 'Mobile number or Email is required' }), { status: 400 });
+    }
+
+    // Check if user already exists when signing up, or if they exist when logging in
+    if (type === 'signup') {
+      if (email) {
+        const existingEmail = await sql`SELECT id FROM users WHERE email = ${email} LIMIT 1`;
+        if (existingEmail.length > 0) {
+          return new Response(JSON.stringify({ error: 'Email address is already registered.' }), { status: 400 });
+        }
+      }
+      if (mobile) {
+        const existingMobile = await sql`SELECT id FROM users WHERE mobile_number = ${mobile} LIMIT 1`;
+        if (existingMobile.length > 0) {
+          return new Response(JSON.stringify({ error: 'Phone number is already registered.' }), { status: 400 });
+        }
+      }
+    } else {
+      // Sign In / Login flow
+      if (email) {
+        const existingEmail = await sql`SELECT id FROM users WHERE email = ${email} LIMIT 1`;
+        if (existingEmail.length === 0) {
+          return new Response(JSON.stringify({ error: 'No account found with this email. Please sign up first.' }), { status: 400 });
+        }
+      }
+      if (mobile) {
+        const existingMobile = await sql`SELECT id FROM users WHERE mobile_number = ${mobile} LIMIT 1`;
+        if (existingMobile.length === 0) {
+          return new Response(JSON.stringify({ error: 'No account found with this phone number. Please sign up first.' }), { status: 400 });
+        }
+      }
     }
 
     // 1. Rate Limiting Check (Max 3 requests per 15 minutes for the requested destination)
