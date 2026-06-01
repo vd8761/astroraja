@@ -145,13 +145,13 @@ import Layout from '../layouts/Layout.astro';
           </div>
           
           <div>
-            <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Padam (Quarter)</label>
+            <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Paatham (Quarter)</label>
             <select x-model="formData.padam" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all appearance-none">
               <option value="">Don't know</option>
-              <option value="1">Padam 1</option>
-              <option value="2">Padam 2</option>
-              <option value="3">Padam 3</option>
-              <option value="4">Padam 4</option>
+              <option value="1">Paatham 1</option>
+              <option value="2">Paatham 2</option>
+              <option value="3">Paatham 3</option>
+              <option value="4">Paatham 4</option>
             </select>
             <p class="text-brand-text-muted text-xs mt-2">Optional, but highly recommended for accuracy.</p>
           </div>
@@ -263,9 +263,9 @@ import Layout from '../layouts/Layout.astro';
         </div>
         <div class="bg-white border border-brand-border rounded-xl p-4 shadow-sm relative">
           <button @click="step = 0" class="absolute top-4 right-4 text-brand-saffron text-xs font-semibold hover:underline">Edit</button>
-          <div class="text-brand-saffron-dark text-[10px] tracking-widest uppercase mb-1">Raasi / Lagnam / Star</div>
+          <div class="text-brand-saffron-dark text-[10px] tracking-widest uppercase mb-1">Raasi / Lagnam / Star / Paatham</div>
           <div class="font-bold text-brand-navy text-base" x-text="`${formData.raasi} / ${formData.lagnam}`"></div>
-          <div class="text-brand-text-muted text-sm mt-1" x-text="formData.padam ? formData.nakshatra + ' (Padam ' + formData.padam + ')' : formData.nakshatra"></div>
+          <div class="text-brand-text-muted text-sm mt-1" x-text="formData.padam ? formData.nakshatra + ' (Paatham ' + formData.padam + ')' : formData.nakshatra + ' (Paatham Unknown)'"></div>
         </div>
       </div>
 
