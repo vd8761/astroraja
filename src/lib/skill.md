@@ -1,6 +1,6 @@
 ---
 name: astro-life-report
-description: "Generate deeply personalized life transformation reports using a three-layer framework — Raasi (inner world), Lagnam (outer approach), and Nakshatra + Padam (search engine + D9 soul direction). Trigger when user provides Name + Raasi + Lagnam + Nakshatra + Padam and asks for any life report, transformation guide, karmic pattern analysis, soul purpose report, or situation handling guide. Auto-derives D9 Navamsa from Nakshatra + Padam. Produces a deeply personalized 12-section document, starting immediately with SECTION 1: ASTRO FOUNDATION."
+description: "Generate deeply personalized life transformation reports using a three-layer framework — Raasi (inner world), Lagnam (outer approach), and Nakshatra + Padam (search engine + D9 soul direction). Trigger when user provides Name + Raasi + Lagnam + Nakshatra + Padam and asks for any life report, transformation guide, karmic pattern analysis, soul purpose report, or situation handling guide. Auto-derives D9 Navamsa from Nakshatra + Padam. Produces a deeply personalized 12-section Word document (.docx)."
 ---
 
 # Astro Life Transformation Report — Skill Guide
@@ -187,7 +187,136 @@ The 27 Nakshatras × 4 Padams = 108 Padams map sequentially through the 12 zodia
 
 ---
 
-## STEP 3: ANALYSIS BEFORE WRITING
+## STEP 3: DERIVE THE MAHADASHA LIFE TIMELINE
+
+This is a mandatory step before writing the report. Every report must include the full Mahadasha sequence — birth to end — mapped against real ages, house rulerships, and what each period delivers in human terms.
+
+### Writing Style for Mahadasha Section — CRITICAL
+
+Model this exactly on the Ayilyam 1st Pada Cancer example. Short. Timed. Real. No padding.
+
+**The template:**
+> Pain explained → Timing named → Sensitivity acknowledged → Pivot line → Rise mapped → Navamsa activated → Who they become
+
+**The 4 questions every person is silently asking — answer all four:**
+1. *Why is my life so hard?* — Name the Dasha lord + house rulerships
+2. *When does it get better?* — Give the exact age the next Dasha begins
+3. *What does better actually look like?* — Name specific life outcomes
+4. *Was my suffering worth anything?* — Reframe: the struggle was the forge
+
+---
+
+### Mahadasha Sequence by Birth Nakshatra
+
+**Vimshottari Dasha Order and Years:**
+Ketu (7) → Venus (20) → Sun (6) → Moon (10) → Mars (7) → Rahu (18) → Jupiter (16) → Saturn (19) → Mercury (17)
+
+**Birth Dasha by Nakshatra:**
+| Nakshatra | Birth Dasha Lord | Years |
+|-----------|-----------------|-------|
+| Aswini, Magam, Moolam | Ketu | 7 |
+| Bharani, Puram, Pooradam | Venus | 20 |
+| Krithikai, Uthiram, Uthiradam | Sun | 6 |
+| Rohini, Hastam, Thiruvonam | Moon | 10 |
+| Mirugasirisam, Chithirai, Avittam | Mars | 7 |
+| Thiruvathirai, Swathi, Sathayam | Rahu | 18 |
+| Punarvasu, Visakam, Poorattathi | Jupiter | 16 |
+| Poosam, Anusham, Uttirattathi | Saturn | 19 |
+| Aayilyam, Kettai, Revathi | Mercury | 17 |
+
+**Pada affects age at Dasha transition:**
+- Pada 1 natives — born at star's very start. Run almost the FULL birth Dasha through childhood.
+- Pada 4 natives — most of birth Dasha already consumed before birth. Transition to next Dasha much earlier.
+Always account for this when writing age ranges.
+
+---
+
+### House Rulerships by Rasi — COMPLETE TABLE
+
+Always name which houses each Dasha lord rules for THIS person's Rasi — and translate into human outcomes.
+
+| Dasha Planet | Aries | Taurus | Gemini | Cancer | Leo | Virgo | Libra | Scorpio | Sagittarius | Capricorn | Aquarius | Pisces |
+|-------------|-------|--------|--------|--------|-----|-------|-------|---------|-------------|-----------|----------|--------|
+| Sun | 5th | 4th | 3rd | 2nd | 1st | 12th | 11th | 10th | 9th | 8th | 7th | 6th |
+| Moon | 4th | 3rd | 2nd | 1st | 12th | 11th | 10th | 9th | 8th | 7th | 6th | 5th |
+| Mars | 1st+8th | 12th+7th | 11th+6th | 10th+5th | 9th+4th | 8th+3rd | 7th+2nd | 6th+1st | 5th+12th | 4th+11th | 3rd+10th | 2nd+9th |
+| Mercury | 3rd+6th | 2nd+5th | 1st+4th | 12th+3rd | 11th+2nd | 10th+1st | 9th+12th | 8th+11th | 7th+10th | 6th+9th | 5th+8th | 4th+7th |
+| Jupiter | 9th+12th | 8th+11th | 7th+10th | 6th+9th | 5th+8th | 4th+7th | 3rd+6th | 2nd+5th | 1st+4th | 12th+3rd | 11th+2nd | 10th+1st |
+| Venus | 2nd+7th | 1st+6th | 12th+5th | 11th+4th | 10th+3rd | 9th+2nd | 8th+1st | 7th+12th | 6th+11th | 5th+10th | 4th+9th | 3rd+8th |
+| Saturn | 10th+11th | 9th+10th | 8th+9th | 7th+8th | 6th+7th | 5th+6th | 4th+5th | 3rd+4th | 2nd+3rd | 1st+2nd | 12th+1st | 11th+12th |
+
+**Key House Meanings — always translate into human outcomes:**
+- 1st: Self, identity, health, personality
+- 2nd: Family wealth, speech, savings
+- 3rd: Siblings, effort, struggles, courage
+- 4th: Home, mother, vehicles, comfort, property
+- 5th: Children, intelligence, past life merit, investments
+- 6th: Enemies, illness, debts, competition
+- 7th: Marriage, partnerships, business relationships
+- 8th: Sudden changes, transformation, hidden struggles
+- 9th: Father, fortune, dharma, wisdom
+- 10th: Career, status, public reputation, authority
+- 11th: Income, gains, desires fulfilled, powerful networks
+- 12th: Losses, isolation, foreign lands, spiritual liberation
+
+---
+
+### Navamsa (D9) Activation Age
+
+Always name when the D9 activates and what changes. This is what gives the person a timeline to hold onto.
+
+| D9 Sign | Activation Window | What Activates |
+|---------|------------------|----------------|
+| Aries | Late 20s | Leadership instinct, courage to pioneer |
+| Taurus | Early 30s | Patience pays off, material stability builds |
+| Gemini | Mid 20s | Communication gifts emerge, teaching begins |
+| Cancer | Late 20s | Emotional wisdom, nurturing leadership |
+| Leo | Early 30s | Public recognition, authority claimed |
+| Virgo | Late 20s | Mastery through service, craft perfected |
+| Libra | Early 30s | Relationships clarify, justice instinct sharpens |
+| Scorpio | Mid 30s | Transformation deepens, hidden power emerges |
+| Sagittarius | Late 20s–Early 30s | Wisdom from suffering, teaching begins |
+| Capricorn | Mid 30s | Institutional authority, long-term building pays |
+| Aquarius | Early 30s | Collective purpose found, innovation emerges |
+| Pisces | Late 30s | Spiritual depth, healing gifts activated |
+
+---
+
+### Mahadasha Section Format — Follow This Exactly
+
+**Part 1 — Why the First Phase is Hard**
+3 numbered points only:
+- Point 1: Birth Dasha — years, house rulerships, real-life impact on childhood
+- Point 2: Next Dasha — transition age, houses, human experience during this period
+- Point 3: Nakshatra + Rasi combination — why the emotional sensitivity amplifies the difficulty
+
+**Part 2 — The Great Turning Point**
+- One pivot line reframing the suffering ("structured like a crucible")
+- The turning Dasha — exact age, house rulerships, specific life outcomes named
+- The Navamsa activation — when, what transforms, who they become
+- The result — what most people from this combination achieve in their 30s, 40s, 50s
+
+**Part 3 — The Full Mahadasha Map (always include)**
+| Dasha | Age | Houses Ruled | What It Delivers |
+Every row — specific outcomes in human language. Never "good period" or "difficult period."
+
+**Part 4 — The Big Picture**
+3-4 sentences. The overall life arc. End with one line that reframes the early struggle as preparation for the later greatness.
+
+---
+
+### Writing Rules — Non-Negotiable
+
+1. **One idea per point. Stop.** No padding.
+2. **Always name the age.** "Around age 23-24" not "later in life."
+3. **Always name houses AND their human meaning.** "Venus rules 4th (home, comfort) and 11th (massive gains, networks)"
+4. **Navamsa activation is mandatory** — when it wakes up and what changes
+5. **Full Mahadasha table is mandatory** — all Dashas, all ages, all outcomes
+6. **Never use vague words** — "challenging," "positive," "good period" are banned. Name what actually happens.
+
+---
+
+## STEP 4: ANALYSIS BEFORE WRITING
 
 Before writing a single word of the report, perform this analysis:
 
@@ -196,6 +325,7 @@ Before writing a single word of the report, perform this analysis:
 **3. The Animal Metaphor** — Use zodiac symbols to build a memorable identity sentence
 **4. D9 Exit** — What the D9 Navamsa soul direction requires to break the loop
 **5. Karmic Origin** — What past life pattern this Nakshatra + Padam combination suggests
+**6. Mahadasha Arc** — Map the full Dasha sequence with ages before writing Section 11 Block 4
 
 ### Element Interaction Guide
 | Combination | Dynamic | Core Pattern |
@@ -215,7 +345,9 @@ Before writing a single word of the report, perform this analysis:
 
 ---
 
-## STEP 4: BUILD THE REPORT
+## STEP 5: BUILD THE REPORT
+
+---
 
 ### THE 12 SECTIONS (generate all 12, in this exact order)
 
@@ -441,6 +573,35 @@ Style rule: If it takes more than 3 lines, it is too long. Cut it.
 
 ---
 
+**Block 4 — Your Mahadasha Life Timeline** (sub-heading)
+**Purpose:** Give the person a complete map of their life — specific ages, real outcomes, and the exact moment everything changes. Short. Timed. Clear. One idea per point.
+
+**Part 1 — Why the First Phase is Hard** (3 numbered points only)
+- Point 1: Birth Dasha — years, house rulerships for THIS Rasi, real-life impact on childhood named clearly
+- Point 2: Next Dasha — exact transition age, houses ruled, what the person experiences
+- Point 3: Nakshatra + Rasi combination — why the emotional nature amplifies the difficulty in youth
+
+**Part 2 — The Great Turning Point**
+- One pivot line reframing the suffering as design (e.g. "structured like a crucible")
+- The turning Dasha — exact age, house rulerships, specific life outcomes named
+- The Navamsa activation — when the D9 wakes up, what transforms, who they become
+- The result — what this combination achieves in their 30s, 40s, 50s
+
+**Part 3 — The Full Mahadasha Map** (mandatory — always include all Dashas)
+| Dasha | Age | Houses Ruled | What It Delivers |
+Every row — specific human outcomes. Never "good period" or "difficult period."
+
+**Part 4 — The Big Picture**
+3-4 sentences only. The overall life arc. End with one line reframing early struggle as preparation for later greatness.
+
+**Writing rules:**
+- Always name the age. "Around age 23-24" not "later in life."
+- Always name houses AND their human meaning. "Venus rules 4th (home, comfort) and 11th (massive gains, networks)"
+- Navamsa activation age is mandatory in every report
+- Never use vague words — "challenging," "positive," "good period" are banned. Name what actually happens.
+
+---
+
 #### SECTION 12: LIVING A DHARMIC LIFE
 **Purpose:** The closing section. How to live aligned with soul direction.
 
@@ -454,13 +615,54 @@ End with one italicised closing sentence capturing the dharmic call for this spe
 
 ---
 
-## STEP 5: MARKDOWN FORMATTING
+Read `/mnt/skills/public/docx/SKILL.md` before writing any code.
 
-- Output the report strictly in plain Markdown format.
-- Use ##  for section headers.
-- Use standard Markdown tables for all tables.
-- Use blockquotes (> ) for quotes.
-- Do NOT output any code blocks, json, or binary files. Just the Markdown text.
+### Page Setup
+- US Letter (12240 × 15840 DXA), 1" margins all sides
+- Font: Aptos (body), Arial (headings)
+
+### Color Palette
+| Element | Color |
+|---------|-------|
+| Primary heading | #1A3C5E (dark navy) |
+| Section heading | #2E75B6 (medium blue) |
+| Table header | #1A3C5E bg, white text |
+| Alternate row | #E8F0F8 |
+| Quote block border | #2E75B6 |
+| Quote block bg | #F0F4F8 |
+| Strength header | #155724 bg, white text |
+| Weakness header | #7B1818 bg, white text |
+
+### Heading Style
+- Report title: Centered, 36pt bold, #1A3C5E
+- Subtitle (identity sentence): Centered, 18pt italic, #2E75B6
+- Astro detail line: Centered, 12pt, #2C2C2C
+- SECTION headers: 18pt bold, #1A3C5E, with thick left border bar
+- Sub-section headers: 14pt bold, #2E75B6
+
+### Table Formatting
+- All tables: full-width (9360 DXA), `WidthType.DXA`, dual widths (table + each cell)
+- Cell padding: `{ top: 80, bottom: 80, left: 120, right: 120 }`
+- Use `ShadingType.CLEAR` — never SOLID
+- Header rows: shaded per color palette, white bold text
+- Alternate body rows: #E8F0F8 and white
+
+### Paragraph Sections (4, 6, 10)
+- Bold heading per item, Aptos 22pt, color #1A3C5E
+- Body paragraph: Aptos 20pt, color #2C2C2C
+- Spacing before each heading: 200; after paragraph: 120
+
+### Quote Blocks
+Left border bar, #F0F4F8 background, indent 360, italic Aptos.
+
+### Section Structure
+- Each section starts on a new page (PageBreak before SECTION header)
+
+### Validation
+```bash
+python scripts/office/validate.py output.docx
+```
+Fix any validation errors before delivering.
 
 ---
 
@@ -476,16 +678,20 @@ End with one italicised closing sentence capturing the dharmic call for this spe
 - [ ] Section 4: Life areas in paragraph style — bold heading + paragraph each
 - [ ] Section 5: 3 patterns only — short and punchy, not lengthy
 - [ ] Section 6: Root problems in paragraph style — bold heading + 2-3 sentences each
-- [ ] Section 6: Career Karma table — 3 columns, one sharp sentence per cell
+- [ ] Section 6: Career Karma table — 5 rows, 3 columns, one specific career field per row, derived from D9 + combination
 - [ ] Section 7C/D/E: Money, Overthinking, Relationships in bullet points only
 - [ ] Section 8: Each step 2-3 lines maximum
 - [ ] Section 9: Top 5 rows only — old identity in person's voice, new in bold first-person
 - [ ] Section 10: 5 truths only — paragraph style, combination-specific
-- [ ] Section 6: Career Karma table — 5 rows, 3 columns, one specific career field per row, derived from D9 + combination
-- [ ] Section 11: Karmic Origin — 4 bullets, one line each, specific to THIS Nakshatra + Padam soul story
-- [ ] Section 11: Career table present — 6-8 rows, specific named career fields (not categories), why it clears karma, how to start
-- [ ] Section 11: Career fields derived from D9 Navamsa ruling planet first, then narrowed by Raasi + Lagnam + Nakshatra
-- [ ] Section 11: 3 Karma-Clearing Shifts — 3 lines maximum each, no paragraphs, shift format strictly followed
+- [ ] Section 11 Block 1: Karmic Origin — 4 bullets, one line each, specific to THIS Nakshatra + Padam
+- [ ] Section 11 Block 2: Career table — 6-8 rows, specific named career fields, why it clears karma, how to start
+- [ ] Section 11 Block 2: Career fields derived from D9 Navamsa ruling planet first, narrowed by Raasi + Lagnam + Nakshatra
+- [ ] Section 11 Block 3: 3 Karma-Clearing Shifts — 3 lines maximum each, shift format strictly followed
+- [ ] Section 11 Block 4: Mahadasha Timeline present — all 4 parts included
+- [ ] Section 11 Block 4: Full Mahadasha table — ALL Dashas listed with age, houses, specific outcomes
+- [ ] Section 11 Block 4: Navamsa activation age named explicitly
+- [ ] Section 11 Block 4: No vague words — "challenging/positive/good period" banned, real outcomes named
+- [ ] Section 11 Block 4: Big Picture closes the arc with one reframing line
 - [ ] Section 12: 4 dharmic bullet points + closing italicised line
 - [ ] No generic filler — every sentence specific enough that swapping names makes it wrong
 - [ ] No repetition across sections
@@ -497,3 +703,4 @@ End with one italicised closing sentence capturing the dharmic call for this spe
 - [ ] Strength/Weakness headers in green/red
 - [ ] Paragraph sections (4, 6, 10) have no tables — bold heading + text only
 - [ ] Validation passes
+
