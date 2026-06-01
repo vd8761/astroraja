@@ -11,7 +11,7 @@ async function main() {
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       mobile_number VARCHAR(20) UNIQUE,
       email VARCHAR(255),
-      token_balance INTEGER DEFAULT 0,
+      token_balance INTEGER DEFAULT 10000,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
       updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
     )
