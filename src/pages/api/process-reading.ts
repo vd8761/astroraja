@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import sql from '../../lib/db';
 import Anthropic from '@anthropic-ai/sdk';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 export const config = {
   maxDuration: 300,
@@ -67,9 +67,9 @@ Language: ${report.language || 'English'}
 
     const systemPrompt = skillTemplate + `
 
-CRITICAL INSTRUCTION: Output the final report as raw Markdown text. You MUST complete the entire report from Section 1 to Section 14 exactly as formatted in the skill guide. 
+CRITICAL INSTRUCTION: Output the final report as raw Markdown text. You MUST complete the entire report from Section 1 to Section 12 exactly as formatted in the skill guide. 
 You must be highly concise, deeply impactful, and synthesize the information beautifully. Compress the text, summarize details, and avoid unnecessary repetition or overly long paragraphs. Keep it tight and highly focused. 
-DO NOT STOP until Section 14 is fully generated.
+DO NOT STOP until Section 12 is fully generated.
 
 CRITICAL LANGUAGE INSTRUCTION: The user has requested the report in ${report.language || 'English'}. You MUST output the ENTIRE document (including all headings, tables, labels, advice, and paragraphs) flawlessly in ${report.language || 'English'}. If Tamil is requested, ensure the Tamil translation is deeply contextual, natural, and preserves the intense psychological tone without losing any meaning.
 
@@ -187,25 +187,51 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
 
         const filenameSafeName = report.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
 
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: 'askastroraja@gmail.com',
-            pass: import.meta.env.GMAIL_APP_PASSWORD || process.env.GMAIL_APP_PASSWORD
-          }
-        });
+        const resend = new Resend(import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY);
+        const fromEmail = import.meta.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || 'Astro Raja <reports@astroraja.com>';
 
-        await transporter.sendMail({
-          from: '"Astro Raja" <askastroraja@gmail.com>',
+        const { data: emailData, error: emailError } = await resend.emails.send({
+          from: fromEmail,
           to: report.email,
           subject: 'Your Astro Raja Life Transformation Report - ' + report.name,
-          text: 'Hello ' + report.name + ',\n\nYour Astro Raja Life Transformation Report is ready! Please find the PDF document attached to this email.\n\nBest regards,\nAstro Raja Team',
+          html: `
+            <div style="background-color: #faf8f5; padding: 40px 20px; font-family: 'Outfit', Arial, sans-serif; color: #334155; line-height: 1.6;">
+              <style>
+                @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Outfit:wght@100..900&display=swap');
+              </style>
+              <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                <div style="background-color: #1e1b4b; padding: 30px; text-align: center; border-bottom: 4px solid #f59e0b;">
+                  <h2 style="color: #ffffff; margin: 0; font-family: 'Lora', Georgia, serif; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">Ask Astro Raja</h2>
+                </div>
+                <div style="padding: 40px 30px;">
+                  <h3 style="margin-top: 0; color: #1e1b4b; font-family: 'Lora', Georgia, serif; font-size: 22px;">Hello <span style="color: #f59e0b;">${report.name}</span>,</h3>
+                  <p style="font-size: 16px; margin-bottom: 20px;">Your deeply personalized <strong style="color: #1e1b4b;">Life Transformation Report</strong> is ready.</p>
+                  <p style="font-size: 16px; margin-bottom: 30px;">We have securely attached your full report as a PDF document to this email. This report is based on your unique astrological blueprint and is designed to provide you with clarity, guidance, and actionable steps for your life.</p>
+                  
+                  <div style="background-color: #faf8f5; padding: 25px; border-left: 4px solid #f59e0b; margin: 30px 0; border-radius: 0 8px 8px 0;">
+                    <h4 style="margin: 0 0 10px 0; color: #1e1b4b; font-family: 'Lora', Georgia, serif; font-size: 18px;">How to read this report:</h4>
+                    <p style="margin: 0; font-size: 15px; color: #475569;">Take your time. Find a quiet space, read through the sections carefully, and reflect on the insights provided. This isn't just a reading; it's a structural intervention for your life.</p>
+                  </div>
+                  
+                  <p style="font-size: 16px; margin-bottom: 10px;">If you have any questions or need further guidance, feel free to reply directly to this email.</p>
+                  <p style="font-size: 16px; margin-top: 30px; margin-bottom: 0;">Warm regards,<br><strong style="color: #1e1b4b;">Astro Raja Team</strong></p>
+                </div>
+              </div>
+              <div style="text-align: center; margin-top: 25px; font-size: 13px; color: #64748b; font-family: 'Outfit', Arial, sans-serif;">
+                <p style="margin: 5px 0;">&copy; ${new Date().getFullYear()} Astro Raja. All rights reserved.</p>
+                <p style="margin: 5px 0;">You are receiving this email because you requested a Life Transformation Report.</p>
+              </div>
+            </div>
+          `,
           attachments: [{
             filename: 'AstroRaja_Life_Report_' + filenameSafeName + '.pdf',
-            content: pdfBuffer,
-            contentType: 'application/pdf'
+            content: pdfBuffer
           }]
         });
+
+        if (emailError) {
+          throw new Error(emailError.message);
+        }
       } catch (emailError) {
         console.error('Failed to generate/send premium PDF email:', emailError);
       }

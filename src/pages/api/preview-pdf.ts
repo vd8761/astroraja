@@ -39,11 +39,11 @@ export const GET: APIRoute = async ({ request }) => {
 
     // ── Brand Color System (matches website exactly) ──────────────────────
     const C = {
-      navy:       '#1e1b4b',   // brand-navy (headings, headers)
+      navy:       '#1e1b4b',   // brand-navy
       navyLight:  '#312e81',   // brand-navy-light
       purple:     '#4c1d95',   // brand-purple
       purpleLight:'#7c3aed',   // brand-purple-light
-      saffron:    '#f59e0b',   // brand-saffron (gold accents)
+      saffron:    '#f59e0b',   // brand-saffron
       saffronDark:'#d97706',   // brand-saffron-dark
       text:       '#334155',   // brand-text
       textDark:   '#0f172a',   // brand-text-dark
@@ -51,7 +51,8 @@ export const GET: APIRoute = async ({ request }) => {
       border:     '#e2e8f0',   // brand-border
       bg:         '#faf8f5',   // brand-light-bg
       white:      '#ffffff',
-      // Section header colors — all deep navy/indigo family for consistency
+      rowAlt:     '#faf8f5',   // use brand light bg for alternate rows
+      // Section header colors
       sec1:  '#1e1b4b', sec2: '#1e1b4b', sec3: '#1e1b4b',
       sec4:  '#1e1b4b', sec5: '#1e1b4b', sec6: '#1e1b4b',
       sec7:  '#1e1b4b', sec8: '#1e1b4b', sec9: '#1e1b4b',
@@ -86,26 +87,21 @@ export const GET: APIRoute = async ({ request }) => {
 
     // ── Design components ─────────────────────────────────────────────────
     const sectionHeader = (num: number, title: string, subtitle?: string, breakBefore = false) => {
-      const color = sectionColors[num - 1] || C.navy;
       const numStr = String(num).padStart(2, '0');
       return {
         table: {
-          widths: [4, '*'],
+          widths: [3, '*'],
           body: [[
             { text: '', fillColor: C.saffron, border: [false, false, false, false], margin: [0, 0, 0, 0] },
             {
               stack: [
-                {
-                  text: [
-                    { text: numStr + '  ', font: 'Lora', fontSize: 13, color: C.saffron, bold: true },
-                    { text: title.toUpperCase(), font: 'Lora', fontSize: 13, color: C.white, bold: true },
-                  ],
-                },
-                subtitle ? { text: subtitle, font: 'Outfit', fontSize: 8.5, color: '#c4b5fd', margin: [0, 4, 0, 0] } : null,
+                { text: `SECTION ${numStr}`, font: 'Outfit', fontSize: 9, color: C.saffronDark, bold: true, tracking: 1 },
+                { text: title.toUpperCase(), font: 'Lora', fontSize: 18, color: C.navy, bold: true, margin: [0, 2, 0, 0] },
+                subtitle ? { text: subtitle, font: 'Outfit', fontSize: 10, color: C.muted, margin: [0, 4, 0, 0] } : null,
               ].filter(Boolean),
-              fillColor: color,
+              fillColor: C.bg, // using brand-light-bg
               border: [false, false, false, false],
-              margin: [10, 9, 10, 9],
+              margin: [12, 10, 10, 10],
             },
           ]],
         },
@@ -117,7 +113,7 @@ export const GET: APIRoute = async ({ request }) => {
           paddingTop: () => 0,
           paddingBottom: () => 0,
         },
-        margin: [0, 20, 0, 10],
+        margin: [0, 25, 0, 25],
         pageBreak: breakBefore ? 'before' : undefined,
       } as any;
     };
@@ -147,6 +143,7 @@ export const GET: APIRoute = async ({ request }) => {
     const subLabel = (letter: string, title: string) => ({
       table: {
         widths: [18, '*'],
+        dontBreakRows: true,
         body: [[
           {
             text: letter,
@@ -178,6 +175,7 @@ export const GET: APIRoute = async ({ request }) => {
       return {
         table: {
           widths: [5, '*'],
+          dontBreakRows: true,
           body: [[
             { text: '', fillColor: C.saffron, border: [false, false, false, false] },
             {
@@ -209,6 +207,7 @@ export const GET: APIRoute = async ({ request }) => {
     const infoBox = (text: string, bgColor = '#f5f3ff') => ({
       table: {
         widths: [5, '*'],
+        dontBreakRows: true,
         body: [[
           { text: '', fillColor: C.saffron, border: [false, false, false, false] },
           {
@@ -244,7 +243,7 @@ export const GET: APIRoute = async ({ request }) => {
           body: [
             headers.map((h, i) => {
               const parsed = parseText(h);
-              const applyStyle = (t: any) => ({ ...t, font: t.font === 'Tamil' ? 'Tamil' : 'Outfit', bold: true, fontSize: 8.5, color: C.white, fillColor: i === 0 ? C.navy : C.navyLight, margin: [6, 5, 6, 5], border: [false, false, false, false] });
+              const applyStyle = (t: any) => ({ ...t, font: t.font === 'Tamil' ? 'Tamil' : 'Lora', bold: true, fontSize: 10.5, color: C.navy, fillColor: C.bg, margin: [8, 8, 8, 8], border: [false, false, false, true] });
               return {
                 text: Array.isArray(parsed) ? parsed.map(applyStyle) : [applyStyle({ text: parsed })],
               };
@@ -254,22 +253,22 @@ export const GET: APIRoute = async ({ request }) => {
               while (paddedRow.length < headers.length) paddedRow.push('');
               return paddedRow.slice(0, headers.length).map((cell, ci) => ({
                 text: parseText(cell),
-                font: 'Outfit', fontSize: 8.5,
+                font: 'Outfit', fontSize: 9.5,
                 color: ci === 0 ? C.navy : C.text,
                 bold: ci === 0,
-                fillColor: ri % 2 === 0 ? C.white : '#f5f3ff',
-                margin: [6, 5, 6, 5],
-                border: [false, false, false, false],
+                fillColor: ri % 2 === 0 ? C.white : C.rowAlt,
+                margin: [8, 8, 8, 8],
+                border: [false, false, false, true],
               }));
             }),
           ],
         },
         layout: {
-          hLineWidth: (i: number, node: any) => (i === 0 || i === node.table.body.length) ? 1.5 : 0.5,
-          vLineWidth: () => 0,
-          hLineColor: (i: number, node: any) => (i === 0 || i === node.table.body.length) ? C.navy : C.border,
+          hLineWidth: (i: number, node: any) => (i === 0 || i === node.table.body.length) ? 0 : 1,
+          vLineWidth: () => 0, // No vertical lines for a cleaner, modern look
+          hLineColor: (i: number, node: any) => (i === 1) ? C.navy : C.border, // Dark line under header, light lines between rows
         },
-        margin: [0, 5, 0, 14],
+        margin: [0, 10, 0, 20],
       } as any;
     };
 
@@ -383,6 +382,7 @@ export const GET: APIRoute = async ({ request }) => {
     let reportRaasi = 'Simbha';
     let reportLagnam = 'Kanni';
     let reportNakshatra = 'Puram';
+    let reportPadam = '4';
     let reportRulingPlanet = 'Sun + Mercury';
     let reportSubtitle = '';
     let useRealContent = false;
@@ -417,6 +417,38 @@ export const GET: APIRoute = async ({ request }) => {
       return '—';
     };
 
+    const getTamil = (str: string, type: string) => {
+      if (!str) return '';
+      const s = str.toLowerCase();
+      const maps: any = {
+        raasi: {
+          'mesham': 'மேஷம்', 'aries': 'மேஷம்', 'rishabam': 'ரிஷபம்', 'taurus': 'ரிஷபம்',
+          'mithunam': 'மிதுனம்', 'midhunam': 'மிதுனம்', 'gemini': 'மிதுனம்',
+          'kadagam': 'கடகம்', 'cancer': 'கடகம்', 'simbham': 'சிம்மம்', 'simbha': 'சிம்மம்', 'leo': 'சிம்மம்',
+          'kanni': 'கன்னி', 'virgo': 'கன்னி', 'thulam': 'துலாம்', 'thulaam': 'துலாம்', 'libra': 'துலாம்',
+          'vrichigam': 'விருச்சிகம்', 'viruchigam': 'விருச்சிகம்', 'scorpio': 'விருச்சிகம்',
+          'dhanusu': 'தனுசு', 'sagittarius': 'தனுசு', 'magaram': 'மகரம்', 'capricorn': 'மகரம்',
+          'kumbam': 'கும்பம்', 'aquarius': 'கும்பம்', 'meenam': 'மீனம்', 'pisces': 'மீனம்'
+        },
+        nakshatra: {
+          'ashwini': 'அஸ்வினி', 'bharani': 'பரணி', 'karthikai': 'கார்த்திகை', 'rohini': 'ரோகிணி', 'mrigashira': 'மிருகசீரிடம்',
+          'ardra': 'திருவாதிரை', 'thiruvadhirai': 'திருவாதிரை', 'punarvasu': 'புனர்பூசம்', 'punarpoosam': 'புனர்பூசம்',
+          'pushya': 'பூசம்', 'poosam': 'பூசம்', 'ashlesha': 'ஆயில்யம்', 'ayilyam': 'ஆயில்யம்', 'magha': 'மகம்', 'magam': 'மகம்',
+          'purva phalguni': 'பூரம்', 'pooram': 'பூரம்', 'uttara phalguni': 'உத்திரம்', 'uthiram': 'உத்திரம்',
+          'hasta': 'அஸ்தம்', 'astham': 'அஸ்தம்', 'chitra': 'சித்திரை', 'chithirai': 'சித்திரை', 'swathi': 'சுவாதி', 'swati': 'சுவாதி',
+          'vishakha': 'விசாகம்', 'visakam': 'விசாகம்', 'anuradha': 'அனுஷம்', 'anusham': 'அனுஷம்', 'jyeshta': 'கேட்டை', 'kettai': 'கேட்டை',
+          'mula': 'மூலம்', 'moolam': 'மூலம்', 'purva ashadha': 'பூராடம்', 'pooradam': 'பூராடம்', 'uttara ashadha': 'உத்திராடம்', 'uthiradam': 'உத்திராடம்',
+          'shravana': 'திருவோணம்', 'thiruvonam': 'திருவோணம்', 'dhanishta': 'அவிட்டம்', 'avittam': 'அவிட்டம்',
+          'shatabhisha': 'சதயம்', 'sadayam': 'சதயம்', 'purva bhadrapada': 'பூரட்டாதி', 'poorattadhi': 'பூரட்டாதி',
+          'uttara bhadrapada': 'உத்திரட்டாதி', 'uthirattadhi': 'உத்திரட்டாதி', 'revati': 'ரேவதி'
+        }
+      };
+      const map = maps[type];
+      if (!map) return '';
+      for (const k in map) { if (s.includes(k)) return map[k]; }
+      return '';
+    };
+
     if (reportId) {
       try {
         const { neon } = await import('@neondatabase/serverless');
@@ -424,7 +456,7 @@ export const GET: APIRoute = async ({ request }) => {
         if (!dbUrl) throw new Error('DATABASE_URL not set');
         const sql = neon(dbUrl);
         const rows = await sql`
-          SELECT r.raw_markdown_report, p.name, p.raasi, p.lagnam, p.nakshatra
+          SELECT r.raw_markdown_report, p.name, p.raasi, p.lagnam, p.nakshatra, p.padam
           FROM reports r
           JOIN profiles p ON r.profile_id = p.id
           WHERE r.id = ${reportId} AND r.status = 'completed'
@@ -435,18 +467,30 @@ export const GET: APIRoute = async ({ request }) => {
         reportRaasi = row.raasi || 'Simbha';
         reportLagnam = row.lagnam || 'Kanni';
         reportNakshatra = row.nakshatra || 'Puram';
+        reportPadam = row.padam || '';
         reportRulingPlanet = getRulingPlanet(reportRaasi, reportLagnam);
         useRealContent = true;
         // ── Markdown → pdfmake parser ─────────────────────────────────────
         const md = (row.raw_markdown_report || '').split('\n');
         let secNum = 0;
         let mi = 0;
+        let skipCurrentSection = false;
         while (mi < md.length) {
           const l = md[mi];
           if (l.match(/^## /)) {
-            secNum++;
             const title = l.replace(/^## /, '').replace(/^Section\s*\d+:?\s*/i, '').trim();
+            // Skip the AI-generated intro sections to avoid duplicating the hardcoded preamble
+            if (title.toUpperCase().includes('A COMPLETE SOUL') || title.toUpperCase().includes('A MESSAGE BEFORE YOU BEGIN')) {
+              skipCurrentSection = true;
+              mi++;
+              continue;
+            }
+            skipCurrentSection = false;
+            secNum++;
             realContent.push(sectionHeader(secNum, title.toUpperCase()));
+          } else if (skipCurrentSection) {
+            mi++;
+            continue;
           } else if (l.match(/^### /)) {
             realContent.push(subHead(l.replace(/^### /, '').trim()));
           } else if (l.match(/^#### /)) {
@@ -484,6 +528,66 @@ export const GET: APIRoute = async ({ request }) => {
           }
           mi++;
         }
+
+        // Restore the beautiful hardcoded preamble that the user requested
+        const introMessage = [
+          // 1. The Quote Box (On the Cover Page)
+          {
+            table: {
+              widths: ['*'],
+              dontBreakRows: true,
+              body: [
+                [
+                  {
+                    stack: [
+                      { 
+                        text: [
+                          { text: '“', font: 'Lora', fontSize: 18, color: C.saffron, bold: true },
+                          { text: 'We are responsible for what we are, and whatever we wish ourselves to be, we have the power to make ourselves. If what we are now has been the result of our own past actions, it certainly follows that whatever we wish to be in future can be produced by our present actions; so we have to know how to act.', font: 'Lora', italics: true, fontSize: 12, color: C.navy },
+                          { text: '”', font: 'Lora', fontSize: 18, color: C.saffron, bold: true }
+                        ],
+                        alignment: 'center', 
+                        lineHeight: 1.6,
+                        margin: [0, 0, 0, 12]
+                      },
+                      { 
+                        text: '— Swami Vivekananda', 
+                        font: 'Outfit', 
+                        bold: true, 
+                        fontSize: 10, 
+                        color: C.saffronDark, 
+                        alignment: 'center',
+                        letterSpacing: 1
+                      }
+                    ],
+                    fillColor: C.bg,
+                    margin: [20, 20, 20, 20],
+                    border: [true, true, true, true]
+                  }
+                ]
+              ]
+            },
+            layout: {
+              hLineWidth: () => 1,
+              vLineWidth: () => 1,
+              hLineColor: () => C.saffron,
+              vLineColor: () => C.saffron,
+            },
+            margin: [0, 10, 0, 10]
+          },
+          
+          // 2. The Preamble Text (On the Next Page)
+          { text: 'A Message Before You Begin', font: 'Lora', bold: true, fontSize: 18, color: C.navy, alignment: 'center', margin: [0, 0, 0, 20], pageBreak: 'before' },
+          { text: 'The whole idea behind this report is not just to provide astrological guidance or simply reflect your characteristics.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
+          { text: 'One important assumption is that astrology is a gift deeply rooted in Indian tradition. If we look back from ancient times, a vast amount of knowledge has been embedded within it. In many ways, we can say this is a combination of mathematics and science.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
+          { text: 'When you observe how numbers have been used and interpreted in astrology, it almost feels magical. Considering the world\'s massive population, this mathematical system has worked in such a way that every individual can still be understood as unique.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
+          { text: 'The purpose of this report goes beyond predicting events. We believe that every person has a soul purpose. When you identify that purpose clearly and begin to align your life with it, your karmic patterns gradually start to clear.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
+          { text: 'Going to temples and performing remedies may help on one side, but beyond all that, the best way is to consciously neutralize our karmic actions through awareness and right action.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
+          { text: 'This report has been designed with that intention — to help you understand these deeper aspects of your life. Use this guidance, take action, and move forward with clarity.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
+          { text: 'Our best wishes to you. But remember — without taking action, it is impossible to achieve meaningful change.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 15] },
+          { text: '— Thank you.', font: 'Outfit', bold: true, fontSize: 11, color: C.navy, margin: [0, 0, 0, 10] }
+        ];
+        realContent.unshift(...introMessage);
       }
       } catch (dbErr) { console.error('DB fetch for PDF failed:', dbErr); }
     }
@@ -493,33 +597,24 @@ export const GET: APIRoute = async ({ request }) => {
 
       // ══ COVER PAGE ═══════════════════════════════════════════════════════
       {
-        canvas: [
-          { type: 'rect', x: 0, y: 0, w: 515, h: 220, r: 6, color: C.navy },
-        ],
-      },
-      {
         stack: [
-          // Stars / decorative
-          {
-            columns: [
-              { canvas: [{ type: 'line', x1: 0, y1: 4, x2: 140, y2: 4, lineWidth: 0.8, lineColor: C.saffron }], width: 140 },
-              { text: 'ASK ASTRO RAJA', font: 'Outfit', bold: true, fontSize: 8, color: C.saffron, alignment: 'center', letterSpacing: 4, width: '*' },
-              { canvas: [{ type: 'line', x1: 0, y1: 4, x2: 140, y2: 4, lineWidth: 0.8, lineColor: C.saffron }], width: 140 },
-            ],
-            margin: [0, 0, 0, 14],
-          },
-          { text: 'LIFE TRANSFORMATION', font: 'Lora', bold: true, fontSize: 26, color: C.white, alignment: 'center', margin: [0, 0, 0, 4] },
-          { text: 'REPORT', font: 'Lora', bold: true, fontSize: 26, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 16] },
-          // Gold line
-          { canvas: [{ type: 'line', x1: 100, y1: 0, x2: 415, y2: 0, lineWidth: 1, lineColor: C.saffron }], margin: [0, 0, 0, 16] },
-          { text: reportName, font: 'Lora', bold: true, fontSize: 20, color: '#e0e7ff', alignment: 'center', margin: [0, 0, 0, 10] },
-          {
-            text: parseText(`${reportRaasi} Raasi   |   ${reportLagnam} Lagnam   |   ${reportNakshatra}`),
-            font: 'Outfit', fontSize: 10, color: C.white, alignment: 'center', margin: [0, 0, 0, 8],
-          }
+          // Top branding
+          { text: 'ASK ASTRO RAJA', font: 'Outfit', bold: true, fontSize: 10, color: C.saffronDark, alignment: 'center', letterSpacing: 4, margin: [0, 0, 0, 20] },
+          
+          // Main Title
+          { text: 'LIFE TRANSFORMATION', font: 'Lora', bold: true, fontSize: 32, color: C.navy, alignment: 'center', margin: [0, 0, 0, 8] },
+          { text: 'REPORT', font: 'Lora', bold: true, fontSize: 32, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 20] },
+          
+          // Separator
+          { canvas: [{ type: 'line', x1: 157.5, y1: 0, x2: 357.5, y2: 0, lineWidth: 1, lineColor: C.border }], margin: [0, 0, 0, 20] },
+          
+          // For Label
+          { text: 'PREPARED EXCLUSIVELY FOR', font: 'Outfit', fontSize: 9, color: C.muted, alignment: 'center', letterSpacing: 2, margin: [0, 0, 0, 10] },
+          
+          // Name
+          { text: reportName, font: 'Lora', bold: true, fontSize: 24, color: C.navy, alignment: 'center', margin: [0, 0, 0, 20] },
         ],
-        margin: [0, -210, 0, 0],
-        // position over the rect
+        margin: [0, 20, 0, 10],
       },
 
       // Extracted AI Subtitle
@@ -541,7 +636,7 @@ export const GET: APIRoute = async ({ request }) => {
               body: [[{
                 stack: [
                   { text: 'RAASI', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportRaasi), font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: parseText(reportRaasi + (getTamil(reportRaasi, 'raasi') ? `\n(${getTamil(reportRaasi, 'raasi')})` : '')), font: 'Lora', fontSize: 8.5, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
@@ -555,7 +650,7 @@ export const GET: APIRoute = async ({ request }) => {
               body: [[{
                 stack: [
                   { text: 'LAGNAM', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportLagnam), font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: parseText(reportLagnam + (getTamil(reportLagnam, 'raasi') ? `\n(${getTamil(reportLagnam, 'raasi')})` : '')), font: 'Lora', fontSize: 8.5, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
@@ -569,7 +664,7 @@ export const GET: APIRoute = async ({ request }) => {
               body: [[{
                 stack: [
                   { text: 'NAKSHATRA', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportNakshatra), font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: parseText(reportNakshatra + (getTamil(reportNakshatra, 'nakshatra') ? `\n(${getTamil(reportNakshatra, 'nakshatra')})` : '')), font: 'Lora', fontSize: 8.5, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
@@ -582,8 +677,8 @@ export const GET: APIRoute = async ({ request }) => {
               widths: ['*'],
               body: [[{
                 stack: [
-                  { text: 'RULING PLANET', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: reportRulingPlanet, font: 'Lora', fontSize: 9, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: 'PATHAM', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
+                  { text: parseText(reportPadam ? `${reportPadam}\n(${reportPadam}ம் பாதம்)` : '—\n(—)'), font: 'Lora', fontSize: 8.5, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],

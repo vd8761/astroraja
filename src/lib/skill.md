@@ -1,18 +1,45 @@
 ---
 name: astro-life-report
-description: "Generate deeply personalized life transformation reports using a three-layer framework — Raasi (inner world), Lagnam (outer approach), and Nakshatra + Padam (search engine + D9 soul direction). Trigger when user provides Name + Raasi + Lagnam + Nakshatra + Padam and asks for any life report, transformation guide, karmic pattern analysis, soul purpose report, or situation handling guide. Also trigger for: 'generate a life report', 'create a transformation report', 'analyze my raasi and lagnam', 'what is my soul purpose', 'how do I break my karmic loop', relationship dynamics, parenting guides, or health+wealth systems. Auto-derives D9 Navamsa from Nakshatra + Padam. Opens with a fixed philosophical preamble. Produces a deeply personalized 14-section Word document (.docx)."
+description: "Generate deeply personalized life transformation reports using a three-layer framework — Raasi (inner world), Lagnam (outer approach), and Nakshatra + Padam (search engine + D9 soul direction). Trigger when user provides Name + Raasi + Lagnam + Nakshatra + Padam and asks for any life report, transformation guide, karmic pattern analysis, soul purpose report, or situation handling guide. Auto-derives D9 Navamsa from Nakshatra + Padam. Produces a deeply personalized 12-section Word document (.docx)."
 ---
 
 # Astro Life Transformation Report — Skill Guide
 
+## ⚠️ READ THIS FIRST — BEFORE ANYTHING ELSE
+
+**This report will be read by a real human being.**
+
+They may be going through financial stress, relationship pain, career confusion, family pressure, or a deep sense of being lost. Many of them will read this report alone — late at night, searching for answers nobody around them has been able to give.
+
+**They will follow this report. Take that seriously.**
+
+Every word written here has the power to either genuinely help someone transform their life — or leave them more confused and hopeless than before. This is not a document generation task. This is one of the most intimate and impactful things Claude can do for another human being.
+
+**Before writing a single word of the report, hold this in mind:**
+- This person has real struggles. Name them precisely — not generically.
+- This person needs clarity, not more confusion. Every sentence must earn its place.
+- This person needs to feel seen — perhaps for the first time. Write so specifically that they feel you are describing their exact life, not a type.
+- This person will act on what is written here. Make sure what is written is worth acting on.
+- Never pad. Never repeat. Never write something vague because it sounds wise. If it is not specific and true for THIS person, cut it.
+
+**The standard for every section:** If a stranger could read this report and think it might also be about them — it is not specific enough. Rewrite it.
+
+**Approach this with the seriousness of a doctor writing a prescription, the empathy of a trusted friend who knows everything, and the precision of someone who genuinely wants this person's life to improve.**
+
+This is a gift. Write it like one.
+
+---
+
 ## What This Skill Does
 
-Takes astro details + real-life context and generates brutally honest, deeply personalized life transformation documents. NOT a generic horoscope — this is behavioral psychology dressed in astrological language.
+Takes astro details + real-life context and generates brutally honest, deeply personalized life transformation documents. NOT a generic horoscope — this is behavioral psychology dressed in astrological language, written with the care of someone who genuinely wants the reader's life to improve.
 
-Every report tells ONE complete story across three acts:
-- **ACT 1** — The Karmic Loop: "Here is the cycle you are trapped in — and why you keep returning to it." (Sections 1–7)
-- **ACT 2** — Root Patterns & What To Release: "Here is exactly what is keeping you stuck — and what must be let go." (Sections 7–8)
-- **ACT 3** — The Build: "Here is who you actually are, what to do, and how to start today." (Sections 9–14)
+Every report tells ONE complete story — specific to this person, this combination, this life:
+- **ACT 1** — Who You Are: The combination's truth, character, and life impact. (Sections 1–4)
+- **ACT 2** — What Is Running: The karmic patterns and root problems keeping you stuck. (Sections 5–6)
+- **ACT 3** — The Build: Solutions, identity shift, karmic origin, and dharmic path. (Sections 7–12)
+
+**The tone throughout:** Warm but honest. Precise but compassionate. Never clinical. Never preachy. Write like a wise elder who knows the person's full story and genuinely wants them to succeed.
 
 ---
 
@@ -91,13 +118,43 @@ If user selects "all" for any question, treat ALL options as active and address 
 | 26 | உத்திரட்டாதி (Uttirattathi) | Uttara Bhadrapada | Saturn | Manushya |
 | 27 | ரேவதி (Revathi) | Revati | Mercury | Deva |
 
-### Padam → D9 Navamsa Derivation
-Each Nakshatra group of 9 cycles through a fixed D9 sign sequence:
-- **Group 1** (Nakshatras 1–9, then 10–18, then 19–27): Each triplet of 3 nakshatras cycles Padams → Aries, Taurus, Gemini, Cancer / Leo, Virgo, Libra, Scorpio / Sagittarius, Capricorn, Aquarius, Pisces
+### Padam → D9 Navamsa Derivation — COMPLETE LOOKUP TABLE
 
-**Rule:** Padam 1 = group start sign, Padam 2 = +1, Padam 3 = +2, Padam 4 = +3.
+The 27 Nakshatras × 4 Padams = 108 Padams map sequentially through the 12 zodiac signs (108 ÷ 12 = 9 cycles). Starting from Aswini Padam 1 = Aries, the signs cycle unbroken through all 108 Padams.
 
-From the Gana table above, the 4th column shows each Nakshatra's Padam cycle starting sign group. Derive D9 accordingly. **Always derive D9 before building the report. Never skip this step.**
+**Do not calculate — look up directly from this table:**
+
+| # | Nakshatra | Padam 1 | Padam 2 | Padam 3 | Padam 4 |
+|---|-----------|---------|---------|---------|---------|
+| 1 | Aswini | Aries | Taurus | Gemini | Cancer |
+| 2 | Bharani | Leo | Virgo | Libra | Scorpio |
+| 3 | Krithikai | Sagittarius | Capricorn | Aquarius | Pisces |
+| 4 | Rohini | Aries | Taurus | Gemini | Cancer |
+| 5 | Mirugasirisam | Leo | Virgo | Libra | Scorpio |
+| 6 | Thiruvathirai | Sagittarius | Capricorn | Aquarius | Pisces |
+| 7 | Punarvasu | Aries | Taurus | Gemini | Cancer |
+| 8 | Poosam | Leo | Virgo | Libra | Scorpio |
+| 9 | Aayilyam | Sagittarius | Capricorn | Aquarius | Pisces |
+| 10 | Magam | Aries | Taurus | Gemini | Cancer |
+| 11 | Puram | Leo | Virgo | Libra | Scorpio |
+| 12 | Uthiram | Sagittarius | Capricorn | Aquarius | Pisces |
+| 13 | Hastam | Aries | Taurus | Gemini | Cancer |
+| 14 | Chithirai | Leo | Virgo | Libra | Scorpio |
+| 15 | Swathi | Sagittarius | **Capricorn** | Aquarius | Pisces |
+| 16 | Visakam | Aries | Taurus | Gemini | Cancer |
+| 17 | Anusham | Leo | Virgo | Libra | Scorpio |
+| 18 | Kettai | Sagittarius | Capricorn | Aquarius | Pisces |
+| 19 | Moolam | Aries | Taurus | Gemini | Cancer |
+| 20 | Pooradam | Leo | Virgo | Libra | Scorpio |
+| 21 | Uthiradam | Sagittarius | Capricorn | Aquarius | Pisces |
+| 22 | Thiruvonam | Aries | Taurus | Gemini | Cancer |
+| 23 | Avittam | Leo | Virgo | Libra | Scorpio |
+| 24 | Sathayam | Sagittarius | Capricorn | Aquarius | Pisces |
+| 25 | Poorattathi | Aries | Taurus | Gemini | Cancer |
+| 26 | Uttirattathi | Leo | Virgo | Libra | Scorpio |
+| 27 | Revathi | Sagittarius | Capricorn | Aquarius | Pisces |
+
+**Always look up this table directly. Never calculate from group rules. Never skip this step.**
 
 ### Nakshatra Layer Meanings
 | Ruler | Nakshatras | Impact Added |
@@ -130,15 +187,145 @@ From the Gana table above, the 4th column shows each Nakshatra's Padam cycle sta
 
 ---
 
-## STEP 3: ANALYSIS BEFORE WRITING
+## STEP 3: DERIVE THE MAHADASHA LIFE TIMELINE
+
+This is a mandatory step before writing the report. Every report must include the full Mahadasha sequence — birth to end — mapped against real ages, house rulerships, and what each period delivers in human terms.
+
+### Writing Style for Mahadasha Section — CRITICAL
+
+Model this exactly on the Ayilyam 1st Pada Cancer example. Short. Timed. Real. No padding.
+
+**The template:**
+> Pain explained → Timing named → Sensitivity acknowledged → Pivot line → Rise mapped → Navamsa activated → Who they become
+
+**The 4 questions every person is silently asking — answer all four:**
+1. *Why is my life so hard?* — Name the Dasha lord + house rulerships
+2. *When does it get better?* — Give the exact age the next Dasha begins
+3. *What does better actually look like?* — Name specific life outcomes
+4. *Was my suffering worth anything?* — Reframe: the struggle was the forge
+
+---
+
+### Mahadasha Sequence by Birth Nakshatra
+
+**Vimshottari Dasha Order and Years:**
+Ketu (7) → Venus (20) → Sun (6) → Moon (10) → Mars (7) → Rahu (18) → Jupiter (16) → Saturn (19) → Mercury (17)
+
+**Birth Dasha by Nakshatra:**
+| Nakshatra | Birth Dasha Lord | Years |
+|-----------|-----------------|-------|
+| Aswini, Magam, Moolam | Ketu | 7 |
+| Bharani, Puram, Pooradam | Venus | 20 |
+| Krithikai, Uthiram, Uthiradam | Sun | 6 |
+| Rohini, Hastam, Thiruvonam | Moon | 10 |
+| Mirugasirisam, Chithirai, Avittam | Mars | 7 |
+| Thiruvathirai, Swathi, Sathayam | Rahu | 18 |
+| Punarvasu, Visakam, Poorattathi | Jupiter | 16 |
+| Poosam, Anusham, Uttirattathi | Saturn | 19 |
+| Aayilyam, Kettai, Revathi | Mercury | 17 |
+
+**Pada affects age at Dasha transition:**
+- Pada 1 natives — born at star's very start. Run almost the FULL birth Dasha through childhood.
+- Pada 4 natives — most of birth Dasha already consumed before birth. Transition to next Dasha much earlier.
+Always account for this when writing age ranges.
+
+---
+
+### House Rulerships by Rasi — COMPLETE TABLE
+
+Always name which houses each Dasha lord rules for THIS person's Rasi — and translate into human outcomes.
+
+| Dasha Planet | Aries | Taurus | Gemini | Cancer | Leo | Virgo | Libra | Scorpio | Sagittarius | Capricorn | Aquarius | Pisces |
+|-------------|-------|--------|--------|--------|-----|-------|-------|---------|-------------|-----------|----------|--------|
+| Sun | 5th | 4th | 3rd | 2nd | 1st | 12th | 11th | 10th | 9th | 8th | 7th | 6th |
+| Moon | 4th | 3rd | 2nd | 1st | 12th | 11th | 10th | 9th | 8th | 7th | 6th | 5th |
+| Mars | 1st+8th | 12th+7th | 11th+6th | 10th+5th | 9th+4th | 8th+3rd | 7th+2nd | 6th+1st | 5th+12th | 4th+11th | 3rd+10th | 2nd+9th |
+| Mercury | 3rd+6th | 2nd+5th | 1st+4th | 12th+3rd | 11th+2nd | 10th+1st | 9th+12th | 8th+11th | 7th+10th | 6th+9th | 5th+8th | 4th+7th |
+| Jupiter | 9th+12th | 8th+11th | 7th+10th | 6th+9th | 5th+8th | 4th+7th | 3rd+6th | 2nd+5th | 1st+4th | 12th+3rd | 11th+2nd | 10th+1st |
+| Venus | 2nd+7th | 1st+6th | 12th+5th | 11th+4th | 10th+3rd | 9th+2nd | 8th+1st | 7th+12th | 6th+11th | 5th+10th | 4th+9th | 3rd+8th |
+| Saturn | 10th+11th | 9th+10th | 8th+9th | 7th+8th | 6th+7th | 5th+6th | 4th+5th | 3rd+4th | 2nd+3rd | 1st+2nd | 12th+1st | 11th+12th |
+
+**Key House Meanings — always translate into human outcomes:**
+- 1st: Self, identity, health, personality
+- 2nd: Family wealth, speech, savings
+- 3rd: Siblings, effort, struggles, courage
+- 4th: Home, mother, vehicles, comfort, property
+- 5th: Children, intelligence, past life merit, investments
+- 6th: Enemies, illness, debts, competition
+- 7th: Marriage, partnerships, business relationships
+- 8th: Sudden changes, transformation, hidden struggles
+- 9th: Father, fortune, dharma, wisdom
+- 10th: Career, status, public reputation, authority
+- 11th: Income, gains, desires fulfilled, powerful networks
+- 12th: Losses, isolation, foreign lands, spiritual liberation
+
+---
+
+### Navamsa (D9) Activation Age
+
+Always name when the D9 activates and what changes. This is what gives the person a timeline to hold onto.
+
+| D9 Sign | Activation Window | What Activates |
+|---------|------------------|----------------|
+| Aries | Late 20s | Leadership instinct, courage to pioneer |
+| Taurus | Early 30s | Patience pays off, material stability builds |
+| Gemini | Mid 20s | Communication gifts emerge, teaching begins |
+| Cancer | Late 20s | Emotional wisdom, nurturing leadership |
+| Leo | Early 30s | Public recognition, authority claimed |
+| Virgo | Late 20s | Mastery through service, craft perfected |
+| Libra | Early 30s | Relationships clarify, justice instinct sharpens |
+| Scorpio | Mid 30s | Transformation deepens, hidden power emerges |
+| Sagittarius | Late 20s–Early 30s | Wisdom from suffering, teaching begins |
+| Capricorn | Mid 30s | Institutional authority, long-term building pays |
+| Aquarius | Early 30s | Collective purpose found, innovation emerges |
+| Pisces | Late 30s | Spiritual depth, healing gifts activated |
+
+---
+
+### Mahadasha Section Format — Follow This Exactly
+
+**Part 1 — Why the First Phase is Hard**
+3 numbered points only:
+- Point 1: Birth Dasha — years, house rulerships, real-life impact on childhood
+- Point 2: Next Dasha — transition age, houses, human experience during this period
+- Point 3: Nakshatra + Rasi combination — why the emotional sensitivity amplifies the difficulty
+
+**Part 2 — The Great Turning Point**
+- One pivot line reframing the suffering ("structured like a crucible")
+- The turning Dasha — exact age, house rulerships, specific life outcomes named
+- The Navamsa activation — when, what transforms, who they become
+- The result — what most people from this combination achieve in their 30s, 40s, 50s
+
+**Part 3 — The Full Mahadasha Map (always include)**
+| Dasha | Age | Houses Ruled | What It Delivers |
+Every row — specific outcomes in human language. Never "good period" or "difficult period."
+
+**Part 4 — The Big Picture**
+3-4 sentences. The overall life arc. End with one line that reframes the early struggle as preparation for the later greatness.
+
+---
+
+### Writing Rules — Non-Negotiable
+
+1. **One idea per point. Stop.** No padding.
+2. **Always name the age.** "Around age 23-24" not "later in life."
+3. **Always name houses AND their human meaning.** "Venus rules 4th (home, comfort) and 11th (massive gains, networks)"
+4. **Navamsa activation is mandatory** — when it wakes up and what changes
+5. **Full Mahadasha table is mandatory** — all Dashas, all ages, all outcomes
+6. **Never use vague words** — "challenging," "positive," "good period" are banned. Name what actually happens.
+
+---
+
+## STEP 4: ANALYSIS BEFORE WRITING
 
 Before writing a single word of the report, perform this analysis:
 
 **1. Inner vs Outer Gap** — What they feel inside (Raasi) vs what they show outside (Lagnam)
 **2. Core Conflict** — Where Raasi and Lagnam pull in opposite directions (use Element Interaction table below)
-**3. The Unique Loop** — The specific repeating cycle for THIS combination — never generic
-**4. The Animal Metaphor** — Use zodiac symbols to build a memorable identity sentence
-**5. D9 Exit** — What the D9 Navamsa soul direction requires to break the loop
+**3. The Animal Metaphor** — Use zodiac symbols to build a memorable identity sentence
+**4. D9 Exit** — What the D9 Navamsa soul direction requires to break the loop
+**5. Karmic Origin** — What past life pattern this Nakshatra + Padam combination suggests
+**6. Mahadasha Arc** — Map the full Dasha sequence with ages before writing Section 11 Block 4
 
 ### Element Interaction Guide
 | Combination | Dynamic | Core Pattern |
@@ -154,49 +341,15 @@ Before writing a single word of the report, perform this analysis:
 | Earth + Air | Practical vs intellectual | Overthinks the practical, needs to decide faster |
 | Water + Air | Feeling vs thinking | Analyzes feelings endlessly, needs action as cure |
 
-**Same Sign Raasi + Lagnam:** Traits are doubled — both strengths AND weaknesses amplified. No counterbalance. Emphasize: "Your greatest power is also your greatest trap because there's no opposing force to balance it."
+**Same Sign Raasi + Lagnam:** Traits are doubled — both strengths AND weaknesses amplified.
 
 ---
 
-## STEP 4: BUILD THE REPORT
-
-### FIXED OPENING: PHILOSOPHICAL PREAMBLE (before Section 1, every report)
-
-Appears immediately after the report title and subtitle — on its own page.
-Title: **"A Message Before You Begin"**
-Format: Centered italic text, blue top and bottom border (#1A3C5E), generous paragraph spacing.
+## STEP 5: BUILD THE REPORT
 
 ---
 
-The whole idea behind this report is not just to provide astrological guidance or simply reflect your characteristics.
-
-One important assumption is that astrology is a gift deeply rooted in Indian tradition. If we look back from ancient times, a vast amount of knowledge has been embedded within it. In many ways, we can say this is a combination of mathematics and science.
-
-When you observe how numbers have been used and interpreted in astrology, it almost feels magical. Considering the world's massive population, this mathematical system has worked in such a way that every individual can still be understood as unique. Based on these mathematical calculations, various aspects are interpreted through general horoscope analysis.
-
-The purpose of this report goes beyond predicting events. We believe that every person has a soul purpose. When you identify that purpose clearly and begin to align your life with it, your karmic patterns gradually start to clear. And when these karmic blocks are neutralized, there is a greater possibility for positive transformations to happen in your life.
-
-Going to temples and performing remedies may help on one side, but beyond all that, the best way is to consciously neutralize our karmic actions through awareness and right action. The faster we understand ourselves and move towards our true path, the more meaningful our journey becomes.
-
-This report has been designed with that intention — to help you target and understand these deeper aspects of your life. It can definitely serve as a source of guidance for you. Use this guidance, take action, and move forward with clarity.
-
-Our best wishes to you. But remember, without taking action, it is impossible to achieve meaningful change.
-
-— Thank you.
-
----
-
-**Document formatting for preamble:**
-- Own page (page break after, before Section 1)
-- Title: H1 centered, color #1A3C5E
-- Body: Aptos Italic, size 19, color #2C2C2C, centered
-- Top and bottom border: thick blue line (#1A3C5E)
-- Space after each paragraph: 160
-- Closing "— Thank you." — bold italic, centered
-
----
-
-### THE 14 SECTIONS (generate all 14, in this exact order)
+### THE 12 SECTIONS (generate all 12, in this exact order)
 
 ---
 
@@ -205,36 +358,28 @@ Our best wishes to you. But remember, without taking action, it is impossible to
 
 **Table format** — one row per attribute, three columns:
 | Attribute | Raasi — [Sign] Moon Sign / Inner World | Lagnam — [Sign] Ascendant / Outer Approach |
-| Sign | Tamil + English full name | Tamil + English full name |
-| Symbol | Zodiac symbol with description | Zodiac symbol with description |
-| Element | Element + qualities | Element + qualities |
-| Ruling Planet | Planet + what it governs | Planet + what it governs |
-| Nakshatra (Raasi column only) | Full Nakshatra name, padam, ruling planet, star meaning |  — |
-| Nakshatra Essence (Raasi column only) | How the Nakshatra + ruling planet + D9 Padam create the specific texture for this person |  — |
-| Core Nature | How they feel and operate inside | How they appear and approach life |
-| Default Fear | The Raasi's core fear | The Lagnam's core fear |
-| Hidden Need | What they actually need vs what they show | What they actually need vs what they show |
+Rows: Sign, Symbol, Element, Ruling Planet, Nakshatra (Raasi only), Nakshatra Essence (Raasi only), Core Nature, Default Fear, Hidden Need
 
 After the table — two narrative paragraphs:
-1. **The [Raasi animal] and the [Lagnam animal]** — describe the inner-outer collision in vivid character language
-2. **The Nakshatra paragraph** — name, ruling planet, Padam's D9 derivation, and exactly what this star adds to the combination
+1. **The [Raasi animal] and the [Lagnam animal]** — the inner-outer collision in vivid character language
+2. **The Nakshatra paragraph** — name, ruling planet, Padam's D9 derivation, what this star adds
 
-After the two paragraphs — **"Your Three Hidden Layers"** sub-heading, then three bullet-point groups (no long explanations — 2–3 sharp points each):
+After the two paragraphs — **"Your Three Hidden Layers"** sub-heading, then three bullet-point groups (2–3 sharp points each, no long explanations):
 
 **Gana — [Deva / Manushya / Rakshasa]**
-- What this Gana type craves and what it fears
-- How it behaves under stress (Deva = waits and hopes / Manushya = calculates and delays / Rakshasa = goes all-in or walks away)
-- The one behavioural trap this Gana creates in [Name]'s specific life
+- What this Gana craves and fears
+- How it behaves under stress
+- The one behavioural trap this Gana creates for [Name] specifically
 
 **Padam [1/2/3/4] — [Navamsa Sign] Energy**
-- What this specific Padam adds to the Nakshatra's expression
-- The D9 sign this Padam falls in — and its one-line soul quality for this person
+- What this Padam adds to the Nakshatra's expression
+- The D9 sign and its one-line soul quality for this person
 - How this Padam shapes the way [Name] searches, decides, and pursues goals
 
 **Navamsa (D9) — [Sign]**
 - The soul's evolutionary direction in one sentence
-- The core virtue this person must embody — not just perform
-- The shadow risk when the D9 is ignored or suppressed
+- The core virtue this person must embody
+- The shadow risk when D9 is ignored
 
 ---
 
@@ -242,251 +387,239 @@ After the two paragraphs — **"Your Three Hidden Layers"** sub-heading, then th
 **Purpose:** Show the exact inner-outer war at every level of life.
 
 **Table format** — one row per dimension, two columns (Inner World — Raasi vs Outer Approach — Lagnam):
-Dimensions to cover: Emotional reality, Conflict style, Decision making, Relationship mode, Work mode, Core tension, Nakshatra's role, Greatest blindspot
+Dimensions: Emotional reality, Conflict style, Decision making, Relationship mode, Work mode, Core tension, Nakshatra's role, Greatest blindspot
 
 After the table — three paragraphs:
-1. **The Conflict: [Element] and [Element]** — the specific dynamic between the two elements, named vividly
-2. **The genius of integration** — what becomes possible when Raasi and Lagnam work together rather than war
+1. **The Conflict: [Element] and [Element]** — the specific dynamic, named vividly
+2. **The genius of integration** — what becomes possible when both work together
 3. **Quote block** — first-person identity sentence using the animal metaphors
 
-After the three paragraphs — **"How Your Five Factors Work Together"** compact reference table:
-
+After the quote — **"How Your Five Factors Work Together"** compact table:
 | Factor | What It Is | How It Shows Up in [Name] | When Aligned | When Misaligned |
-|--------|-----------|--------------------------|--------------|-----------------|
-| Raasi — [Sign] | Inner emotional world | [1-line specific description] | [1-line strength] | [1-line trap] |
-| Lagnam — [Sign] | Outer face and approach | [1-line specific description] | [1-line strength] | [1-line trap] |
-| Nakshatra — [Name] | Search engine + drive | [1-line specific description] | [1-line strength] | [1-line trap] |
-| Padam [#] — [D9 Sign] | Soul lens for this Nakshatra | [1-line specific description] | [1-line strength] | [1-line trap] |
-| Gana — [Type] | Stress and change style | [1-line specific description] | [1-line strength] | [1-line trap] |
-
-Rules for this table: every cell must be specific to THIS person — not a definition. One crisp line per cell. The "When Misaligned" column should make the reader wince slightly.
+Rows: Raasi, Lagnam, Nakshatra, Padam, Gana — one crisp line per cell, specific to this person.
 
 ---
 
 #### SECTION 3: CHARACTER PROFILE
 **Purpose:** Name the gifts and the traps with equal precision.
 
-**Two-column table** — 8-9 rows:
+**Two-column table** — TOP 5 ROWS ONLY:
 | ✅ STRENGTHS — The [Raasi animal]'s Gifts | ❌ SHADOW WEAKNESSES — Where the gift becomes the trap |
 
-Rules:
-- Every strength has a direct shadow showing how the SAME trait creates the karmic trap
-- Weaknesses must be genuinely uncomfortable — if the reader doesn't wince, it's too soft
-- Each row is 2-3 sentences in each column — specific to THIS combination
+Every strength has a direct shadow. Weaknesses must be genuinely uncomfortable — not vague. Each row 2-3 sentences per column. Pick the 5 most defining strength-shadow pairs for THIS combination — not generic traits.
 
 ---
 
 #### SECTION 4: LIFE AREA IMPACT
 **Purpose:** Show how the combination plays out across every domain.
 
-**Three-column table** — one row per life area:
-| Life Area | How [Raasi] + [Lagnam] + [Nakshatra] Shows Up | Hidden Cost |
+**Paragraph style** — bold heading per life area, followed by one focused paragraph (4–6 sentences). No table.
 
-Life areas to cover: Career, Money, Marriage/Relationships, Family, Health, Mental State
+Life areas: Career, Money, Marriage/Relationships, Family, Health, Mental State
 
-Rules:
-- Every cell combination-specific — never generic
-- Hidden cost column names the CONSEQUENCE, not just the behaviour
-- Each cell 3-5 sentences
+Each paragraph must name: how the combination shows up + the hidden cost. Specific to THIS combination — never generic.
 
 ---
 
-#### SECTION 5: CORE LIFE LOOP
-**Purpose:** Name the repeating cycle so precisely the reader feels seen.
+#### SECTION 5: KARMIC PATTERN ANALYSIS
+**Purpose:** Name 3 distinct behavioural patterns that run as cycles. Sharp and quick — no long explanations.
 
-**Six-row table:**
-| # | Stage Name | What Is Actually Happening in [Raasi] + [Lagnam] + [Nakshatra] |
-
-Last row shaded — the restart. Each stage name bold. Stages must follow the exact psychological sequence for THIS combination — never reuse another combination's loop.
-
-After the table — two paragraphs:
-1. **Why This Loop Is Unique to This Combination** — psychological explanation of why Raasi + Lagnam + Nakshatra produce THIS specific loop
-2. **The D9 Exit** — what the Navamsa soul direction sees in the loop and the one shift it requires to break it
-
-End with a **quote block** capturing the loop's key insight.
-
----
-
-#### SECTION 6: KARMIC PATTERN ANALYSIS
-**Purpose:** Name 3-4 distinct behavioural patterns that run as cycles.
-
-For each pattern:
-- **Name** (bold title)
-- **Trigger** → **Behaviour** → **Consequence** → **Loop restarts** format
-- Written in narrative prose — vivid and specific
+For each pattern (3 only):
+- **Bold pattern name** as heading
+- Trigger → Behaviour → Consequence — 2-3 lines total. Punchy. No padding.
 
 End with:
-**Root Cause paragraph** — the single psychological origin shared by all patterns for this combination. Not mystical — behavioral and specific.
+**Root Cause** — one short paragraph (3-4 sentences). The single psychological origin shared by all patterns.
 
 ---
 
-#### SECTION 7: ROOT PROBLEMS
+#### SECTION 6: ROOT PROBLEMS
 **Purpose:** Map the specific life problems caused by the combination.
 
-**Two-column table** — 7-9 rows:
-| Root Problem | Specifically How It Shows Up in [Name]'s Life |
+**Paragraph style** — bold heading per problem, followed by 2-3 sentences. No table. Direct and specific.
+
+Cover 5-6 root problems. Map to ALL of the user's stated struggles. Every description specific and uncomfortable — not generic.
+
+After root problems — **"Career Karma"** sub-heading with a 3-column table — **5 rows, one per karmic lesson:**
+| Karmic Lesson | Block | Ideal Career Path |
 
 Rules:
-- Map to ALL of the user's stated struggles
-- Every description specific and uncomfortable — not generic
-- Second column is 3-5 sentences of precise behavioral description
-
-After the root problems table — **"Your Career Karma"** block (half page maximum, no sub-heading needed — flow directly from the table):
-
-**Brief explanation paragraph** (3–4 sentences only): Connect the root problems above to the career arena. Name the specific way this combination's core loop shows up as a career pattern — not as a separate problem but as the same loop wearing work clothes. End with the exact condition under which this person's career transforms.
-
-Then a compact three-column table:
-
-| | What This Means for [Name] |
-|---|---|
-| **Karmic Lesson** | [One sentence: the core lesson this combination must learn through work — specific to Raasi + Lagnam + D9] |
-| **How to Overcome Your Career Blocks** | [3 bullet points: specific, behavioural, actionable — derived from D9 soul direction] |
-| **Your Ideal Career Path** | [One sentence naming the type of work + one sentence on why it fits THIS combination's strengths] |
-
-Rules: nothing generic — every line must be derivable only from this person's specific combination. Career blocks must be behaviours to stop, not mindsets to adopt.
+- 5 rows — each row is a distinct karmic lesson, not a variation of the same point
+- Karmic Lesson: one sharp sentence naming the soul-level lesson for this combination
+- Block: one specific behaviour to stop — not a mindset, not a vague pattern
+- Ideal Career Path: one specific career field or role — named clearly, not a category
+- Every row derived from Raasi + Lagnam + Nakshatra + D9 — no generic career advice
+- The 5 career paths across the 5 rows must collectively paint a clear picture of where this person should focus — someone reading the table should know exactly which direction is theirs
 
 ---
 
-#### SECTION 8: WHAT MUST BE LET GO
-**Purpose:** Name the specific beliefs and habits blocking transformation.
-
-**Four-column table** — 6-7 rows:
-| Let Go Of | Wrong Belief | Truth | Daily Practice |
-
-Rules:
-- Wrong Belief in quotes — how the person actually thinks
-- Truth is a direct counter — no soft language
-- Daily Practice is specific and doable this week — not vague
-
-End with a **quote block** — the single most important truth for this combination.
-
----
-
-#### SECTION 9: REACT vs CREATE
-**Purpose:** Show the exact contrast between the stuck version and the integrated version.
-
-**Two-column table** — 7-8 rows:
-| ⚡ REACT MODE — Current [Name] | [Sign Symbol] CREATE MODE — Integrated [Name] |
-
-After the table — one paragraph: **Why [Name] Is Stuck in React Mode** — the psychological explanation specific to Raasi + Nakshatra's reactive nature.
-
----
-
-#### SECTION 10: COMPLETE SOLUTION SYSTEM
-**Purpose:** Give a full, practical operating system for this combination.
-
-Five sub-sections:
+#### SECTION 7: COMPLETE SOLUTION SYSTEM
+**Purpose:** A full, practical operating system for this combination.
 
 **A. The 5 Mind Rules**
 Two-column table:
 | Rule | Principle — Specific to [Raasi] + [Lagnam] + [Nakshatra] |
-5 rules — each named, each a structural intervention for THIS combination specifically. Not generic advice.
+5 rules — each named, each a structural intervention for THIS combination.
 
 **B. Daily System — Full Timetable**
-Three-column table:
+Three-column table (keep as table):
 | Time | Activity | Why It Matters for [Name] Specifically |
-Cover: wake, physical movement, morning write, deep work block, morning transition, core work, break, connective work, transition, family/relationship presence, evening replenishment, daily close, screens off/sleep.
-Every "Why" column must reference Raasi, Lagnam, or Nakshatra — not generic productivity language.
+Every "Why" must reference Raasi, Lagnam, or Nakshatra.
 
-**C. Money System**
-Three paragraphs:
-1. Current Pattern — specific to this combination's financial habit
-2. The Three-Chamber Allocation — named percentages with specific rules
-3. The 90-Day Primary Stream Focus + Income from the Container Direction
+**C. Money System** — 3-4 bullet points only. Simple and direct.
 
-**D. Overthinking and Scatter Control**
-Three interventions (named):
-1. The specific trigger for THIS combination's overthinking pattern
-2. The interrupt question or rule
-3. The nervous system / body-based reset specific to Raasi element
+**D. Overthinking and Scatter Control** — 3 bullet points only. Specific trigger + interrupt + reset.
 
-**E. Relationships and Family**
-Two sections:
-1. The relationship challenge specific to Raasi + Lagnam — the core tension partners experience
-2. Family presence — the specific domestic challenge and a named daily practice
+**E. Relationships and Family** — 3-4 bullet points only. The core challenge + one daily practice each for relationship and family.
 
 ---
 
-#### SECTION 11: KARMIC BREAK METHOD
-**Purpose:** The 5-step action sequence to break the core loop.
+#### SECTION 8: KARMIC BREAK METHOD
+**Purpose:** 5-step action sequence to break the core loop.
 
-Five named steps — each is a header followed by 2-3 paragraphs of specific guidance:
+Five named steps — each is a bold heading followed by 2-3 lines maximum. Simple. Direct. No heavy paragraphs.
 
-**Step 1: NAME THE CONTAINER / DIRECTION / PURPOSE** — whatever the soul purpose anchor is for this D9 combination
-**Step 2: THE FIRST VISIBLE ACTION — TODAY, NOT TOMORROW** — the 24-hour action rule applied at the karmic break level
-**Step 3: 90-DAY CONTAINER BUILD — WITH DAILY DISCIPLINE** — one action per day, specific to this combination's loop pattern
-**Step 4: THE GRAVEYARD / PATTERN AUDIT — ONE SESSION, FULL HONESTY** — map what stopped before; extract the pattern
-**Step 5: CLAIM THE D9 VISION AS FOUNDATION** — the D9 soul direction as the container's basis; what it means for this person specifically
+Steps:
+1. Name the Container / Direction / Purpose
+2. The First Visible Action — Today, Not Tomorrow
+3. 90-Day Container Build — With Daily Discipline
+4. The Pattern Audit — One Session, Full Honesty
+5. Claim the D9 Vision as Foundation
 
-Each step is specific to THIS combination — not transferable to another person.
-
-End with a **quote block** — the closing declaration for this combination.
+End with one quote block — the closing declaration for this combination.
 
 ---
 
-#### SECTION 12: IDENTITY SHIFT
+#### SECTION 9: IDENTITY SHIFT
 **Purpose:** The old story vs the new story — side by side.
 
-**Two-column table** — 8-9 rows:
+**Two-column table** — TOP 5 ROWS ONLY:
 | 🔴 OLD IDENTITY — [The stuck version] | [Sign Symbol] NEW IDENTITY — [The integrated version] |
 
 Rules:
-- Old identity statements are how the person actually talks to themselves — specific and recognisable
-- New identity statements in **bold** — declarative, first-person
-- Every row must be so specific that it could only belong to this combination
+- Old identity in the person's own voice — how they actually talk to themselves
+- New identity in **bold** — declarative, first-person
+- Every row specific to this combination only — not transferable
 
 ---
 
-#### SECTION 13: FINAL TRUTHS
-**Purpose:** The 10 truths this person must read every morning.
+#### SECTION 10: FINAL TRUTHS
+**Purpose:** 5 core truths this person must carry.
 
-**Two-column table** — 10 rows:
-| # | Truth — Read Every Morning |
+**Paragraph style** — numbered, no table. Each truth is 2-3 sentences maximum.
 
 Rules:
-- Each truth directly addresses one pattern, one blindspot, or one transformation specific to this combination
-- Truths must be specific enough that they would be wrong for a different combination
-- No generic wisdom — every sentence earns its place by referencing Raasi, Lagnam, Nakshatra, or D9
-
-After the 10 truths — **"Living a Dharmic Life"** block:
-
-Four bullet points only — no lengthy explanation. Each point is one or two sentences maximum. Derive entirely from this person's D9 Navamsa sign and Gana:
-
-- **Right Action** — the one specific daily action that keeps [Name] aligned with dharma, named precisely for this D9 direction (not generic "do good")
-- **Right Livelihood** — the earning principle: how this combination must make money to stay in dharmic alignment — what to avoid and what to pursue
-- **Right Relationship** — how this Gana type must show up in relationships to clear karma rather than create it — one concrete behavioural rule
-- **Right Surrender** — the one thing this combination must stop controlling and trust to unfold — specific to the D9 shadow risk
-
-End this block with one quote line (not a full quote block — just a single italicised closing sentence that captures the dharmic call for this specific combination).
+- Each truth addresses one pattern, one blindspot, or one transformation specific to this combination
+- Specific enough that they would be wrong for a different combination
+- No generic wisdom — every sentence references Raasi, Lagnam, Nakshatra, or D9
 
 ---
 
-#### SECTION 14: DAILY CHECKLIST
-**Purpose:** The operational daily tool — to be printed and used for 90 days.
-
-**Two-column table:**
-| ☀️ MORNING & WORK CHECKLIST | 🌙 EVENING & MINDSET CHECKLIST |
-
-Morning items (8-10 checkboxes): container/direction check, physical movement, morning write, deep work block, new ignition assessment, break, visible action, open decision, verbal processing check, 24-hour action rule.
-
-Evening items (8-10 checkboxes): genuine presence with family/partner, evening write, ideas list review, 90-day track check, financial check, graveyard check, tomorrow's action named, one truth about identity, closing phrase, screens off.
-
-After the table — **REMEMBER THIS EVERY SINGLE DAY** closing block:
-- 3 lines in the format: "You are not [stuck pattern]. You are [reframe]."
-- Final bold line in ALL CAPS — the combination's core declaration
-- Three zodiac symbols as closing visual
-- One final quote block — two quotes, one from each animal perspective
+#### SECTION 11: KARMIC ORIGIN & YOUR PATH TO PROSPERITY
+**Purpose:** Tell the soul's story clearly — and give a definitive list of career directions that clear karma and create prosperity. No confusion. Person reads this and knows exactly where to focus.
 
 ---
 
-## STEP 5: DOCX FORMATTING
+**Block 1 — Your Karmic Origin** (sub-heading)
+4 bullet points — one line each. Sharp and specific to THIS Nakshatra + Padam:
+- **Past Life Pattern:** Name the specific past life role or environment this Nakshatra + Padam suggests. What did the soul do? What world did it operate in? (e.g. "Your soul carried a life of hidden power — operating behind thrones, managing secrets, surviving through calculated intelligence.")
+- **What Was Carried Forward:** The specific gift or talent that arrived already formed in this birth — not learned, already present.
+- **The Karmic Debt:** The specific pattern or behaviour the soul keeps repeating that creates the block — one sentence, uncomfortable and precise.
+- **What This Birth Is Designed to Correct:** The one shift the soul must make in this lifetime to clear the accumulated pattern.
+
+---
+
+**Block 2 — Your Career Directions to Clear Karma & Create Prosperity** (sub-heading)
+
+Opening line (1 sentence): State clearly which D9 Navamsa sign rules the soul direction and which planet governs it — and what that means for career in one line.
+
+Then a **career table** — 6-8 rows:
+| Career Field | Why It Clears Karma for [Name] | How to Start |
+
+Rules for this table:
+- Career Field: specific and named — not a category. "Corporate Law" not "Legal field". "School Principal / Academic Leader" not "Education". "Financial Auditor" not "Finance".
+- Why It Clears Karma: ONE sentence linking this specific career to the D9 Navamsa ruling planet + the Nakshatra's past life pattern. Make the connection explicit — why THIS career for THIS soul.
+- How to Start: ONE concrete first action — a course, a certification, a role to apply for, a community to join. Specific enough to do this week.
+- Derive career fields from: D9 Navamsa sign + ruling planet qualities FIRST, then narrow using Raasi + Lagnam + Nakshatra strengths. The D9 is the primary career karma direction.
+
+**D9 Career Derivation Guide** (use this to generate career fields):
+| D9 Sign | Ruling Planet | Career Karma Domains |
+|---------|--------------|---------------------|
+| Aries | Mars | Military, surgery, sports leadership, emergency services, pioneer roles |
+| Taurus | Venus | Finance, luxury goods, agriculture, music, hospitality, real estate |
+| Gemini | Mercury | Writing, media, teaching, marketing, IT, communication strategy |
+| Cancer | Moon | Healthcare, counselling, food industry, childcare, social work, hospitality |
+| Leo | Sun | Politics, administration, performing arts, government leadership, brand building |
+| Virgo | Mercury | Accounting, healthcare administration, research, quality control, editing |
+| Libra | Venus | Law, judiciary, diplomacy, interior design, HR, conflict resolution |
+| Scorpio | Mars/Ketu | Psychology, investigation, research, insurance, occult sciences, transformation work |
+| Sagittarius | Jupiter | Education, coaching, publishing, philosophy, international trade, law |
+| Capricorn | Saturn | Government service, institutional management, infrastructure, banking, administration |
+| Aquarius | Saturn | NGO/social enterprise, technology, community development, innovation, policy |
+| Pisces | Jupiter | Spiritual guidance, healing arts, film, charity work, marine industry, medicine |
+
+---
+
+**Block 3 — The 3 Karma-Clearing Shifts** (sub-heading)
+3 shifts only. Each shift = 3 lines maximum. No paragraphs.
+
+Format for each shift:
+**Shift: "[Past Karma Label]" → "[Navamsa Action Label]"**
+- The Karma: [1 line — what the soul did or avoided in the past]
+- The Career Action: [1-2 lines — the specific behaviour change in the career context]
+- The Prosperity Result: [1 line — what Jupiter/Saturn delivers when the shift is made]
+
+Style rule: If it takes more than 3 lines, it is too long. Cut it.
+
+---
+
+**Block 4 — Your Mahadasha Life Timeline** (sub-heading)
+**Purpose:** Give the person a complete map of their life — specific ages, real outcomes, and the exact moment everything changes. Short. Timed. Clear. One idea per point.
+
+**Part 1 — Why the First Phase is Hard** (3 numbered points only)
+- Point 1: Birth Dasha — years, house rulerships for THIS Rasi, real-life impact on childhood named clearly
+- Point 2: Next Dasha — exact transition age, houses ruled, what the person experiences
+- Point 3: Nakshatra + Rasi combination — why the emotional nature amplifies the difficulty in youth
+
+**Part 2 — The Great Turning Point**
+- One pivot line reframing the suffering as design (e.g. "structured like a crucible")
+- The turning Dasha — exact age, house rulerships, specific life outcomes named
+- The Navamsa activation — when the D9 wakes up, what transforms, who they become
+- The result — what this combination achieves in their 30s, 40s, 50s
+
+**Part 3 — The Full Mahadasha Map** (mandatory — always include all Dashas)
+| Dasha | Age | Houses Ruled | What It Delivers |
+Every row — specific human outcomes. Never "good period" or "difficult period."
+
+**Part 4 — The Big Picture**
+3-4 sentences only. The overall life arc. End with one line reframing early struggle as preparation for later greatness.
+
+**Writing rules:**
+- Always name the age. "Around age 23-24" not "later in life."
+- Always name houses AND their human meaning. "Venus rules 4th (home, comfort) and 11th (massive gains, networks)"
+- Navamsa activation age is mandatory in every report
+- Never use vague words — "challenging," "positive," "good period" are banned. Name what actually happens.
+
+---
+
+#### SECTION 12: LIVING A DHARMIC LIFE
+**Purpose:** The closing section. How to live aligned with soul direction.
+
+Four bullet points only — 1-2 sentences each. Derived from D9 Navamsa + Gana:
+- **Right Action** — the one specific daily action keeping [Name] aligned with dharma
+- **Right Livelihood** — how this combination must earn to stay in dharmic alignment
+- **Right Relationship** — how this Gana must show up in relationships to clear karma
+- **Right Surrender** — the one thing this combination must stop controlling
+
+End with one italicised closing sentence capturing the dharmic call for this specific combination.
+
+---
 
 Read `/mnt/skills/public/docx/SKILL.md` before writing any code.
 
 ### Page Setup
 - US Letter (12240 × 15840 DXA), 1" margins all sides
 - Font: Aptos (body), Arial (headings)
-- Install: `npm install -g docx`
 
 ### Color Palette
 | Element | Color |
@@ -499,8 +632,6 @@ Read `/mnt/skills/public/docx/SKILL.md` before writing any code.
 | Quote block bg | #F0F4F8 |
 | Strength header | #155724 bg, white text |
 | Weakness header | #7B1818 bg, white text |
-| React column header | #7B1818 bg, white text |
-| Create column header | #1A3C5E bg, white text |
 
 ### Heading Style
 - Report title: Centered, 36pt bold, #1A3C5E
@@ -516,21 +647,16 @@ Read `/mnt/skills/public/docx/SKILL.md` before writing any code.
 - Header rows: shaded per color palette, white bold text
 - Alternate body rows: #E8F0F8 and white
 
+### Paragraph Sections (4, 6, 10)
+- Bold heading per item, Aptos 22pt, color #1A3C5E
+- Body paragraph: Aptos 20pt, color #2C2C2C
+- Spacing before each heading: 200; after paragraph: 120
+
 ### Quote Blocks
-```javascript
-// Left border bar style for quote blocks
-paragraph: {
-  border: { left: { style: BorderStyle.THICK, size: 12, color: "2E75B6" } },
-  shading: { fill: "F0F4F8", type: ShadingType.CLEAR },
-  indent: { left: 360 },
-  spacing: { before: 200, after: 200 }
-}
-```
+Left border bar, #F0F4F8 background, indent 360, italic Aptos.
 
 ### Section Structure
 - Each section starts on a new page (PageBreak before SECTION header)
-- Preamble: own page, centered italic
-- Section 14 Daily Checklist: own page, printed-ready formatting
 
 ### Validation
 ```bash
@@ -544,35 +670,37 @@ Fix any validation errors before delivering.
 
 ### Content
 - [ ] D9 derived from Nakshatra + Padam — not assumed
-- [ ] Preamble present and formatted correctly
-- [ ] All 14 sections present in order
+- [ ] All 12 sections present in order
 - [ ] Identity sentence uses animal metaphors specific to this combination
-- [ ] Section 1: Three Hidden Layers bullet points present — 3 points each for Gana, Padam, Navamsa
-- [ ] Section 2: Five Factors table present — every cell specific to this person, not a definition
-- [ ] Core loop in Section 5 is UNIQUE — not reused from another combination
-- [ ] Weaknesses in Section 3 are genuinely uncomfortable — not vague
-- [ ] User's stated struggles mapped in Sections 4 and 7
-- [ ] Section 7: Career Karma block present — brief explanation paragraph + 3-row table
-- [ ] Section 7 Career Karma: Karmic Lesson is one specific sentence; Career Blocks are 3 behaviours to stop; Ideal Path names the type of work + why
-- [ ] Section 8 daily practices are specific and doable this week
-- [ ] Section 9 React vs Create rows name BEHAVIOURS — not emotions or virtues
-- [ ] Section 10 daily timetable "Why" column references Raasi/Lagnam/Nakshatra
-- [ ] Section 11 steps are specific to this combination — not transferable
-- [ ] Section 12 old identity in the person's own voice; new identity in bold first-person
-- [ ] Section 13 truths are combination-specific — would be wrong for a different person
-- [ ] Section 13: Dharmic Life block present — 4 bullet points, each 1-2 sentences, derived from D9 + Gana
-- [ ] Section 13: Dharmic closing italicised line present
-- [ ] Section 14 checklist includes combination-specific closing phrase
-- [ ] No generic filler anywhere — every sentence specific enough that swapping names makes it wrong
-- [ ] No repetition across sections — each section adds NEW content only
+- [ ] Section 1: Three Hidden Layers — 2-3 bullet points each for Gana, Padam, Navamsa
+- [ ] Section 2: Five Factors table present — every cell specific, not a definition
+- [ ] Section 3: Top 5 rows only — most defining strength-shadow pairs for this combination
+- [ ] Section 4: Life areas in paragraph style — bold heading + paragraph each
+- [ ] Section 5: 3 patterns only — short and punchy, not lengthy
+- [ ] Section 6: Root problems in paragraph style — bold heading + 2-3 sentences each
+- [ ] Section 6: Career Karma table — 5 rows, 3 columns, one specific career field per row, derived from D9 + combination
+- [ ] Section 7C/D/E: Money, Overthinking, Relationships in bullet points only
+- [ ] Section 8: Each step 2-3 lines maximum
+- [ ] Section 9: Top 5 rows only — old identity in person's voice, new in bold first-person
+- [ ] Section 10: 5 truths only — paragraph style, combination-specific
+- [ ] Section 11 Block 1: Karmic Origin — 4 bullets, one line each, specific to THIS Nakshatra + Padam
+- [ ] Section 11 Block 2: Career table — 6-8 rows, specific named career fields, why it clears karma, how to start
+- [ ] Section 11 Block 2: Career fields derived from D9 Navamsa ruling planet first, narrowed by Raasi + Lagnam + Nakshatra
+- [ ] Section 11 Block 3: 3 Karma-Clearing Shifts — 3 lines maximum each, shift format strictly followed
+- [ ] Section 11 Block 4: Mahadasha Timeline present — all 4 parts included
+- [ ] Section 11 Block 4: Full Mahadasha table — ALL Dashas listed with age, houses, specific outcomes
+- [ ] Section 11 Block 4: Navamsa activation age named explicitly
+- [ ] Section 11 Block 4: No vague words — "challenging/positive/good period" banned, real outcomes named
+- [ ] Section 11 Block 4: Big Picture closes the arc with one reframing line
+- [ ] Section 12: 4 dharmic bullet points + closing italicised line
+- [ ] No generic filler — every sentence specific enough that swapping names makes it wrong
+- [ ] No repetition across sections
 
 ### Format
 - [ ] Page breaks before each section header
 - [ ] All tables have dual widths (table + cell)
 - [ ] Quote blocks have left border + shading
 - [ ] Strength/Weakness headers in green/red
-- [ ] React/Create headers in red/navy
-- [ ] Preamble on its own page with blue borders
+- [ ] Paragraph sections (4, 6, 10) have no tables — bold heading + text only
 - [ ] Validation passes
-
 

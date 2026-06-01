@@ -1,21 +1,16 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 /**
- * Sends an urgent admin alert email to ariyappan@touchmarkdes.com
+ * Sends an urgent admin alert email
  * Used for critical failures like AI model deprecation.
  */
 export async function sendAdminAlert(subject: string, body: string): Promise<void> {
   try {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'askastroraja@gmail.com',
-        pass: import.meta.env.GMAIL_APP_PASSWORD || process.env.GMAIL_APP_PASSWORD,
-      },
-    });
+    const resend = new Resend(import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY);
+    const fromEmail = import.meta.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || 'Astro Raja Alerts <reports@astroraja.com>';
 
-    await transporter.sendMail({
-      from: '"Astro Raja System Alert" <askastroraja@gmail.com>',
+    const { error: emailError } = await resend.emails.send({
+      from: fromEmail,
       to: 'ariyappan@touchmarkdes.com',
       subject: `🚨 [Astro Raja Alert] ${subject}`,
       html: `
@@ -28,16 +23,17 @@ export async function sendAdminAlert(subject: string, body: string): Promise<voi
             <pre style="background: #f8f8f8; padding: 16px; border-radius: 4px; font-size: 13px; overflow-x: auto; white-space: pre-wrap;">${body}</pre>
             <hr style="margin: 20px 0; border-color: #ddd;">
             <p style="color: #666; font-size: 13px;">
-              <strong>Action Required:</strong> Update <code>ANTHROPIC_MODEL</code> in your 
-              <a href="https://vercel.com/dashboard">Vercel Environment Variables</a> 
-              and local <code>.env</code> file with the latest model from 
-              <a href="https://docs.anthropic.com/en/docs/about-claude/models">Anthropic Docs</a>.
+              <strong>Action Required:</strong> Check the system logs and API keys.
             </p>
             <p style="color: #999; font-size: 12px;">Sent automatically by Astro Raja at ${new Date().toISOString()}</p>
           </div>
         </div>
       `,
     });
+
+    if (emailError) {
+      throw new Error(emailError.message);
+    }
 
     console.log('[Admin Alert] Email sent to ariyappan@touchmarkdes.com:', subject);
   } catch (err) {
