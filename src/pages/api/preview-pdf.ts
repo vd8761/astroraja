@@ -166,27 +166,49 @@ export const GET: APIRoute = async ({ request }) => {
       margin: [0, 12, 0, 6],
     } as any);
 
+    const sectionHeader = (num: number, title: string, subtitle?: string) => ({
+      table: {
+        widths: ['*'],
+        dontBreakRows: true,
+        body: [
+          [
+            {
+              stack: [
+                { text: `SECTION ${String(num).padStart(2, '0')}`, font: 'Outfit', bold: true, fontSize: 7, color: C.saffron, letterSpacing: 2, margin: [0, 0, 0, 4] },
+                { text: title.toUpperCase(), font: 'Lora', bold: true, fontSize: 14, color: C.navy, margin: [0, 0, 0, 2] },
+                ...(subtitle ? [{ text: subtitle, font: 'Outfit', italics: true, fontSize: 9.5, color: C.muted }] : []),
+              ],
+              border: [false, true, false, false],
+              margin: [0, 16, 0, 4],
+            }
+          ]
+        ],
+      },
+      layout: {
+        hLineWidth: (i: number) => i === 0 ? 1.5 : 0,
+        hLineColor: () => C.navy,
+        vLineWidth: () => 0,
+      },
+      margin: [0, 16, 0, 12],
+      id: 'sectionHeader',
+    } as any);
+
     const quoteBlock = (text: string) => {
       const parsed = parseText(text);
       const styledText = Array.isArray(parsed)
-        ? parsed.map(p => ({ ...p, font: p.font === 'Tamil' ? 'Tamil' : 'Lora', italics: true, fontSize: 10.5, color: C.navy, bold: true }))
-        : { text: parsed, font: 'Lora', italics: true, fontSize: 10.5, color: C.navy, bold: true };
+        ? parsed.map(p => ({ ...p, font: p.font === 'Tamil' ? 'Tamil' : 'Lora', italics: true, fontSize: 11.5, color: C.navy, bold: true }))
+        : { text: parsed, font: 'Lora', italics: true, fontSize: 11.5, color: C.navy, bold: true };
 
       return {
         table: {
-          widths: [5, '*'],
+          widths: [20, '*'],
           dontBreakRows: true,
           body: [[
-            { text: '', fillColor: C.saffron, border: [false, false, false, false] },
+            { text: '\u201c', font: 'Lora', fontSize: 36, color: C.saffron, bold: true, alignment: 'right', margin: [0, -5, 5, 0], border: [false, false, false, false] },
             {
-              text: [
-                { text: '\u201c', font: 'Lora', fontSize: 12, color: C.saffron, bold: true },
-                ...(Array.isArray(styledText) ? styledText : [styledText]),
-                { text: '\u201d', font: 'Lora', fontSize: 12, color: C.saffron, bold: true },
-              ],
-              fillColor: '#f5f3ff',
-              lineHeight: 1.35,
-              margin: [10, 10, 10, 10],
+              text: Array.isArray(styledText) ? styledText : [styledText],
+              lineHeight: 1.4,
+              margin: [5, 5, 10, 10],
               border: [false, false, false, false],
             },
           ]],
@@ -194,12 +216,8 @@ export const GET: APIRoute = async ({ request }) => {
       layout: {
         hLineWidth: () => 0,
         vLineWidth: () => 0,
-        paddingLeft: () => 0,
-        paddingRight: () => 0,
-        paddingTop: () => 0,
-        paddingBottom: () => 0,
       },
-      margin: [0, 12, 0, 16],
+      margin: [20, 12, 20, 16],
       unbreakable: true,
       } as any;
     };
@@ -243,7 +261,7 @@ export const GET: APIRoute = async ({ request }) => {
           body: [
             headers.map((h, i) => {
               const parsed = parseText(h);
-              const applyStyle = (t: any) => ({ ...t, font: t.font === 'Tamil' ? 'Tamil' : 'Lora', bold: true, fontSize: 10.5, color: C.navy, fillColor: C.bg, margin: [8, 8, 8, 8], border: [false, false, false, true] });
+              const applyStyle = (t: any) => ({ ...t, font: t.font === 'Tamil' ? 'Tamil' : 'Outfit', bold: true, fontSize: 9.5, color: C.white, fillColor: C.navy, margin: [8, 8, 8, 8], border: [false, false, false, false] });
               return {
                 text: Array.isArray(parsed) ? parsed.map(applyStyle) : [applyStyle({ text: parsed })],
               };
@@ -254,9 +272,8 @@ export const GET: APIRoute = async ({ request }) => {
               return paddedRow.slice(0, headers.length).map((cell, ci) => ({
                 text: parseText(cell),
                 font: 'Outfit', fontSize: 9.5,
-                color: ci === 0 ? C.navy : C.text,
-                bold: ci === 0,
-                fillColor: ri % 2 === 0 ? C.white : C.rowAlt,
+                color: C.text,
+                fillColor: ri % 2 === 0 ? C.white : C.bg,
                 margin: [8, 8, 8, 8],
                 border: [false, false, false, true],
               }));
@@ -264,9 +281,9 @@ export const GET: APIRoute = async ({ request }) => {
           ],
         },
         layout: {
-          hLineWidth: (i: number, node: any) => (i === 0 || i === node.table.body.length) ? 0 : 1,
-          vLineWidth: () => 0, // No vertical lines for a cleaner, modern look
-          hLineColor: (i: number, node: any) => (i === 1) ? C.navy : C.border, // Dark line under header, light lines between rows
+          hLineWidth: (i: number, node: any) => (i === 0) ? 0 : (i === node.table.body.length ? 1 : 0.5),
+          vLineWidth: () => 0,
+          hLineColor: (i: number, node: any) => (i === node.table.body.length) ? C.navy : C.border,
         },
         margin: [0, 10, 0, 20],
       } as any;
@@ -599,22 +616,22 @@ export const GET: APIRoute = async ({ request }) => {
       {
         stack: [
           // Top branding
-          { text: 'ASK ASTRO RAJA', font: 'Outfit', bold: true, fontSize: 10, color: C.saffronDark, alignment: 'center', letterSpacing: 4, margin: [0, 0, 0, 20] },
+          { text: 'ASK ASTRO RAJA', font: 'Outfit', bold: true, fontSize: 10, color: C.saffronDark, alignment: 'center', letterSpacing: 4, margin: [0, 40, 0, 40] },
           
           // Main Title
-          { text: 'LIFE TRANSFORMATION', font: 'Lora', bold: true, fontSize: 32, color: C.navy, alignment: 'center', margin: [0, 0, 0, 8] },
-          { text: 'REPORT', font: 'Lora', bold: true, fontSize: 32, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 20] },
+          { text: 'LIFE TRANSFORMATION', font: 'Lora', bold: true, fontSize: 32, color: C.white, alignment: 'center', margin: [0, 0, 0, 8] },
+          { text: 'REPORT', font: 'Lora', bold: true, fontSize: 32, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 40] },
           
           // Separator
-          { canvas: [{ type: 'line', x1: 157.5, y1: 0, x2: 357.5, y2: 0, lineWidth: 1, lineColor: C.border }], margin: [0, 0, 0, 20] },
+          { canvas: [{ type: 'line', x1: 157.5, y1: 0, x2: 357.5, y2: 0, lineWidth: 1, lineColor: C.saffron }], margin: [0, 0, 0, 40] },
           
           // For Label
-          { text: 'PREPARED EXCLUSIVELY FOR', font: 'Outfit', fontSize: 9, color: C.muted, alignment: 'center', letterSpacing: 2, margin: [0, 0, 0, 10] },
+          { text: 'PREPARED EXCLUSIVELY FOR', font: 'Outfit', fontSize: 9, color: '#a5b4fc', alignment: 'center', letterSpacing: 2, margin: [0, 0, 0, 10] },
           
           // Name
-          { text: reportName, font: 'Lora', bold: true, fontSize: 24, color: C.navy, alignment: 'center', margin: [0, 0, 0, 20] },
+          { text: reportName, font: 'Lora', bold: true, fontSize: 24, color: C.white, alignment: 'center', margin: [0, 0, 0, 40] },
         ],
-        margin: [0, 20, 0, 10],
+        margin: [0, 40, 0, 10],
       },
 
       // Extracted AI Subtitle
@@ -624,10 +641,10 @@ export const GET: APIRoute = async ({ request }) => {
         fontSize: 14,
         color: C.saffron,
         alignment: 'center',
-        margin: [0, 24, 0, 14]
+        margin: [0, 24, 0, 40]
       }] : []),
 
-      // Astro key summary bar — navy background, white label, saffron value
+      // Astro key summary bar
       {
         columns: [
           {
@@ -636,9 +653,9 @@ export const GET: APIRoute = async ({ request }) => {
               body: [[{
                 stack: [
                   { text: 'RAASI', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportRaasi + (getTamil(reportRaasi, 'raasi') ? `\n(${getTamil(reportRaasi, 'raasi')})` : '')), font: 'Lora', fontSize: 8.5, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: parseText(reportRaasi + (getTamil(reportRaasi, 'raasi') ? `\n(${getTamil(reportRaasi, 'raasi')})` : '')), font: 'Lora', fontSize: 8.5, color: C.white, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
-                fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
+                fillColor: C.navyLight, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
             },
             layout: 'noBorders',
@@ -650,9 +667,9 @@ export const GET: APIRoute = async ({ request }) => {
               body: [[{
                 stack: [
                   { text: 'LAGNAM', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportLagnam + (getTamil(reportLagnam, 'raasi') ? `\n(${getTamil(reportLagnam, 'raasi')})` : '')), font: 'Lora', fontSize: 8.5, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: parseText(reportLagnam + (getTamil(reportLagnam, 'raasi') ? `\n(${getTamil(reportLagnam, 'raasi')})` : '')), font: 'Lora', fontSize: 8.5, color: C.white, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
-                fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
+                fillColor: C.navyLight, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
             },
             layout: 'noBorders',
@@ -664,9 +681,9 @@ export const GET: APIRoute = async ({ request }) => {
               body: [[{
                 stack: [
                   { text: 'NAKSHATRA', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportNakshatra + (getTamil(reportNakshatra, 'nakshatra') ? `\n(${getTamil(reportNakshatra, 'nakshatra')})` : '')), font: 'Lora', fontSize: 8.5, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: parseText(reportNakshatra + (getTamil(reportNakshatra, 'nakshatra') ? `\n(${getTamil(reportNakshatra, 'nakshatra')})` : '')), font: 'Lora', fontSize: 8.5, color: C.white, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
-                fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
+                fillColor: C.navyLight, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
             },
             layout: 'noBorders',
@@ -678,15 +695,16 @@ export const GET: APIRoute = async ({ request }) => {
               body: [[{
                 stack: [
                   { text: 'PATHAM', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportPadam ? `${reportPadam}\n(${reportPadam}ம் பாதம்)` : '—\n(—)'), font: 'Lora', fontSize: 8.5, color: C.saffron, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: parseText(reportPadam ? `${reportPadam}\n(${reportPadam}ம் பாதம்)` : '—\n(—)'), font: 'Lora', fontSize: 8.5, color: C.white, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
-                fillColor: C.navy, margin: [8, 10, 8, 10], border: [false, false, false, false],
+                fillColor: C.navyLight, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
             },
             layout: 'noBorders',
           },
         ],
         margin: [0, 14, 0, 6],
+        pageBreak: 'after',
       },
 
       ...(useRealContent ? realContent : [
@@ -1022,6 +1040,24 @@ export const GET: APIRoute = async ({ request }) => {
       },
       // top=65 reserves space for header bar, bottom=55 reserves space for footer bar
       pageMargins: [40, 65, 40, 55],
+      
+      background: (currentPage: number) => {
+        if (currentPage === 1) {
+          return [
+            {
+              canvas: [
+                { type: 'rect', x: 0, y: 0, w: 595.28, h: 841.89, color: C.navy }
+              ]
+            },
+            {
+              canvas: [
+                { type: 'rect', x: 20, y: 20, w: 595.28 - 40, h: 841.89 - 40, lineWidth: 1, lineColor: C.saffron }
+              ]
+            }
+          ];
+        }
+        return null;
+      },
 
       header: (currentPage: number, pageCount: number) => currentPage === 1 ? null : ({
         // margin: [left, top, right, bottom] — positions the header block
