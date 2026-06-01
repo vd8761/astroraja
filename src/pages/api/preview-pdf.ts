@@ -15,10 +15,10 @@ export const GET: APIRoute = async ({ request }) => {
 
     const fonts = {
       Haskoy: {
-        normal:      path.join(fontsDir, 'Haskoy-Regular.otf'),
-        bold:        path.join(fontsDir, 'Haskoy-Bold.otf'),
-        italics:     path.join(fontsDir, 'Haskoy-Regular.otf'),
-        bolditalics: path.join(fontsDir, 'Haskoy-Bold.otf'),
+        normal:      path.join(fontsDir, 'Haskoy-Regular.ttf'),
+        bold:        path.join(fontsDir, 'Haskoy-Bold.ttf'),
+        italics:     path.join(fontsDir, 'Haskoy-Regular.ttf'),
+        bolditalics: path.join(fontsDir, 'Haskoy-Bold.ttf'),
       },
       Inter: {
         normal:      path.join(fontsDir, 'Inter-Regular.ttf'),
