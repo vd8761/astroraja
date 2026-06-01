@@ -12,7 +12,17 @@ export const POST: APIRoute = async ({ request }) => {
 
     // 1. Validate OTP
     let validOtp;
-    if (email) {
+    if (email && mobile) {
+      validOtp = await sql`
+        SELECT id FROM otps 
+        WHERE (email = ${email} OR mobile_number = ${mobile})
+        AND otp_code = ${otp}
+        AND is_used = FALSE
+        AND expires_at > NOW()
+        ORDER BY created_at DESC
+        LIMIT 1
+      `;
+    } else if (email) {
       validOtp = await sql`
         SELECT id FROM otps 
         WHERE email = ${email} 
@@ -43,7 +53,29 @@ export const POST: APIRoute = async ({ request }) => {
 
     // 2. Get or Create User
     let userId;
-    if (email) {
+    if (email && mobile) {
+      const existingUser = await sql`
+        SELECT id FROM users 
+        WHERE email = ${email} OR mobile_number = ${mobile} 
+        LIMIT 1
+      `;
+      if (existingUser.length > 0) {
+        userId = existingUser[0].id;
+        // Keep both fields updated if one was missing
+        await sql`
+          UPDATE users 
+          SET email = ${email}, mobile_number = ${mobile}, updated_at = NOW() 
+          WHERE id = ${userId}
+        `;
+      } else {
+        const newUser = await sql`
+          INSERT INTO users (email, mobile_number) 
+          VALUES (${email}, ${mobile}) 
+          RETURNING id
+        `;
+        userId = newUser[0].id;
+      }
+    } else if (email) {
       const existingUser = await sql`SELECT id FROM users WHERE email = ${email} LIMIT 1`;
       if (existingUser.length > 0) {
         userId = existingUser[0].id;
@@ -89,10 +121,15 @@ export const POST: APIRoute = async ({ request }) => {
       .setExpirationTime('30d') // Token valid for 30 days
       .sign(jwtSecret);
 
+    // Retrieve the user's name from their "Self" profile if it exists
+    const userProfile = await sql`SELECT name FROM profiles WHERE user_id = ${userId} AND relationship = 'Self' LIMIT 1`;
+    const profileName = userProfile[0]?.name || null;
+
     return new Response(JSON.stringify({ 
       success: true, 
       token,
-      userId
+      userId,
+      name: profileName
     }), { status: 200 });
 
   } catch (error: any) {

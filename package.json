@@ -28,12 +28,14 @@
     "marked": "^18.0.4",
     "nodemailer": "^8.0.7",
     "pdfmake": "^0.3.8",
+    "pg": "^8.21.0",
     "razorpay": "^2.9.6",
     "resend": "^6.12.4",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
     "@types/marked": "^5.0.2",
-    "@types/nodemailer": "^8.0.0"
+    "@types/nodemailer": "^8.0.0",
+    "@types/pg": "^8.20.0"
   }
 }
