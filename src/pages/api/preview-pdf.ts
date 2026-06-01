@@ -14,21 +14,18 @@ export const GET: APIRoute = async ({ request }) => {
     const fontsDir = path.join(process.cwd(), 'public', 'fonts');
 
     const fonts = {
-      // Heading font — Serif, premium editorial feel
-      Lora: {
-        normal:      path.join(fontsDir, 'NotoSerif-Regular.ttf'),
-        bold:        path.join(fontsDir, 'NotoSerif-Bold.ttf'),
-        italics:     path.join(fontsDir, 'NotoSerif-Regular.ttf'),
-        bolditalics: path.join(fontsDir, 'NotoSerif-Bold.ttf'),
+      Haskoy: {
+        normal:      path.join(fontsDir, 'Haskoy-Regular.otf'),
+        bold:        path.join(fontsDir, 'Haskoy-Bold.otf'),
+        italics:     path.join(fontsDir, 'Haskoy-Regular.otf'),
+        bolditalics: path.join(fontsDir, 'Haskoy-Bold.otf'),
       },
-      // Body font — clean, modern
-      Outfit: {
-        normal:      path.join(fontsDir, 'NotoSans-Regular.ttf'),
-        bold:        path.join(fontsDir, 'NotoSans-Bold.ttf'),
-        italics:     path.join(fontsDir, 'NotoSans-Regular.ttf'),
-        bolditalics: path.join(fontsDir, 'NotoSans-Bold.ttf'),
+      Inter: {
+        normal:      path.join(fontsDir, 'Inter-Regular.ttf'),
+        bold:        path.join(fontsDir, 'Inter-Bold.ttf'),
+        italics:     path.join(fontsDir, 'Inter-Regular.ttf'),
+        bolditalics: path.join(fontsDir, 'Inter-Bold.ttf'),
       },
-      // Tamil font for Tamil text spans
       Tamil: {
         normal:      path.join(fontsDir, 'NotoSansTamil-Regular.ttf'),
         bold:        path.join(fontsDir, 'NotoSansTamil-Bold.ttf'),
@@ -37,29 +34,28 @@ export const GET: APIRoute = async ({ request }) => {
       },
     };
 
-    // ── Brand Color System (matches website exactly) ──────────────────────
+    // ── Corporate Consulting Color System ──────────────────────
     const C = {
-      navy:       '#1e1b4b',   // brand-navy
-      navyLight:  '#312e81',   // brand-navy-light
-      purple:     '#4c1d95',   // brand-purple
-      purpleLight:'#7c3aed',   // brand-purple-light
-      saffron:    '#f59e0b',   // brand-saffron
-      saffronDark:'#d97706',   // brand-saffron-dark
-      text:       '#334155',   // brand-text
-      textDark:   '#0f172a',   // brand-text-dark
-      muted:      '#64748b',   // brand-text-muted
-      border:     '#e2e8f0',   // brand-border
-      bg:         '#faf8f5',   // brand-light-bg
+      navy:       '#0f172a',   // deep navy
+      navyLight:  '#1e293b',   // slate-800
+      purple:     '#334155',   // slate-700
+      purpleLight:'#475569',   // slate-600
+      saffron:    '#0f172a',   // mapped to navy to remove gold AI elements
+      saffronDark:'#334155',   // slate-700
+      text:       '#334155',   // slate-700
+      textDark:   '#0f172a',   // slate-900
+      muted:      '#64748b',   // slate-500
+      border:     '#e2e8f0',   // slate-200
+      bg:         '#f8fafc',   // soft gray background
       white:      '#ffffff',
-      rowAlt:     '#faf8f5',   // use brand light bg for alternate rows
-      // Section header colors
-      sec1:  '#1e1b4b', sec2: '#1e1b4b', sec3: '#1e1b4b',
-      sec4:  '#1e1b4b', sec5: '#1e1b4b', sec6: '#1e1b4b',
-      sec7:  '#1e1b4b', sec8: '#1e1b4b', sec9: '#1e1b4b',
-      sec10: '#1e1b4b', sec11:'#1e1b4b', sec12:'#1e1b4b',
-      sec13: '#1e1b4b', sec14:'#1e1b4b', sec15:'#1e1b4b',
-      sec16: '#1e1b4b', sec17:'#1e1b4b', sec18:'#1e1b4b',
-      sec19: '#1e1b4b', sec20:'#1e1b4b'
+      rowAlt:     '#f8fafc',   // soft gray background for rows
+      sec1:  '#0f172a', sec2: '#0f172a', sec3: '#0f172a',
+      sec4:  '#0f172a', sec5: '#0f172a', sec6: '#0f172a',
+      sec7:  '#0f172a', sec8: '#0f172a', sec9: '#0f172a',
+      sec10: '#0f172a', sec11:'#0f172a', sec12:'#0f172a',
+      sec13: '#0f172a', sec14:'#0f172a', sec15:'#0f172a',
+      sec16: '#0f172a', sec17:'#0f172a', sec18:'#0f172a',
+      sec19: '#0f172a', sec20:'#0f172a'
     };
 
     const sectionColors = [
@@ -68,7 +64,6 @@ export const GET: APIRoute = async ({ request }) => {
       C.sec15, C.sec16, C.sec17, C.sec18, C.sec19, C.sec20
     ];
 
-    // ── Tamil-aware inline text ───────────────────────────────────────────
     const T = (text: string, extra: any = {}) => ({
       text, font: 'Tamil', fontSize: 9, ...extra,
     });
@@ -79,13 +74,13 @@ export const GET: APIRoute = async ({ request }) => {
         .replace(/\*\*/g, '')
         .replace(/\*/g, '')
         .replace(/☐/g, '[  ]')
-        .replace(/☑/g, '[x]');
+        .replace(/☑/g, '[x]')
+        .replace(/-/g, '-');
       const parts = clean.split(/([\u0B80-\u0BFF]+)/);
       if (parts.length === 1) return clean;
       return parts.map(p => p.match(/[\u0B80-\u0BFF]/) ? { text: p, font: 'Tamil' } : { text: p });
     };
 
-    // ── Design components ─────────────────────────────────────────────────
     const sectionHeader = (num: number, title: string, subtitle?: string, breakBefore = false) => ({
       table: {
         widths: ['*'],
@@ -94,18 +89,17 @@ export const GET: APIRoute = async ({ request }) => {
           [
             {
               stack: [
-                { text: `SECTION ${String(num).padStart(2, '0')}`, font: 'Outfit', bold: true, fontSize: 7, color: C.saffron, letterSpacing: 2, margin: [0, 0, 0, 4] },
-                { text: title.toUpperCase(), font: 'Lora', bold: true, fontSize: 14, color: C.navy, margin: [0, 0, 0, 2] },
-                ...(subtitle ? [{ text: subtitle, font: 'Outfit', italics: true, fontSize: 9.5, color: C.muted }] : []),
+                { text: `${String(num).padStart(2, '0')}  |  ${title.toUpperCase()}`, font: 'Haskoy', bold: true, fontSize: 13, color: C.navy, margin: [0, 0, 0, 4] },
+                ...(subtitle ? [{ text: subtitle, font: 'Inter', fontSize: 9.5, color: C.muted }] : []),
               ],
-              border: [false, true, false, false],
-              margin: [0, 16, 0, 4],
+              border: [false, false, false, true],
+              margin: [0, 16, 0, 8],
             }
           ]
         ],
       },
       layout: {
-        hLineWidth: (i: number) => i === 0 ? 1.5 : 0,
+        hLineWidth: (i: number, node: any) => i === node.table.body.length ? 1 : 0,
         hLineColor: () => C.navy,
         vLineWidth: () => 0,
       },
@@ -116,26 +110,25 @@ export const GET: APIRoute = async ({ request }) => {
 
     const keyValue = (label: string, value: string | any[]) => ({
       columns: [
-        { text: label, font: 'Outfit', bold: true, fontSize: 9, color: C.navy, width: 120 },
-        { text: value, font: 'Outfit', fontSize: 9, color: C.text, width: '*' },
+        { text: label, font: 'Inter', bold: true, fontSize: 9, color: C.navy, width: 120 },
+        { text: value, font: 'Inter', fontSize: 9, color: C.text, width: '*' },
       ],
       margin: [0, 2, 0, 2],
     } as any);
 
     const para = (text: string | any[], opts: any = {}) => ({
       text,
-      font: 'Outfit', fontSize: 9.5, color: C.text,
+      font: 'Inter', fontSize: 9.5, color: C.text,
       lineHeight: 1.5, margin: [0, 0, 0, 8],
       ...opts,
     } as any);
 
     const subHead = (text: string, color = C.navy) => ({
       text,
-      font: 'Lora', bold: true, fontSize: 11.5, color,
+      font: 'Haskoy', bold: true, fontSize: 11.5, color,
       margin: [0, 14, 0, 6],
     } as any);
 
-    // Sub-label: for numbered sub-sections like A, B, C inside a section
     const subLabel = (letter: string, title: string) => ({
       table: {
         widths: [18, '*'],
@@ -143,16 +136,16 @@ export const GET: APIRoute = async ({ request }) => {
         body: [[
           {
             text: letter,
-            font: 'Lora', bold: true, fontSize: 9, color: C.white,
-            fillColor: C.saffron,
+            font: 'Haskoy', bold: true, fontSize: 9, color: C.white,
+            fillColor: C.navy,
             alignment: 'center',
             margin: [0, 5, 0, 0],
             border: [false, false, false, false],
           },
           {
             text: title.toUpperCase(),
-            font: 'Lora', bold: true, fontSize: 10, color: C.navy,
-            fillColor: '#fef9ee',
+            font: 'Haskoy', bold: true, fontSize: 10, color: C.navy,
+            fillColor: C.bg,
             margin: [8, 5, 8, 5],
             border: [false, false, false, false],
           },
@@ -162,23 +155,23 @@ export const GET: APIRoute = async ({ request }) => {
       margin: [0, 12, 0, 6],
     } as any);
 
-
     const quoteBlock = (text: string) => {
       const parsed = parseText(text);
       const styledText = Array.isArray(parsed)
-        ? parsed.map(p => ({ ...p, font: p.font === 'Tamil' ? 'Tamil' : 'Lora', italics: true, fontSize: 11.5, color: C.navy, bold: true }))
-        : { text: parsed, font: 'Lora', italics: true, fontSize: 11.5, color: C.navy, bold: true };
+        ? parsed.map(p => ({ ...p, font: p.font === 'Tamil' ? 'Tamil' : 'Inter', italics: false, fontSize: 10, color: C.textDark, bold: false }))
+        : { text: parsed, font: 'Inter', italics: false, fontSize: 10, color: C.textDark, bold: false };
 
       return {
         table: {
-          widths: [20, '*'],
+          widths: [2, '*'],
           dontBreakRows: true,
           body: [[
-            { text: '\u201c', font: 'Lora', fontSize: 36, color: C.saffron, bold: true, alignment: 'right', margin: [0, -5, 5, 0], border: [false, false, false, false] },
+            { text: '', fillColor: C.navy, margin: [0, 0, 0, 0], border: [false, false, false, false] },
             {
               text: Array.isArray(styledText) ? styledText : [styledText],
               lineHeight: 1.4,
-              margin: [5, 5, 10, 10],
+              margin: [10, 8, 10, 8],
+              fillColor: C.bg,
               border: [false, false, false, false],
             },
           ]],
@@ -186,21 +179,25 @@ export const GET: APIRoute = async ({ request }) => {
       layout: {
         hLineWidth: () => 0,
         vLineWidth: () => 0,
+        paddingLeft: () => 0,
+        paddingRight: () => 0,
+        paddingTop: () => 0,
+        paddingBottom: () => 0,
       },
-      margin: [20, 12, 20, 16],
+      margin: [0, 12, 0, 16],
       unbreakable: true,
       } as any;
     };
 
-    const infoBox = (text: string, bgColor = '#f5f3ff') => ({
+    const infoBox = (text: string, bgColor = C.bg) => ({
       table: {
-        widths: [5, '*'],
+        widths: [2, '*'],
         dontBreakRows: true,
         body: [[
-          { text: '', fillColor: C.saffron, border: [false, false, false, false] },
+          { text: '', fillColor: C.muted, border: [false, false, false, false] },
           {
             text,
-            font: 'Outfit', fontSize: 9.5, color: C.navy,
+            font: 'Inter', fontSize: 9.5, color: C.textDark,
             fillColor: bgColor,
             margin: [10, 9, 10, 9],
             border: [false, false, false, false],
@@ -219,7 +216,6 @@ export const GET: APIRoute = async ({ request }) => {
       margin: [0, 4, 0, 12],
     } as any);
 
-    // Premium table builder
     const table = (headers: string[], rows: (string | any[])[][], widths?: any[]) => {
       const w = widths || headers.map(() => '*');
       return {
@@ -231,7 +227,7 @@ export const GET: APIRoute = async ({ request }) => {
           body: [
             headers.map((h, i) => {
               const parsed = parseText(h);
-              const applyStyle = (t: any) => ({ ...t, font: t.font === 'Tamil' ? 'Tamil' : 'Outfit', bold: true, fontSize: 9.5, color: C.white, fillColor: C.navy, margin: [8, 8, 8, 8], border: [false, false, false, false] });
+              const applyStyle = (t: any) => ({ ...t, font: t.font === 'Tamil' ? 'Tamil' : 'Inter', bold: true, fontSize: 9, color: C.white, fillColor: C.navy, margin: [8, 8, 8, 8], border: [false, false, false, false] });
               return {
                 text: Array.isArray(parsed) ? parsed.map(applyStyle) : [applyStyle({ text: parsed })],
               };
@@ -241,7 +237,7 @@ export const GET: APIRoute = async ({ request }) => {
               while (paddedRow.length < headers.length) paddedRow.push('');
               return paddedRow.slice(0, headers.length).map((cell, ci) => ({
                 text: parseText(cell),
-                font: 'Outfit', fontSize: 9.5,
+                font: 'Inter', fontSize: 9,
                 color: C.text,
                 fillColor: ri % 2 === 0 ? C.white : C.bg,
                 margin: [8, 8, 8, 8],
@@ -272,8 +268,8 @@ export const GET: APIRoute = async ({ request }) => {
             widths: ['*'],
             body: [[{
               text: [
-                { text: 'LOOP #' + num + '  ', font: 'Outfit', fontSize: 8, color: C.saffron, bold: true },
-                { text: title, font: 'Outfit', fontSize: 10, color: C.white, bold: true },
+                { text: 'LOOP #' + num + '  ', font: 'Inter', fontSize: 8, color: C.white, bold: true },
+                { text: title, font: 'Inter', fontSize: 10, color: C.white, bold: true },
               ],
               fillColor: C.navy,
               margin: [10, 7, 10, 7],
@@ -290,7 +286,7 @@ export const GET: APIRoute = async ({ request }) => {
             headerRows: 0,
             body: steps.map((step, i) => [
               {
-                table: { widths: [18], body: [[{ text: String(i + 1), font: 'Outfit', bold: true, fontSize: 8, color: C.saffron, fillColor: '#1e1b4b', alignment: 'center', margin: [0, 3, 0, 0], border: [false, false, false, false] }]] },
+                table: { widths: [18], body: [[{ text: String(i + 1), font: 'Inter', bold: true, fontSize: 8, color: C.white, fillColor: '#1e1b4b', alignment: 'center', margin: [0, 3, 0, 0], border: [false, false, false, false] }]] },
                 layout: { hLineWidth: () => 0, vLineWidth: () => 0 },
                 fillColor: i % 2 === 0 ? C.white : '#f5f3ff',
                 border: [false, false, false, false],
@@ -298,7 +294,7 @@ export const GET: APIRoute = async ({ request }) => {
               },
               {
                 text: step.trim(),
-                font: 'Outfit', fontSize: 9, color: C.text,
+                font: 'Inter', fontSize: 9, color: C.text,
                 lineHeight: 1.4,
                 fillColor: i % 2 === 0 ? C.white : '#f5f3ff',
                 border: [false, false, false, false],
@@ -326,8 +322,8 @@ export const GET: APIRoute = async ({ request }) => {
             heights: [28],
             body: [[{
               text: String(num),
-              font: 'Lora', bold: true, fontSize: 12,
-              color: C.saffron,
+              font: 'Haskoy', bold: true, fontSize: 12,
+              color: C.white,
               fillColor: C.navy,
               alignment: 'center',
               margin: [0, 8, 0, 0],
@@ -339,8 +335,8 @@ export const GET: APIRoute = async ({ request }) => {
         },
         {
           stack: [
-            { text: title, font: 'Lora', bold: true, fontSize: 10.5, color: C.navy, margin: [0, 2, 0, 3] },
-            { text: desc, font: 'Outfit', fontSize: 9.5, color: C.text, lineHeight: 1.5 },
+            { text: title, font: 'Haskoy', bold: true, fontSize: 10.5, color: C.navy, margin: [0, 2, 0, 3] },
+            { text: desc, font: 'Inter', fontSize: 9.5, color: C.text, lineHeight: 1.5 },
           ],
           width: '*',
         },
@@ -352,11 +348,11 @@ export const GET: APIRoute = async ({ request }) => {
       stack: items.map(item => ({
         columns: [
           {
-            canvas: [{ type: 'ellipse', x: 4, y: 5, r1: 3.5, r2: 3.5, color: C.saffron }],
+            canvas: [{ type: 'ellipse', x: 4, y: 5, r1: 3.5, r2: 3.5, color: C.white }],
             width: 14,
             margin: [0, 0, 0, 0],
           },
-          { text: item, font: 'Outfit', fontSize: 9.5, color: C.text, width: '*', lineHeight: 1.4 },
+          { text: item, font: 'Inter', fontSize: 9.5, color: C.text, width: '*', lineHeight: 1.4 },
         ],
         margin: [0, 4, 0, 4],
       })),
@@ -401,7 +397,7 @@ export const GET: APIRoute = async ({ request }) => {
       if (rl && ll && rl !== ll) return `${rl} + ${ll}`;
       if (rl) return rl;
       if (ll) return ll;
-      return '—';
+      return '-';
     };
 
     const getTamil = (str: string, type: string) => {
@@ -467,7 +463,7 @@ export const GET: APIRoute = async ({ request }) => {
           if (l.match(/^## /)) {
             const title = l.replace(/^## /, '').replace(/^Section\s*\d+:?\s*/i, '').trim();
             // Skip the AI-generated intro sections to avoid duplicating the hardcoded preamble
-            if (title.toUpperCase().includes('A COMPLETE SOUL') || title.toUpperCase().includes('A MESSAGE BEFORE YOU BEGIN')) {
+            if (title.toUpperCase().includes('COMPREHENSIVE ANALYSIS') || title.toUpperCase().includes('A MESSAGE BEFORE YOU BEGIN')) {
               skipCurrentSection = true;
               mi++;
               continue;
@@ -481,7 +477,7 @@ export const GET: APIRoute = async ({ request }) => {
           } else if (l.match(/^### /)) {
             realContent.push(subHead(l.replace(/^### /, '').trim()));
           } else if (l.match(/^#### /)) {
-            realContent.push({ text: l.replace(/^#### /, '').trim(), font: 'Outfit', bold: true, fontSize: 10, color: C.navy, margin: [0, 8, 0, 4] });
+            realContent.push({ text: l.replace(/^#### /, '').trim(), font: 'Inter', bold: true, fontSize: 10, color: C.navy, margin: [0, 8, 0, 4] });
           } else if (l.startsWith('> ')) {
             const q = l.replace(/^> /, '').replace(/^["'\s*]+|["'\s*]+$/g, '').trim();
             if (q) realContent.push(quoteBlock(q));
@@ -495,12 +491,12 @@ export const GET: APIRoute = async ({ request }) => {
           } else if (l.match(/^[-*] /)) {
             const items: any[] = [];
             while (mi < md.length && md[mi].match(/^[-*] /)) { items.push(parseText(md[mi].replace(/^[-*] /, '').replace(/\*\*/g, '').trim())); mi++; }
-            if (items.length > 0) realContent.push({ ul: items, font: 'Outfit', fontSize: 9.5, color: C.text, margin: [8, 4, 0, 10] });
+            if (items.length > 0) realContent.push({ ul: items, font: 'Inter', fontSize: 9.5, color: C.text, margin: [8, 4, 0, 10] });
             continue;
           } else if (l.match(/^\d+\.\s/)) {
             const items: any[] = [];
             while (mi < md.length && md[mi].match(/^\d+\.\s/)) { items.push(parseText(md[mi].replace(/^\d+\.\s+/, '').replace(/\*\*/g, '').trim())); mi++; }
-            if (items.length > 0) realContent.push({ ol: items, font: 'Outfit', fontSize: 9.5, color: C.text, margin: [8, 4, 0, 10] });
+            if (items.length > 0) realContent.push({ ol: items, font: 'Inter', fontSize: 9.5, color: C.text, margin: [8, 4, 0, 10] });
             continue;
           } else if (l.trim() && !l.match(/^#{1,6} /) && !l.match(/^[-=]{3,}/)) {
             const clean = l.trim().replace(/\*\*/g, '').replace(/\*/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
@@ -509,7 +505,7 @@ export const GET: APIRoute = async ({ request }) => {
                 // Extract the very first non-heading text as the report subtitle
                 reportSubtitle = clean;
               } else {
-                realContent.push({ text: parseText(clean), font: 'Outfit', fontSize: 9.5, color: C.text, lineHeight: 1.45, margin: [0, 2, 0, 6] });
+                realContent.push({ text: parseText(clean), font: 'Inter', fontSize: 9.5, color: C.text, lineHeight: 1.45, margin: [0, 2, 0, 6] });
               }
             }
           }
@@ -529,20 +525,20 @@ export const GET: APIRoute = async ({ request }) => {
                     stack: [
                       { 
                         text: [
-                          { text: '“', font: 'Lora', fontSize: 18, color: C.saffron, bold: true },
-                          { text: 'We are responsible for what we are, and whatever we wish ourselves to be, we have the power to make ourselves. If what we are now has been the result of our own past actions, it certainly follows that whatever we wish to be in future can be produced by our present actions; so we have to know how to act.', font: 'Lora', italics: true, fontSize: 12, color: C.navy },
-                          { text: '”', font: 'Lora', fontSize: 18, color: C.saffron, bold: true }
+                          { text: '“', font: 'Haskoy', fontSize: 18, color: C.white, bold: true },
+                          { text: 'We are responsible for what we are, and whatever we wish ourselves to be, we have the power to make ourselves. If what we are now has been the result of our own past actions, it certainly follows that whatever we wish to be in future can be produced by our present actions; so we have to know how to act.', font: 'Haskoy', italics: true, fontSize: 12, color: C.navy },
+                          { text: '”', font: 'Haskoy', fontSize: 18, color: C.white, bold: true }
                         ],
                         alignment: 'center', 
                         lineHeight: 1.6,
                         margin: [0, 0, 0, 12]
                       },
                       { 
-                        text: '— Swami Vivekananda', 
-                        font: 'Outfit', 
+                        text: '- Swami Vivekananda', 
+                        font: 'Inter', 
                         bold: true, 
                         fontSize: 10, 
-                        color: C.saffronDark, 
+                        color: C.muted, 
                         alignment: 'center',
                         letterSpacing: 1
                       }
@@ -557,22 +553,22 @@ export const GET: APIRoute = async ({ request }) => {
             layout: {
               hLineWidth: () => 1,
               vLineWidth: () => 1,
-              hLineColor: () => C.saffron,
-              vLineColor: () => C.saffron,
+              hLineColor: () => C.white,
+              vLineColor: () => C.white,
             },
             margin: [0, 10, 0, 10]
           },
           
           // 2. The Preamble Text (On the Next Page)
-          { text: 'A Message Before You Begin', font: 'Lora', bold: true, fontSize: 18, color: C.navy, alignment: 'center', margin: [0, 0, 0, 20], pageBreak: 'before' },
-          { text: 'The whole idea behind this report is not just to provide astrological guidance or simply reflect your characteristics.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
-          { text: 'One important assumption is that astrology is a gift deeply rooted in Indian tradition. If we look back from ancient times, a vast amount of knowledge has been embedded within it. In many ways, we can say this is a combination of mathematics and science.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
-          { text: 'When you observe how numbers have been used and interpreted in astrology, it almost feels magical. Considering the world\'s massive population, this mathematical system has worked in such a way that every individual can still be understood as unique.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
-          { text: 'The purpose of this report goes beyond predicting events. We believe that every person has a soul purpose. When you identify that purpose clearly and begin to align your life with it, your karmic patterns gradually start to clear.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
-          { text: 'Going to temples and performing remedies may help on one side, but beyond all that, the best way is to consciously neutralize our karmic actions through awareness and right action.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
-          { text: 'This report has been designed with that intention — to help you understand these deeper aspects of your life. Use this guidance, take action, and move forward with clarity.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
-          { text: 'Our best wishes to you. But remember — without taking action, it is impossible to achieve meaningful change.', font: 'Outfit', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 15] },
-          { text: '— Thank you.', font: 'Outfit', bold: true, fontSize: 11, color: C.navy, margin: [0, 0, 0, 10] }
+          { text: 'Executive Summary', font: 'Haskoy', bold: true, fontSize: 18, color: C.navy, alignment: 'center', margin: [0, 0, 0, 20], pageBreak: 'before' },
+          { text: 'This document provides a structured evaluation and targeted advisory or simply reflect your characteristics.', font: 'Inter', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
+          { text: 'One important assumption is that astrology is a gift deeply rooted in Indian tradition. If we look back from ancient times, a vast amount of knowledge has been embedded within it. In many ways, we can say this is a combination of mathematics and science.', font: 'Inter', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
+          { text: 'When you observe how numbers have been used and interpreted in astrology, it almost feels magical. Considering the world\'s massive population, this mathematical system has worked in such a way that every individual can still be understood as unique.', font: 'Inter', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
+          { text: 'The purpose of this report goes beyond predicting events. We believe that every person has a soul purpose. When you identify that purpose clearly and begin to align your life with it, your karmic patterns gradually start to clear.', font: 'Inter', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
+          { text: 'Going to temples and performing remedies may help on one side, but beyond all that, the best way is to consciously neutralize our karmic actions through awareness and right action.', font: 'Inter', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
+          { text: 'This analysis has been designed - to help you understand these deeper aspects of your life. Use this guidance, take action, and move forward with clarity.', font: 'Inter', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 10] },
+          { text: 'Prepared for your review. But remember - without taking action, it is impossible to achieve meaningful change.', font: 'Inter', fontSize: 10.5, color: C.text, lineHeight: 1.6, margin: [0, 0, 0, 15] },
+          { text: '- Thank you.', font: 'Inter', bold: true, fontSize: 11, color: C.navy, margin: [0, 0, 0, 10] }
         ];
         realContent.unshift(...introMessage);
       }
@@ -586,20 +582,20 @@ export const GET: APIRoute = async ({ request }) => {
       {
         stack: [
           // Top branding
-          { text: 'ASK ASTRO RAJA', font: 'Outfit', bold: true, fontSize: 10, color: C.saffronDark, alignment: 'center', letterSpacing: 4, margin: [0, 40, 0, 40] },
+          { text: 'ASK ASTRO RAJA', font: 'Inter', bold: true, fontSize: 10, color: C.muted, alignment: 'center', letterSpacing: 4, margin: [0, 40, 0, 40] },
           
           // Main Title
-          { text: 'LIFE TRANSFORMATION', font: 'Lora', bold: true, fontSize: 32, color: C.white, alignment: 'center', margin: [0, 0, 0, 8] },
-          { text: 'REPORT', font: 'Lora', bold: true, fontSize: 32, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 40] },
+          { text: 'LIFE TRANSFORMATION', font: 'Haskoy', bold: true, fontSize: 32, color: C.white, alignment: 'center', margin: [0, 0, 0, 8] },
+          { text: 'REPORT', font: 'Haskoy', bold: true, fontSize: 32, color: C.white, alignment: 'center', margin: [0, 0, 0, 40] },
           
           // Separator
-          { canvas: [{ type: 'line', x1: 157.5, y1: 0, x2: 357.5, y2: 0, lineWidth: 1, lineColor: C.saffron }], margin: [0, 0, 0, 40] },
+          { canvas: [{ type: 'line', x1: 157.5, y1: 0, x2: 357.5, y2: 0, lineWidth: 1, lineColor: C.white }], margin: [0, 0, 0, 40] },
           
           // For Label
-          { text: 'PREPARED EXCLUSIVELY FOR', font: 'Outfit', fontSize: 9, color: '#a5b4fc', alignment: 'center', letterSpacing: 2, margin: [0, 0, 0, 10] },
+          { text: 'PREPARED EXCLUSIVELY FOR', font: 'Inter', fontSize: 9, color: '#a5b4fc', alignment: 'center', letterSpacing: 2, margin: [0, 0, 0, 10] },
           
           // Name
-          { text: reportName, font: 'Lora', bold: true, fontSize: 24, color: C.white, alignment: 'center', margin: [0, 0, 0, 40] },
+          { text: reportName, font: 'Haskoy', bold: true, fontSize: 24, color: C.white, alignment: 'center', margin: [0, 0, 0, 40] },
         ],
         margin: [0, 40, 0, 10],
       },
@@ -607,9 +603,9 @@ export const GET: APIRoute = async ({ request }) => {
       // Extracted AI Subtitle
       ...(reportSubtitle ? [{
         text: reportSubtitle,
-        font: 'Lora',
+        font: 'Haskoy',
         fontSize: 14,
-        color: C.saffron,
+        color: C.white,
         alignment: 'center',
         margin: [0, 24, 0, 40]
       }] : []),
@@ -622,8 +618,8 @@ export const GET: APIRoute = async ({ request }) => {
               widths: ['*'],
               body: [[{
                 stack: [
-                  { text: 'RAASI', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportRaasi + (getTamil(reportRaasi, 'raasi') ? `\n(${getTamil(reportRaasi, 'raasi')})` : '')), font: 'Lora', fontSize: 8.5, color: C.white, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: 'RAASI', font: 'Inter', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
+                  { text: parseText(reportRaasi + (getTamil(reportRaasi, 'raasi') ? `\n(${getTamil(reportRaasi, 'raasi')})` : '')), font: 'Haskoy', fontSize: 8.5, color: C.white, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navyLight, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
@@ -636,8 +632,8 @@ export const GET: APIRoute = async ({ request }) => {
               widths: ['*'],
               body: [[{
                 stack: [
-                  { text: 'LAGNAM', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportLagnam + (getTamil(reportLagnam, 'raasi') ? `\n(${getTamil(reportLagnam, 'raasi')})` : '')), font: 'Lora', fontSize: 8.5, color: C.white, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: 'LAGNAM', font: 'Inter', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
+                  { text: parseText(reportLagnam + (getTamil(reportLagnam, 'raasi') ? `\n(${getTamil(reportLagnam, 'raasi')})` : '')), font: 'Haskoy', fontSize: 8.5, color: C.white, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navyLight, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
@@ -650,8 +646,8 @@ export const GET: APIRoute = async ({ request }) => {
               widths: ['*'],
               body: [[{
                 stack: [
-                  { text: 'NAKSHATRA', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportNakshatra + (getTamil(reportNakshatra, 'nakshatra') ? `\n(${getTamil(reportNakshatra, 'nakshatra')})` : '')), font: 'Lora', fontSize: 8.5, color: C.white, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: 'NAKSHATRA', font: 'Inter', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
+                  { text: parseText(reportNakshatra + (getTamil(reportNakshatra, 'nakshatra') ? `\n(${getTamil(reportNakshatra, 'nakshatra')})` : '')), font: 'Haskoy', fontSize: 8.5, color: C.white, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navyLight, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
@@ -664,8 +660,8 @@ export const GET: APIRoute = async ({ request }) => {
               widths: ['*'],
               body: [[{
                 stack: [
-                  { text: 'PATHAM', font: 'Outfit', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
-                  { text: parseText(reportPadam ? `${reportPadam}\n(${reportPadam}ம் பாதம்)` : '—\n(—)'), font: 'Lora', fontSize: 8.5, color: C.white, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
+                  { text: 'PATHAM', font: 'Inter', fontSize: 7, color: '#a5b4fc', bold: true, alignment: 'center', letterSpacing: 1 },
+                  { text: parseText(reportPadam ? `${reportPadam}\n(${reportPadam}ம் பாதம்)` : '-\n(-)'), font: 'Haskoy', fontSize: 8.5, color: C.white, bold: true, alignment: 'center', margin: [0, 3, 0, 0] },
                 ],
                 fillColor: C.navyLight, margin: [8, 10, 8, 10], border: [false, false, false, false],
               }]],
@@ -679,58 +675,58 @@ export const GET: APIRoute = async ({ request }) => {
 
       ...(useRealContent ? realContent : [
       // ══ SECTION 1 ═════════════════════════════════════════════════════════
-      sectionHeader(1, 'Astro Foundation', 'Your cosmic blueprint — the stars that shape your inner and outer world'),
+      sectionHeader(1, 'Astro Foundation', 'Your cosmic blueprint - the stars that shape your inner and outer world'),
       table(
-        ['Aspect', ['Raasi — Simbham (', T('சிம்மம்'), ')'], ['Lagnam — Kanni (', T('கன்னி'), ')']],
+        ['Aspect', ['Raasi - Simbham (', T('சிம்மம்'), ')'], ['Lagnam - Kanni (', T('கன்னி'), ')']],
         [
-          [['Sign'], ['Leo — ', T('சிம்மம்')], ['Virgo — ', T('கன்னி')]],
-          [['Symbol'], ['Lion — ', T('சிங்கம்')], ['Virgin / Maiden — ', T('கன்னி')]],
-          [['Element'], ['Fire — ', T('நெருப்பு')], ['Earth — ', T('பூமி')]],
-          [['Ruling Planet'], ['Sun / Surya — ', T('சூரியன்')], ['Mercury / Budhan — ', T('புதன்')]],
-          [['Nakshatra'], ['Puram 4th Padam — ', T('பூரம்'), '\n(Ruled by Venus — Royal star of luxury & creativity)'], ['']],
+          [['Sign'], ['Leo - ', T('சிம்மம்')], ['Virgo - ', T('கன்னி')]],
+          [['Symbol'], ['Lion - ', T('சிங்கம்')], ['Virgin / Maiden - ', T('கன்னி')]],
+          [['Element'], ['Fire - ', T('நெருப்பு')], ['Earth - ', T('பூமி')]],
+          [['Ruling Planet'], ['Sun / Surya - ', T('சூரியன்')], ['Mercury / Budhan - ', T('புதன்')]],
+          [['Nakshatra'], ['Puram 4th Padam - ', T('பூரம்'), '\n(Ruled by Venus - Royal star of luxury & creativity)'], ['']],
           [['Core Nature'], ['Pride, leadership, warmth, generosity, craves recognition'], ['Analytical, perfectionist, critical, anxious, over-thinks everything']],
-          [['Thinking Style'], ['"I deserve this." — feels grand, thinks big, wants to be center'], ['"Is this good enough?" — analyzes every angle, finds every flaw']],
+          [['Thinking Style'], ['"I deserve this." - feels grand, thinks big, wants to be center'], ['"Is this good enough?" - analyzes every angle, finds every flaw']],
         ]
       ),
-      subHead('The Lion and The Maiden — Symbol Connection'),
-      para('The Lion is the king of the jungle. It walks with majesty, demands respect, and expects to be admired. It was BORN to rule. The Maiden is meticulous, careful, humble, always checking, always correcting, always worried about imperfection. Now put them in one body. Inside, Mohanraaj feels like a king — he KNOWS he\'s meant for something great. He has the vision, the warmth, the leadership instinct. Outside, the Maiden makes him second-guess every step, over-analyze every decision, and paralyze himself with perfectionism before the Lion can even roar.'),
-      subHead('Puram 4th Padam — The Royal Star in the House of Emotion'),
-      para('Puram nakshatra is the star of royalty, creativity, and public life. It\'s ruled by Venus, giving Mohanraaj a natural love for beauty, comfort, art, and meaningful connections. The 4th padam falls in Cancer navamsa — adding an emotional, nurturing, family-oriented depth to the royal energy. This means Mohanraaj doesn\'t just want success — he wants success that MEANS something. He wants recognition not for ego but for validation that his life MATTERS.'),
-      quoteBlock('I am a king who forgot his crown — because the perfectionist inside keeps telling him it\'s not polished enough to wear.'),
+      subHead('The Lion and The Maiden - Symbol Connection'),
+      para('The Lion is the king of the jungle. It walks with majesty, demands respect, and expects to be admired. It was BORN to rule. The Maiden is meticulous, careful, humble, always checking, always correcting, always worried about imperfection. Now put them in one body. Inside, Mohanraaj feels like a king - he KNOWS he\'s meant for something great. He has the vision, the warmth, the leadership instinct. Outside, the Maiden makes him second-guess every step, over-analyze every decision, and paralyze himself with perfectionism before the Lion can even roar.'),
+      subHead('Puram 4th Padam - The Royal Star in the House of Emotion'),
+      para('Puram nakshatra is the star of royalty, creativity, and public life. It\'s ruled by Venus, giving Mohanraaj a natural love for beauty, comfort, art, and meaningful connections. The 4th padam falls in Cancer navamsa - adding an emotional, nurturing, family-oriented depth to the royal energy. This means Mohanraaj doesn\'t just want success - he wants success that MEANS something. He wants recognition not for ego but for validation that his life MATTERS.'),
+      quoteBlock('I am a king who forgot his crown - because the perfectionist inside keeps telling him it\'s not polished enough to wear.'),
 
       // ══ SECTION 2 ═════════════════════════════════════════════════════════
       sectionHeader(2, 'Core Combination Truth', 'The painful gap between your inner world and outer appearance'),
       table(
         ['INNER WORLD (Simbha Raasi)', 'OUTER APPROACH (Kanni Lagnam)'],
         [
-          ['Feels like a leader — born to shine, guide, and inspire', 'Appears analytical, careful, self-doubting, overly cautious'],
+          ['Feels like a leader - born to shine, guide, and inspire', 'Appears analytical, careful, self-doubting, overly cautious'],
           ['Craves recognition: "See me. Value me. Admire me."', 'Hides from the spotlight because "I\'m not ready yet"'],
-          ['Thinks big — grand visions, majestic plans', 'Thinks small — micro-details, flaws, risks, what could go wrong'],
-          ['Generous, warm, big-hearted', 'Critical, judgmental — of self first, then others'],
+          ['Thinks big - grand visions, majestic plans', 'Thinks small - micro-details, flaws, risks, what could go wrong'],
+          ['Generous, warm, big-hearted', 'Critical, judgmental - of self first, then others'],
           ['Wants to take bold action and lead', 'Over-analyzes until the moment passes. Then regrets.'],
           ['Needs love, admiration, and emotional warmth', 'Pushes people away with criticism and emotional distance'],
           ['"I am special. I have a gift."', '"Who am I to think I\'m special?"'],
         ]
       ),
       subHead('The Conflict'),
-      para('This is one of the most PAINFUL combinations in the zodiac — because the gap between what Mohanraaj feels inside and what he shows outside is enormous. Inside, the Lion ROARS. He knows he\'s meant for greatness. Outside, the Maiden whispers: "But what if you fail? What if it\'s not perfect?" The Lion wants to leap. The Maiden wants to check the landing spot 47 times first. By the time the analysis is done, the opportunity is gone.'),
-      para('The deepest pain: Mohanraaj is MISUNDERSTOOD. People see the Virgo exterior — quiet, analytical, critical, reserved. They have no idea that inside there is a Lion starving for recognition, love, and a chance to shine.'),
-      quoteBlock('The world sees a quiet analyst. Inside lives a roaring king. The tragedy is not that I can\'t lead — it\'s that I won\'t let myself.'),
+      para('This is one of the most PAINFUL combinations in the zodiac - because the gap between what Mohanraaj feels inside and what he shows outside is enormous. Inside, the Lion ROARS. He knows he\'s meant for greatness. Outside, the Maiden whispers: "But what if you fail? What if it\'s not perfect?" The Lion wants to leap. The Maiden wants to check the landing spot 47 times first. By the time the analysis is done, the opportunity is gone.'),
+      para('The deepest pain: Mohanraaj is MISUNDERSTOOD. People see the Virgo exterior - quiet, analytical, critical, reserved. They have no idea that inside there is a Lion starving for recognition, love, and a chance to shine.'),
+      quoteBlock('The world sees a quiet analyst. Inside lives a roaring king. The tragedy is not that I can\'t lead - it\'s that I won\'t let myself.'),
 
       // ══ SECTION 3 ═════════════════════════════════════════════════════════
       sectionHeader(3, 'Character Profile', 'Your strengths and uncomfortable truths side by side'),
       table(
         ['STRENGTHS', 'SHADOW WEAKNESSES'],
         [
-          ['Natural leader — people WANT to follow him when he steps up', 'Rarely steps up because he\'s waiting to be "ready." Ready never comes.'],
-          ['Brilliant analytical mind — sees details others miss', 'Uses analysis as a disguise for fear. "I\'m still researching" = "I\'m too scared to start."'],
-          ['Deeply creative — Puram gives artistic, aesthetic sensibility', 'Creates in private but never shares because it\'s "not good enough yet."'],
+          ['Natural leader - people WANT to follow him when he steps up', 'Rarely steps up because he\'s waiting to be "ready." Ready never comes.'],
+          ['Brilliant analytical mind - sees details others miss', 'Uses analysis as a disguise for fear. "I\'m still researching" = "I\'m too scared to start."'],
+          ['Deeply creative - Puram gives artistic, aesthetic sensibility', 'Creates in private but never shares because it\'s "not good enough yet."'],
           ['Extremely loyal and devoted to family', 'Devotion becomes suffocation. Expectations become resentment.'],
-          ['High standards — everything he does has quality', 'Standards so high that nothing ever meets them. Perfectionism is his prison.'],
+          ['High standards - everything he does has quality', 'Standards so high that nothing ever meets them. Perfectionism is his prison.'],
           ['Warm and generous when comfortable', 'Cold and critical when stressed. The warmth vanishes.'],
           ['Can see the big picture AND the small details', 'Gets lost in small details and forgets the big picture.'],
           ['Deeply wants to serve and help others', 'Helps everyone except himself. Self-neglect is his default setting.'],
-          ['Resilient — quiet endurance under enormous pressure', 'Endures when he should exit. Stays in destroying situations hoping for better.'],
+          ['Resilient - quiet endurance under enormous pressure', 'Endures when he should exit. Stays in destroying situations hoping for better.'],
         ]
       ),
 
@@ -740,24 +736,24 @@ export const GET: APIRoute = async ({ request }) => {
         ['Life Area', 'How it Shows Up', 'The Hidden Cost'],
         [
           ['Career', 'No clear direction. Leo wants to lead but Virgo says "not yet." Overqualified for current reality.', 'Years pass. Talent wasted. The Lion gets smaller every year it doesn\'t roar.'],
-          ['Money', 'Leo wants luxury. Virgo anxious about every rupee. Earns inconsistently because career has no direction.', 'Financial anxiety is constant. Not because he can\'t earn — but never commits to ONE path.'],
+          ['Money', 'Leo wants luxury. Virgo anxious about every rupee. Earns inconsistently because career has no direction.', 'Financial anxiety is constant. Not because he can\'t earn - but never commits to ONE path.'],
           ['Marriage', 'Leo wants admiration from partner. Virgo makes him critical. Wife feels she can never be good enough.', 'Emotional distance. Wife stops trying. Leo feels unloved. Virgo blames. Nobody wins.'],
           ['Family', 'Deep duty (Puram 4th padam = family-oriented). Does everything for family, expects recognition.', 'Quiet resentment builds. "I sacrifice everything and nobody notices."'],
-          ['Health', 'Virgo rules nervous system. Overthinking = acidity, gut problems, sleep issues, anxiety.', 'The body whispers first, then shouts, then screams. By the time he listens — it\'s screaming.'],
+          ['Health', 'Virgo rules nervous system. Overthinking = acidity, gut problems, sleep issues, anxiety.', 'The body whispers first, then shouts, then screams. By the time he listens - it\'s screaming.'],
           ['Mental', 'Brutal inner critic attacking a sensitive ego. The mind is a courtroom with Mohanraaj always on trial.', 'Mental exhaustion. Loneliness. Nobody sees the Lion. He feels invisible in his own life.'],
         ],
         [60, '*', '*']
       ),
 
       // ══ SECTION 5 ═════════════════════════════════════════════════════════
-      sectionHeader(5, 'Core Life Loop', 'The cycle that keeps you trapped — not fate, not karma, a pattern you feed'),
+      sectionHeader(5, 'Core Life Loop', 'The cycle that keeps you trapped - not fate, not karma, a pattern you feed'),
       table(
         ['#', 'Stage Name', 'What\'s Really Happening'],
         [
           ['(1)', 'The Vision', 'Leo sees a grand possibility. The heart KNOWS this is right. "This could be my moment."'],
           ['(2)', 'The Analysis', 'Virgo takes over. "But what about this risk? Let me make sure it\'s PERFECT before I start."'],
           ['(3)', 'Paralysis', 'Weeks → months. Still planning. Still perfecting. Others who are less talented but more decisive move ahead.'],
-          ['(4)', 'Wounded Pride', '"I\'m better than them — why are THEY succeeding?" Frustration. Jealousy. Humiliation by inaction.'],
+          ['(4)', 'Wounded Pride', '"I\'m better than them - why are THEY succeeding?" Frustration. Jealousy. Humiliation by inaction.'],
           ['(5)', 'Self-Spiral', '"You\'re a fraud. You\'ll never do it." The inner critic destroys what\'s left of the Lion\'s confidence.'],
           ['(6)', 'Retreat', 'Gives up. Goes quiet. Retreats into routine. Until the next vision appears. The graveyard of ideas grows.'],
         ],
@@ -765,16 +761,16 @@ export const GET: APIRoute = async ({ request }) => {
       ),
       subHead('Why this happens for Leo + Virgo + Puram:'),
       para('Leo\'s Sun gives the VISION. Virgo\'s Mercury gives the DOUBT. Puram\'s Venus adds the desire for everything to be BEAUTIFUL and PERFECT before it\'s shared. Together: king-level vision, servant-level self-doubt, and artist-level perfectionism. The vision is grand. The standards are impossible. The gap is where life is stuck.'),
-      quoteBlock('I am not failing because I lack talent. I am failing because I won\'t let imperfect talent see the light of day. My perfectionism is not quality control — it is fear wearing a lab coat.'),
+      quoteBlock('I am not failing because I lack talent. I am failing because I won\'t let imperfect talent see the light of day. My perfectionism is not quality control - it is fear wearing a lab coat.'),
 
       // ══ SECTION 6 ═════════════════════════════════════════════════════════
       sectionHeader(6, 'Karmic Pattern Analysis', 'Behavioral grooves carved so deep they feel like destiny'),
       para('These are not curses from past lives. These are patterns carved so deep they feel like fate.'),
       karmicLoop('4', 'The Lonely Lion', [
         'Want deep connection',
-        'Show Virgo exterior — critical, reserved',
+        'Show Virgo exterior - critical, reserved',
         'People feel judged, they withdraw',
-        '"Nobody gets me" — withdraw further',
+        '"Nobody gets me" - withdraw further',
         'Loneliness deepens',
         'Repeat. The warmth of the Lion is trapped behind the walls of the Maiden.',
       ]),
@@ -803,22 +799,22 @@ export const GET: APIRoute = async ({ request }) => {
       table(
         ['Let Go Of', 'Wrong Belief', 'The Truth', 'Daily Practice'],
         [
-          ['Perfectionism', '"It has to be perfect before I share it."', 'Done at 80% beats perfect at 0%. The world rewards shipped, not polished.', 'Ship ONE thing today — good enough, not perfect.'],
+          ['Perfectionism', '"It has to be perfect before I share it."', 'Done at 80% beats perfect at 0%. The world rewards shipped, not polished.', 'Ship ONE thing today - good enough, not perfect.'],
           ['Needing Approval', '"If nobody notices, it wasn\'t worth doing."', 'Worth is not measured by applause.', 'Do one valuable thing without telling anyone.'],
           ['Self-Criticism', '"I\'m not good enough. I\'m a fraud."', 'The inner critic is paralyzing, not protecting.', 'Write ONE thing you did well tonight.'],
           ['Over-Analysis', '"I need more data before deciding."', 'After 70% information, more analysis is just delay.', '10-minute cap: research, then DECIDE.'],
           ['Criticizing Others', '"I\'m helping them by pointing out mistakes."', 'Unsolicited criticism pushes people away.', 'For every flaw you see, say one strength out loud.'],
-          ['Hiding the Lion', '"People will judge me if I show who I really am."', 'Show the Lion — people will see warmth and heart.', 'Once per day: one genuine warm expression.'],
+          ['Hiding the Lion', '"People will judge me if I show who I really am."', 'Show the Lion - people will see warmth and heart.', 'Once per day: one genuine warm expression.'],
           ['Comparing to Others', '"They\'re less talented but more successful."', 'They\'re not more talented. They\'re more DECISIVE.', 'Compete only with yesterday\'s version of yourself.'],
         ],
         [60, 85, 85, '*']
       ),
-      quoteBlock('The Lion doesn\'t need a perfect mane to roar. It just needs to open its mouth. Mohanraaj — open yours.'),
+      quoteBlock('The Lion doesn\'t need a perfect mane to roar. It just needs to open its mouth. Mohanraaj - open yours.'),
 
       // ══ SECTION 9 ═════════════════════════════════════════════════════════
-      sectionHeader(9, 'React Mode vs Create Mode', 'Where you are now — and where you must go'),
+      sectionHeader(9, 'React Mode vs Create Mode', 'Where you are now - and where you must go'),
       table(
-        ['REACT MODE — Current State', 'CREATE MODE — Required State'],
+        ['REACT MODE - Current State', 'CREATE MODE - Required State'],
         [
           ['Waits for perfect conditions to start', 'Starts in imperfect conditions. Perfects along the way.'],
           ['Needs validation before acting', 'Acts first. Validation comes from results, not applause.'],
@@ -828,12 +824,12 @@ export const GET: APIRoute = async ({ request }) => {
           ['Compares to others and feels bitter', 'Competes only with yesterday\'s version of himself.'],
         ]
       ),
-      para('Virgo lagnam is the most analytically REACTIVE sign. Leo raasi COULD be the engine of action — Lions are born leaders and doers. But the Virgo gatekeeper won\'t let the Lion out until every variable is checked. The transformation: OPEN THE GATE. Let the Lion out. Messy, imperfect, unpolished. The world needs his roar, not his analysis.'),
+      para('Virgo lagnam is the most analytically REACTIVE sign. Leo raasi COULD be the engine of action - Lions are born leaders and doers. But the Virgo gatekeeper won\'t let the Lion out until every variable is checked. The transformation: OPEN THE GATE. Let the Lion out. Messy, imperfect, unpolished. The world needs his roar, not his analysis.'),
 
       // ══ SECTION 10 ════════════════════════════════════════════════════════
       sectionHeader(10, 'Complete Solution System', 'The operating system to break every karmic loop'),
 
-      subLabel('A', 'Mind Rules — Non-Negotiable'),
+      subLabel('A', 'Mind Rules - Non-Negotiable'),
       table(
         ['#', 'Rule'],
         [
@@ -856,7 +852,7 @@ export const GET: APIRoute = async ({ request }) => {
           ['9:00 AM–1:00 PM', 'TASK 1: The SCARY task. Do it FIRST.', 'Hardest action while willpower is highest. Once done, the day is already a win.'],
           ['2:00–4:00 PM', 'TASK 2: Income / career progress.', 'Direction. Movement. Money follows action, not analysis.'],
           ['4:00–5:30 PM', 'TASK 3: Creative / share something publicly.', 'The Lion needs a stage. Even a small one.'],
-          ['7:00–7:30 PM', 'Family time — ONE kind word. No criticism.', 'Retrain the Virgo eye to see beauty, not flaws.'],
+          ['7:00–7:30 PM', 'Family time - ONE kind word. No criticism.', 'Retrain the Virgo eye to see beauty, not flaws.'],
           ['9:00–9:15 PM', 'Night review: What did I SHIP? What was I kind?', 'Track courage, not perfection.'],
           ['10:00 PM', 'Sleep. No phone after 9:30.', 'The anxious mind NEEDS shutdown time.'],
         ],
@@ -867,15 +863,15 @@ export const GET: APIRoute = async ({ request }) => {
       infoBox('Current: No clear income path → no career commitment → earns inconsistently → financial anxiety.\n\nFix: COMMIT to one income path for 90 days. Stop researching alternatives. Pick the best option TODAY and go deep.\n\nPuram\'s Gift (Venus): Natural ability with aesthetics, creativity, people skills, luxury markets. Fields: design, consulting, content, hospitality, wellness, art, coaching, branding.\n\nDaily Rule: ONE income action per day. "Did I move closer to money today?" If yes, the day counts.'),
 
       subLabel('D', 'Overthinking Control'),
-      infoBox('The 10-minute cap: Set a timer. Research for max 10 minutes. When it rings: DECIDE. Even if imperfect. Adjust tomorrow.\n\nThe body hack: When the Virgo spiral starts — STAND UP. Walk 5 minutes. Drink water. The spiral lives in stillness. Movement breaks it.\n\nThe truth mantra: "This thought is not a fact. It\'s just the Maiden worrying. The Lion has work to do."'),
+      infoBox('The 10-minute cap: Set a timer. Research for max 10 minutes. When it rings: DECIDE. Even if imperfect. Adjust tomorrow.\n\nThe body hack: When the Virgo spiral starts - STAND UP. Walk 5 minutes. Drink water. The spiral lives in stillness. Movement breaks it.\n\nThe truth mantra: "This thought is not a fact. It\'s just the Maiden worrying. The Lion has work to do."'),
 
       subLabel('E', 'Loneliness Fix'),
-      infoBox('The cause: Shows Virgo exterior (critical, reserved) while Leo inside starves for connection.\n\nThe fix: Show the Lion. Once per day — compliment someone genuinely, share something personal, laugh loudly, express affection directly. Each warm act is a crack in the Virgo wall.\n\nThe rule: "If I want warmth from others, I must radiate it first. The Sun doesn\'t wait for someone else to shine."'),
+      infoBox('The cause: Shows Virgo exterior (critical, reserved) while Leo inside starves for connection.\n\nThe fix: Show the Lion. Once per day - compliment someone genuinely, share something personal, laugh loudly, express affection directly. Each warm act is a crack in the Virgo wall.\n\nThe rule: "If I want warmth from others, I must radiate it first. The Sun doesn\'t wait for someone else to shine."'),
 
       // ══ SECTION 11 ════════════════════════════════════════════════════════
       sectionHeader(11, 'How to Break the Karmic Pattern', '5 steps to permanently end the loops'),
       numberedAction(1, 'Recognize the Maiden taking over',
-        'When you hear: "I need more time, it\'s not ready, what if it fails, let me check one more thing" — say OUT LOUD: "The Maiden is worried. But the Lion is ready. I\'m going." Then act within 60 seconds.'),
+        'When you hear: "I need more time, it\'s not ready, what if it fails, let me check one more thing" - say OUT LOUD: "The Maiden is worried. But the Lion is ready. I\'m going." Then act within 60 seconds.'),
       numberedAction(2, 'Ship something imperfect every day',
         'Every day, put something into the world that is not 100%. A message. A post. An email. A conversation. A decision. After 30 days: imperfect shipped > perfect imagined.'),
       numberedAction(3, 'Stop tracking who noticed',
@@ -887,23 +883,23 @@ export const GET: APIRoute = async ({ request }) => {
       quoteBlock('My karma breaks the day I stop waiting to be perfect and start choosing to be present. The Sun doesn\'t apologize for its spots. It just shines.'),
 
       // ══ SECTION 12 ════════════════════════════════════════════════════════
-      sectionHeader(12, 'Identity Shift', 'The old identity to bury — the new one to build daily'),
+      sectionHeader(12, 'Identity Shift', 'The old identity to bury - the new one to build daily'),
       table(
-        ['OLD IDENTITY — Let This Die', 'NEW IDENTITY — Build This Daily'],
+        ['OLD IDENTITY - Let This Die', 'NEW IDENTITY - Build This Daily'],
         [
           ['"I\'m not ready yet"', '"I start before I\'m ready. Readiness is an illusion."'],
           ['"Nobody sees my talent"', '"I haven\'t shown my talent. That\'s on me, not them."'],
           ['"It has to be perfect"', '"Done and shared beats perfect and hidden. Every time."'],
           ['"I\'m a critic who sees what\'s wrong"', '"I\'m a leader who sees what\'s possible."'],
-          ['"I\'m misunderstood — nobody gets me"', '"I haven\'t shown the real me. When I do, the right people will see."'],
+          ['"I\'m misunderstood - nobody gets me"', '"I haven\'t shown the real me. When I do, the right people will see."'],
           ['"I need recognition to feel worthy"', '"My worth comes from what I create, not what others applaud."'],
-          ['"I\'m an analyst"', '"I\'m a king who uses analysis as a tool — not a cage."'],
+          ['"I\'m an analyst"', '"I\'m a king who uses analysis as a tool - not a cage."'],
           ['"I\'m a failure"', '"I\'m a man of immense potential who is finally choosing to ACT."'],
         ]
       ),
 
       // ══ SECTION 13 ════════════════════════════════════════════════════════
-      sectionHeader(13, 'Final Truths', 'Read these every morning — before the Maiden wakes up'),
+      sectionHeader(13, 'Final Truths', 'Read these every morning - before the Maiden wakes up'),
       para('Read these while the Lion is still in charge.', { bold: true, color: C.navy }),
       table(
         ['#', 'Truth'],
@@ -917,7 +913,7 @@ export const GET: APIRoute = async ({ request }) => {
           ['7', 'Criticism without kindness is cruelty with an alibi. I will lead with warmth.'],
           ['8', 'The Sun doesn\'t wait for a cloudless sky. It rises every morning regardless. I am the Sun. I rise today.'],
           ['9', 'My body is screaming because my feelings have been whispering for too long.'],
-          ['10', 'Today I choose to be imperfect, visible, and alive — rather than perfect, hidden, and dying slowly.'],
+          ['10', 'Today I choose to be imperfect, visible, and alive - rather than perfect, hidden, and dying slowly.'],
         ],
         [32, '*']
       ),
@@ -928,7 +924,7 @@ export const GET: APIRoute = async ({ request }) => {
         columns: [
           {
             stack: [
-              subHead('MORNING & WORK EXECUTION', C.saffron),
+              subHead('MORNING & WORK EXECUTION', C.white),
               checklist([
                 'Wrote down top 3 priorities',
                 'Said affirmation: "The Lion leads today"',
@@ -947,12 +943,12 @@ export const GET: APIRoute = async ({ request }) => {
           { width: 16, text: '' },
           {
             stack: [
-              subHead('EVENING & MINDSET PROTECTION', C.saffron),
+              subHead('EVENING & MINDSET PROTECTION', C.white),
               checklist([
-                'Said one kind word to wife/family — no criticism',
+                'Said one kind word to wife/family - no criticism',
                 'Quality family time (30 min, phone off)',
                 'Wrote ONE thing I did well today',
-                'Stopped analysis in 10 min — then decided',
+                'Stopped analysis in 10 min - then decided',
                 'Did NOT seek validation before acting',
                 'Showed warmth to someone',
                 'Replaced one criticism with one encouragement',
@@ -967,7 +963,7 @@ export const GET: APIRoute = async ({ request }) => {
         margin: [0, 0, 0, 16],
       },
 
-      // ══ CLOSING PANEL — built as a table so content is guaranteed inside the box
+      // ══ CLOSING PANEL - built as a table so content is guaranteed inside the box
       {
         table: {
           widths: ['*'],
@@ -975,17 +971,17 @@ export const GET: APIRoute = async ({ request }) => {
             {
               stack: [
                 // Top gold accent bar via canvas
-                { canvas: [{ type: 'rect', x: 0, y: 0, w: 435, h: 3, color: C.saffron }], margin: [0, 0, 0, 12] },
-                { text: 'MOHANRAAJ — REMEMBER THIS EVERY SINGLE DAY', font: 'Lora', bold: true, fontSize: 12, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 8] },
+                { canvas: [{ type: 'rect', x: 0, y: 0, w: 435, h: 3, color: C.white }], margin: [0, 0, 0, 12] },
+                { text: 'MOHANRAAJ - REMEMBER THIS EVERY SINGLE DAY', font: 'Haskoy', bold: true, fontSize: 12, color: C.white, alignment: 'center', margin: [0, 0, 0, 8] },
                 { canvas: [{ type: 'line', x1: 40, y1: 0, x2: 435, y2: 0, lineWidth: 0.5, lineColor: '#4338ca' }], margin: [0, 0, 0, 10] },
-                { text: 'I am not a perfectionist. I am a king who forgot his crown.\nThe crown was never missing. I was just too busy polishing it to put it on.', font: 'Outfit', fontSize: 10, color: '#e0e7ff', alignment: 'center', lineHeight: 1.55, margin: [0, 0, 0, 12] },
-                { text: '"The Sun does not wait for a cloudless sky. It rises every morning. I am the Sun."', font: 'Lora', italics: true, fontSize: 9.5, color: '#a5b4fc', alignment: 'center', margin: [0, 0, 0, 4] },
-                { text: '"Done and shared beats perfect and hidden. Every single time."', font: 'Lora', italics: true, fontSize: 9.5, color: '#a5b4fc', alignment: 'center', margin: [0, 0, 0, 4] },
-                { text: '"My life is not what I analyze — it\'s what I create."', font: 'Lora', italics: true, fontSize: 9.5, color: '#a5b4fc', alignment: 'center', margin: [0, 0, 0, 12] },
+                { text: 'I am not a perfectionist. I am a king who forgot his crown.\nThe crown was never missing. I was just too busy polishing it to put it on.', font: 'Inter', fontSize: 10, color: '#e0e7ff', alignment: 'center', lineHeight: 1.55, margin: [0, 0, 0, 12] },
+                { text: '"The Sun does not wait for a cloudless sky. It rises every morning. I am the Sun."', font: 'Haskoy', italics: true, fontSize: 9.5, color: '#a5b4fc', alignment: 'center', margin: [0, 0, 0, 4] },
+                { text: '"Done and shared beats perfect and hidden. Every single time."', font: 'Haskoy', italics: true, fontSize: 9.5, color: '#a5b4fc', alignment: 'center', margin: [0, 0, 0, 4] },
+                { text: '"My life is not what I analyze - it\'s what I create."', font: 'Haskoy', italics: true, fontSize: 9.5, color: '#a5b4fc', alignment: 'center', margin: [0, 0, 0, 12] },
                 { canvas: [{ type: 'line', x1: 40, y1: 0, x2: 435, y2: 0, lineWidth: 0.5, lineColor: '#4338ca' }], margin: [0, 0, 0, 10] },
-                { text: 'THE LION LEADS  |  THE MAIDEN ADVISES  |  THE SUN RISES', font: 'Lora', bold: true, fontSize: 11, color: C.saffron, alignment: 'center', margin: [0, 0, 0, 10] },
+                { text: 'THE LION LEADS  |  THE MAIDEN ADVISES  |  THE SUN RISES', font: 'Haskoy', bold: true, fontSize: 11, color: C.white, alignment: 'center', margin: [0, 0, 0, 10] },
                 // Bottom gold accent bar
-                { canvas: [{ type: 'rect', x: 0, y: 0, w: 435, h: 3, color: C.saffron }], margin: [0, 0, 0, 0] },
+                { canvas: [{ type: 'rect', x: 0, y: 0, w: 435, h: 3, color: C.white }], margin: [0, 0, 0, 0] },
               ],
               fillColor: C.navy,
               margin: [20, 12, 20, 12],
@@ -1021,7 +1017,7 @@ export const GET: APIRoute = async ({ request }) => {
             },
             {
               canvas: [
-                { type: 'rect', x: 20, y: 20, w: 595.28 - 40, h: 841.89 - 40, lineWidth: 1, lineColor: C.saffron }
+                { type: 'rect', x: 20, y: 20, w: 595.28 - 40, h: 841.89 - 40, lineWidth: 1, lineColor: C.white }
               ]
             }
           ];
@@ -1030,13 +1026,13 @@ export const GET: APIRoute = async ({ request }) => {
       },
 
       header: (currentPage: number, pageCount: number) => currentPage === 1 ? null : ({
-        // margin: [left, top, right, bottom] — positions the header block
+        // margin: [left, top, right, bottom] - positions the header block
         margin: [40, 20, 40, 0],
         stack: [
           {
             columns: [
-              { text: 'Ask Astro Raja  |  Life Transformation Report', font: 'Outfit', fontSize: 8, color: C.saffron, bold: true, width: '*' },
-              { text: reportName + '  |  Personalized Report', font: 'Outfit', fontSize: 8, color: C.muted, alignment: 'right', width: 'auto' },
+              { text: 'Ask Astro Raja  |  Life Transformation Report', font: 'Inter', fontSize: 8, color: C.white, bold: true, width: '*' },
+              { text: reportName + '  |  Personalized Report', font: 'Inter', fontSize: 8, color: C.muted, alignment: 'right', width: 'auto' },
             ],
             margin: [0, 0, 0, 6],
           },
@@ -1058,18 +1054,18 @@ export const GET: APIRoute = async ({ request }) => {
                 text: useRealContent
                   ? reportRaasi + '  ·  ' + reportLagnam + '  ·  ' + reportNakshatra + '  |  Confidential & Personalized'
                   : [
-                    { text: 'Simbha (', font: 'Outfit', fontSize: 7.5, color: C.muted },
+                    { text: 'Simbha (', font: 'Inter', fontSize: 7.5, color: C.muted },
                     T('சிம்மம்', { fontSize: 7.5, color: C.muted }),
-                    { text: ')  Kanni (', font: 'Outfit', fontSize: 7.5, color: C.muted },
+                    { text: ')  Kanni (', font: 'Inter', fontSize: 7.5, color: C.muted },
                     T('கன்னி', { fontSize: 7.5, color: C.muted }),
-                    { text: ')  Puram (', font: 'Outfit', fontSize: 7.5, color: C.muted },
+                    { text: ')  Puram (', font: 'Inter', fontSize: 7.5, color: C.muted },
                     T('பூரம்', { fontSize: 7.5, color: C.muted }),
-                    { text: ')  |  Confidential & Personalized', font: 'Outfit', fontSize: 7.5, color: C.muted },
+                    { text: ')  |  Confidential & Personalized', font: 'Inter', fontSize: 7.5, color: C.muted },
                   ],
-              font: 'Outfit', fontSize: 7.5, color: C.muted,
+              font: 'Inter', fontSize: 7.5, color: C.muted,
               width: '*',
               },
-              { text: currentPage + ' / ' + pageCount, font: 'Outfit', fontSize: 7.5, color: C.muted, alignment: 'right', width: 40 },
+              { text: currentPage + ' / ' + pageCount, font: 'Inter', fontSize: 7.5, color: C.muted, alignment: 'right', width: 40 },
             ],
           },
         ],
@@ -1078,7 +1074,7 @@ export const GET: APIRoute = async ({ request }) => {
       content,
 
       defaultStyle: {
-        font: 'Outfit',
+        font: 'Inter',
         fontSize: 9.5,
         lineHeight: 1.4,
         color: C.text,
