@@ -6,10 +6,16 @@ export const POST: APIRoute = async ({ request }) => {
     const data = await request.json();
     const countryCode = data.countryCode || 'UNKNOWN';
 
+    // Check if Production Environment
+    const isProduction = (import.meta.env.IS_PRODUCTION || process.env.IS_PRODUCTION) === 'true';
+
     // Pricing Logic
-    // Read amounts from environment variables, fallback to defaults
-    const priceGlobal = parseInt(import.meta.env.RAZORPAY_PRICE_GLOBAL || process.env.RAZORPAY_PRICE_GLOBAL || '999');
-    const priceIndia = parseInt(import.meta.env.RAZORPAY_PRICE_INDIA || process.env.RAZORPAY_PRICE_INDIA || '249');
+    // Read amounts from environment variables based on environment, fallback to defaults
+    const priceGlobalRaw = isProduction ? (import.meta.env.RAZORPAY_PROD_PRICE_GLOBAL || process.env.RAZORPAY_PROD_PRICE_GLOBAL) : (import.meta.env.RAZORPAY_DEV_PRICE_GLOBAL || process.env.RAZORPAY_DEV_PRICE_GLOBAL);
+    const priceIndiaRaw = isProduction ? (import.meta.env.RAZORPAY_PROD_PRICE_INDIA || process.env.RAZORPAY_PROD_PRICE_INDIA) : (import.meta.env.RAZORPAY_DEV_PRICE_INDIA || process.env.RAZORPAY_DEV_PRICE_INDIA);
+    
+    const priceGlobal = parseInt(priceGlobalRaw || '999');
+    const priceIndia = parseInt(priceIndiaRaw || '249');
     
     // INR price
     let amountInRupees = priceGlobal;
@@ -19,8 +25,8 @@ export const POST: APIRoute = async ({ request }) => {
     // Razorpay expects the amount in the smallest currency sub-unit (paise for INR).
     const amountInPaise = amountInRupees * 100;
 
-    const keyId = import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID;
-    const keySecret = import.meta.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET;
+    const keyId = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_ID || process.env.RAZORPAY_PROD_KEY_ID) : (import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID);
+    const keySecret = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_SECRET || process.env.RAZORPAY_PROD_KEY_SECRET) : (import.meta.env.RAZORPAY_DEV_KEY_SECRET || process.env.RAZORPAY_DEV_KEY_SECRET);
 
     if (!keyId || !keySecret) {
       // Return a 500 error if keys are missing
