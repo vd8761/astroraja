@@ -50,6 +50,13 @@ const EXEC_PARAS = [
   'Prepared for your review. But remember - without taking action, it is impossible to achieve meaningful change.',
 ];
 
+const DISCLAIMER =
+  'This astrology report is generated using advanced AI and astrological algorithms based on your birth details. ' +
+  'It is intended for entertainment, spiritual, and personal growth purposes only. Astrology is an ancient art, ' +
+  'not an exact science, and should never replace professional medical, financial, or legal advice. By reading ' +
+  'this report, you acknowledge that you have full free will. Any choices, actions, or major life decisions you ' +
+  'make based on this content are entirely your own responsibility.';
+
 export class BaseReport {
   protected data: ReportData;
   protected nameTitle: string;
@@ -227,6 +234,15 @@ export class BaseReport {
     ];
   }
 
+  protected buildDisclaimer(): any[] {
+    return [
+      { text: 'DISCLAIMER', font: 'Outfit', bold: true, fontSize: 26.5, color: C.indigo, alignment: 'center', characterSpacing: 1.5, lineHeight: 1.12, margin: [0, 170, 0, 18] },
+      { ...this.goldRule(250, 0), margin: [132.5, 0, 132.5, 0] },
+      { text: DISCLAIMER, font: 'Inter', fontSize: 10.5, color: C.text, lineHeight: 1.7, alignment: 'center', margin: [60, 30, 60, 0] },
+      { text: '', pageBreak: 'after' },
+    ];
+  }
+
   protected renderOne(b: Block): any {
     switch (b.type) {
       case 'para': return this.para(b.text);
@@ -339,6 +355,7 @@ export class BaseReport {
     const content = [
       ...this.buildCover(tagline),
       ...this.buildVivekananda(),
+      ...this.buildDisclaimer(),
       ...this.buildMessage(),
       ...this.renderBlocks(blocks),
     ];
