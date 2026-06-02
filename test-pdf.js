@@ -8,7 +8,7 @@ import sql from './src/lib/db.js';
 
 async function testPdf() {
   try {
-    const reportId = 11; // Based on DB records? Wait, let's just fetch the last report.
+    const reportId = '148df440-f7fb-4715-b79e-71a2d5a433f8'; // Based on DB records? Wait, let's just fetch the last report.
     const rows = await sql`
       SELECT r.id, r.language, r.raw_markdown_report, p.name, p.raasi, p.lagnam, p.nakshatra
       FROM reports r
