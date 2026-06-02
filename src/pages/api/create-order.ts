@@ -51,8 +51,8 @@ export const POST: APIRoute = async ({ request }) => {
     // Razorpay expects the amount in the smallest currency sub-unit (paise for INR).
     const amountInPaise = amountInRupees * 100;
 
-    const keyId = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_ID || process.env.RAZORPAY_PROD_KEY_ID) : (import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID);
-    const keySecret = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_SECRET || process.env.RAZORPAY_PROD_KEY_SECRET) : (import.meta.env.RAZORPAY_DEV_KEY_SECRET || process.env.RAZORPAY_DEV_KEY_SECRET);
+    const keyId = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_ID || process.env.RAZORPAY_PROD_KEY_ID) : (import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID || import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID);
+    const keySecret = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_SECRET || process.env.RAZORPAY_PROD_KEY_SECRET) : (import.meta.env.RAZORPAY_DEV_KEY_SECRET || process.env.RAZORPAY_DEV_KEY_SECRET || import.meta.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET);
 
     if (!keyId || !keySecret) {
       // Return a 500 error if keys are missing

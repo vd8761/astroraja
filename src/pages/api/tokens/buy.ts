@@ -14,8 +14,8 @@ export const POST: APIRoute = async ({ request }) => {
     const isProduction = (import.meta.env.IS_PRODUCTION || process.env.IS_PRODUCTION) === 'true';
 
     // 2. Initialize Razorpay
-    const key_id = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_ID || process.env.RAZORPAY_PROD_KEY_ID) : (import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID);
-    const key_secret = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_SECRET || process.env.RAZORPAY_PROD_KEY_SECRET) : (import.meta.env.RAZORPAY_DEV_KEY_SECRET || process.env.RAZORPAY_DEV_KEY_SECRET);
+    const key_id = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_ID || process.env.RAZORPAY_PROD_KEY_ID) : (import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID || import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID);
+    const key_secret = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_SECRET || process.env.RAZORPAY_PROD_KEY_SECRET) : (import.meta.env.RAZORPAY_DEV_KEY_SECRET || process.env.RAZORPAY_DEV_KEY_SECRET || import.meta.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET);
     
     if (!key_id || !key_secret) {
       return new Response(JSON.stringify({ error: 'Razorpay keys not configured' }), { status: 500 });
