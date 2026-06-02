@@ -15,10 +15,7 @@ export const GET: APIRoute = async ({ request }) => {
     if (!reportId) return json({ error: 'report_id is required' }, 400);
 
     // ── Fetch the completed report + profile ──────────────────────────────
-    const { neon } = await import('@neondatabase/serverless');
-    const dbUrl = process.env.DATABASE_URL || (import.meta as any).env?.DATABASE_URL;
-    if (!dbUrl) throw new Error('DATABASE_URL not set');
-    const sql = neon(dbUrl);
+    const { default: sql } = await import('../../lib/db');
 
     const rows = (await sql`
       SELECT r.id, r.raw_markdown_report, p.name, p.raasi, p.lagnam, p.nakshatra, p.padam
@@ -46,7 +43,7 @@ export const GET: APIRoute = async ({ request }) => {
     const pdfBuffer = await report.toBuffer();
 
     const safeName = String(row.name || 'Report').replace(/[^a-z0-9]/gi, '_');
-    return new Response(pdfBuffer, {
+    return new Response(new Uint8Array(pdfBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

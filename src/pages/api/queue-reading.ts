@@ -41,18 +41,39 @@ export const POST: APIRoute = async ({ request }) => {
         user_id = existing[0].id;
         await sql`UPDATE users SET email = ${data.email}, country_code = ${data.countryCode} WHERE id = ${user_id}`;
       } else {
-        const inserted = await sql`INSERT INTO users (mobile_number, country_code, email, referral_code, referred_by) VALUES (${data.mobile}, ${data.countryCode}, ${data.email}, ${newRefCode}, ${referredById}) RETURNING id`;
-        user_id = inserted[0].id;
+        // Fallback: check if they already registered with this email
+        const existingEmail = await sql`SELECT id FROM users WHERE email = ${data.email} LIMIT 1`;
+        if (existingEmail.length > 0) {
+          user_id = existingEmail[0].id;
+          await sql`UPDATE users SET mobile_number = ${data.mobile}, country_code = ${data.countryCode} WHERE id = ${user_id}`;
+        } else {
+          const inserted = await sql`
+            INSERT INTO users (mobile_number, country_code, email, referral_code, referred_by) 
+            VALUES (${data.mobile}, ${data.countryCode}, ${data.email}, ${newRefCode}, ${referredById}) 
+            RETURNING id
+          `;
+          user_id = inserted[0].id;
+        }
       }
     } else {
-      const inserted = await sql`INSERT INTO users (email, referral_code, referred_by) VALUES (${data.email}, ${newRefCode}, ${referredById}) RETURNING id`;
-      user_id = inserted[0].id;
+      const existing = await sql`SELECT id FROM users WHERE email = ${data.email} LIMIT 1`;
+      if (existing.length > 0) {
+        user_id = existing[0].id;
+      } else {
+        const inserted = await sql`
+          INSERT INTO users (email, referral_code, referred_by) 
+          VALUES (${data.email}, ${newRefCode}, ${referredById}) 
+          RETURNING id
+        `;
+        user_id = inserted[0].id;
+      }
     }
 
     // 2. Create Profile
+    const relationship = data.relationship || 'Self';
     const profiles = await sql`
       INSERT INTO profiles (user_id, name, raasi, lagnam, nakshatra, padam, relationship)
-      VALUES (${user_id}, ${data.name}, ${data.raasi}, ${data.lagnam}, ${data.nakshatra || null}, ${data.padam || null}, 'Self')
+      VALUES (${user_id}, ${data.name}, ${data.raasi}, ${data.lagnam}, ${data.nakshatra || null}, ${data.padam || null}, ${relationship})
       RETURNING id
     `;
     const profile_id = profiles[0].id;
@@ -88,15 +109,62 @@ export const POST: APIRoute = async ({ request }) => {
       }
     }
 
-    // 4. Send Job to QStash
+    // 4. Send Job to QStash (Bypass in local development to avoid QStash delivery failure)
     const baseUrl = new URL(request.url).origin;
     const processUrl = `${baseUrl}/api/process-reading`;
-    
-    await qstash.publishJSON({
-      url: processUrl,
-      body: { report_id },
-      retries: 3
-    });
+    const isLocalDev = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1') || baseUrl.includes('10.') || baseUrl.includes('192.168.');
+
+    if (isLocalDev) {
+      console.log(`[Queue Reading] 🏠 Local environment detected (${baseUrl}). Running report generation locally in background...`);
+      (async () => {
+        try {
+          const { POST: processReading } = await import('./process-reading');
+          const fakeReq = new Request(processUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ report_id }),
+          });
+          const res = await processReading({ request: fakeReq } as any);
+          if (!res.ok) {
+            console.error('[Queue Reading] ❌ Local process-reading fallback failed with status:', res.status, await res.text());
+          }
+        } catch (localErr) {
+          console.error('[Queue Reading] ❌ Local process-reading fallback error:', localErr);
+        }
+      })();
+    } else {
+      try {
+        await qstash.publishJSON({
+          url: processUrl,
+          body: { report_id },
+          retries: 3
+        });
+      } catch (qstashError: any) {
+        console.warn('[Queue Reading] ⚠️ QStash publish failed. Running report generation locally in the background:', qstashError.message || qstashError);
+        
+        // Async trigger of local process-reading in the background
+        (async () => {
+          try {
+            const { POST: processReading } = await import('./process-reading');
+            const fakeReq = new Request(processUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ report_id }),
+            });
+            const res = await processReading({ request: fakeReq } as any);
+            if (!res.ok) {
+              console.error('[Queue Reading] ❌ Local process-reading fallback failed with status:', res.status, await res.text());
+            }
+          } catch (localErr) {
+            console.error('[Queue Reading] ❌ Local process-reading fallback error:', localErr);
+          }
+        })();
+      }
+    }
 
     return new Response(JSON.stringify({ success: true, queued: true, report_id }), { 
       status: 200,

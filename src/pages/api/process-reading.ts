@@ -71,6 +71,8 @@ CRITICAL INSTRUCTION: Output the final report as raw Markdown text. You MUST com
 You must be highly concise, deeply impactful, and synthesize the information beautifully. Compress the text, summarize details, and avoid unnecessary repetition or overly long paragraphs. Keep it tight and highly focused. 
 DO NOT STOP until Section 12 is fully generated.
 
+CRITICAL ASSUMPTION INSTRUCTION: Under no circumstances should you ask the user any questions, request clarifications, or request additional inputs (such as birth Padam, exact time, or city details). If any details are missing, marked as "Don't know", or left blank, you MUST automatically make a reasonable astrological assumption or use a default (e.g. if Nakshatra Padam is unknown, default to Padam 1 or analyze generally), and proceed to generate the full, complete report immediately.
+
 CRITICAL LANGUAGE INSTRUCTION: The user has requested the report in ${report.language || 'English'}. You MUST output the ENTIRE document (including all headings, tables, labels, advice, and paragraphs) flawlessly in ${report.language || 'English'}. If Tamil is requested, ensure the Tamil translation is deeply contextual, natural, and preserves the intense psychological tone without losing any meaning.
 
 CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables required in the sections. Use Markdown H1 (#) for the main title, H2 (##) for sections, and blockquotes (>) for quotes.`;
@@ -149,17 +151,35 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
       const requestUrl = new URL(request.url);
       const qstashUrl = `${process.env.QSTASH_URL}/v2/publish/${requestUrl.origin}/api/process-reading`;
       
-      const qstashRes = await fetch(qstashUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.QSTASH_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ report_id }),
-      });
+      try {
+        const qstashRes = await fetch(qstashUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.QSTASH_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ report_id }),
+        });
 
-      if (!qstashRes.ok) {
-        throw new Error('Failed to re-queue chunk to QStash: ' + await qstashRes.text());
+        if (!qstashRes.ok) {
+          throw new Error('Failed to re-queue chunk to QStash: ' + await qstashRes.text());
+        }
+      } catch (qstashError: any) {
+        console.warn('QStash re-queue failed, executing continuation locally:', qstashError.message || qstashError);
+        
+        // Run continuation locally in background
+        (async () => {
+          try {
+            const fakeReq = new Request(request.url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ report_id })
+            });
+            await POST({ request: fakeReq } as any);
+          } catch (recurseErr) {
+            console.error('Recursive local processing continuation failed:', recurseErr);
+          }
+        })();
       }
 
       // Return 200 immediately so this Vercel function invocation completes quickly!

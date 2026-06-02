@@ -4,7 +4,33 @@ import Razorpay from 'razorpay';
 export const POST: APIRoute = async ({ request }) => {
   try {
     const data = await request.json();
-    const countryCode = data.countryCode || 'UNKNOWN';
+    
+    // Extract Client IP
+    const ipHeader = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '';
+    const clientIp = ipHeader.split(',')[0].trim();
+    
+    let detectedCountry = 'UNKNOWN';
+    
+    // 1. Try Vercel country header first (standard for Vercel deployments)
+    const vercelCountry = request.headers.get('x-vercel-ip-country');
+    if (vercelCountry) {
+      detectedCountry = vercelCountry.toUpperCase();
+    }
+    
+    // 2. Query geolocation API if it's a public IP
+    if (detectedCountry === 'UNKNOWN' && clientIp && clientIp !== '127.0.0.1' && clientIp !== '::1' && !clientIp.startsWith('10.') && !clientIp.startsWith('192.168.')) {
+      try {
+        const geoRes = await fetch(`https://ipapi.co/${clientIp}/json/`).then(res => res.json());
+        if (geoRes && geoRes.country_code) {
+          detectedCountry = geoRes.country_code.toUpperCase();
+        }
+      } catch (e) {
+        console.error(`Backend GeoIP lookup failed for IP ${clientIp}:`, e);
+      }
+    }
+    
+    // 3. Fall back to body parameter, or default to IN
+    const finalCountryCode = detectedCountry !== 'UNKNOWN' ? detectedCountry : (data.countryCode || 'IN').toUpperCase();
 
     // Check if Production Environment
     const isProduction = (import.meta.env.IS_PRODUCTION || process.env.IS_PRODUCTION) === 'true';
@@ -19,14 +45,14 @@ export const POST: APIRoute = async ({ request }) => {
     
     // INR price
     let amountInRupees = priceGlobal;
-    if (countryCode.toUpperCase() === 'IN') {
+    if (finalCountryCode === 'IN') {
       amountInRupees = priceIndia;
     }
     // Razorpay expects the amount in the smallest currency sub-unit (paise for INR).
     const amountInPaise = amountInRupees * 100;
 
-    const keyId = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_ID || process.env.RAZORPAY_PROD_KEY_ID) : (import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID);
-    const keySecret = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_SECRET || process.env.RAZORPAY_PROD_KEY_SECRET) : (import.meta.env.RAZORPAY_DEV_KEY_SECRET || process.env.RAZORPAY_DEV_KEY_SECRET);
+    const keyId = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_ID || process.env.RAZORPAY_PROD_KEY_ID) : (import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID || import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID);
+    const keySecret = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_SECRET || process.env.RAZORPAY_PROD_KEY_SECRET) : (import.meta.env.RAZORPAY_DEV_KEY_SECRET || process.env.RAZORPAY_DEV_KEY_SECRET || import.meta.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET);
 
     if (!keyId || !keySecret) {
       // Return a 500 error if keys are missing

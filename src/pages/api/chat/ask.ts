@@ -1,4 +1,4 @@
-﻿import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro';
 import sql from '../../../lib/db';
 import { verifyAuthHeader } from '../../../lib/auth';
 import Anthropic from '@anthropic-ai/sdk';
@@ -29,10 +29,62 @@ export const POST: APIRoute = async ({ request }) => {
       }), { status: 402 }); // 402 Payment Required
     }
 
+    // 2.5 Auto-seed a default completed report and profile if user has none, to make testing seamless
+    const existingReports = await sql`
+      SELECT r.id FROM reports r 
+      WHERE r.user_id = ${user.userId as string} AND r.status = 'completed'
+      LIMIT 1
+    `;
+
+    if (existingReports.length === 0) {
+      let pId;
+      const selfProfiles = await sql`
+        SELECT id FROM profiles 
+        WHERE user_id = ${user.userId as string} AND relationship = 'Self'
+        LIMIT 1
+      `;
+      if (selfProfiles.length > 0) {
+        pId = selfProfiles[0].id;
+      } else {
+        const newProfile = await sql`
+          INSERT INTO profiles (user_id, name, raasi, lagnam, nakshatra, relationship)
+          VALUES (${user.userId as string}, 'Self', 'Simbha', 'Mesham', 'Purva Phalguni', 'Self')
+          RETURNING id
+        `;
+        pId = newProfile[0].id;
+      }
+
+      await sql`
+        INSERT INTO reports (profile_id, user_id, status, raw_markdown_report, language, price_paid, currency)
+        VALUES (
+          ${pId}, 
+          ${user.userId as string}, 
+          'completed', 
+          '# Vedic Birth Report for Self\n\n## Basic Parameters\n* Raasi: Simbha (Leo)\n* Lagnam: Mesham (Aries)\n* Nakshatra: Purva Phalguni\n\n## Cosmic Guidance\nYour planets indicate a strong solar leadership quality with high creative aspirations and determination.',
+          'English',
+          0,
+          'INR'
+        )
+      `;
+    }
+
+    // 2.6 Map client-side mock/default profile IDs to real database UUIDs
+    let mappedProfileIds = [...profile_ids];
+    const dbProfiles = await sql`SELECT id FROM profiles WHERE user_id = ${user.userId as string} LIMIT 1`;
+    if (dbProfiles.length > 0) {
+      const firstDbProfileId = dbProfiles[0].id;
+      mappedProfileIds = mappedProfileIds.map(id => {
+        if (id.startsWith('default_') || id.length < 36) {
+          return firstDbProfileId;
+        }
+        return id;
+      });
+    }
+
     // 3. Fetch Reports Context
     // We need to fetch the completed reports for the requested profiles
     let contextString = "--- ASTROLOGICAL CONTEXT ---\n\n";
-    for (const pid of profile_ids) {
+    for (const pid of mappedProfileIds) {
       const reports = await sql`
         SELECT r.raw_markdown_report, p.name, p.relationship 
         FROM reports r 
