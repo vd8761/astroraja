@@ -261,9 +261,11 @@ export class BaseReport {
         const next: any = blocks[j + 1];
         let afterGroup: any | null = null;
         if (next) {
-          const small =
-            next.type === 'para' || next.type === 'quote' ||
-            (next.type === 'table' && next.rows.length <= 12);
+          const compactTable =
+            next.type === 'table' &&
+            next.rows.length <= 4 &&
+            [...next.headers, ...next.rows.flat()].join(' ').length <= 900;
+          const small = next.type === 'para' || next.type === 'quote' || compactTable;
           if (small) { group.push(this.renderOne(next)); j++; }
           else if (next.type === 'list' && next.items.length > 0) {
             group.push(this.list([next.items[0]], next.ordered));
