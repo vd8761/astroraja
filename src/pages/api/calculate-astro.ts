@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { Observer, getKundli } from '@ishubhamx/panchangam-js';
+import { DateTime } from 'luxon';
 
 // Mapping from panchangam-js English names to our exact form dropdown values
 const RASHI_MAP: Record<string, string> = {
@@ -50,16 +51,26 @@ const NAKSHATRA_MAP: Record<string, string> = {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const data = await request.json();
-    const { dateIso, lat, lon } = data;
+    const { year, month, day, hour, minute, timezone, lat, lon } = data;
 
-    if (!dateIso || lat === undefined || lon === undefined) {
-      return new Response(JSON.stringify({ error: 'Missing required fields (dateIso, lat, lon)' }), { 
+    if (!year || !month || !day || lat === undefined || lon === undefined || !timezone) {
+      return new Response(JSON.stringify({ error: 'Missing required fields (year, month, day, timezone, lat, lon)' }), { 
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    const dateObj = new Date(dateIso);
+    // Use luxon to create a precise Date object reflecting the local time at the birth city
+    const luxonDate = DateTime.fromObject(
+      { year: Number(year), month: Number(month), day: Number(day), hour: Number(hour), minute: Number(minute) },
+      { zone: timezone }
+    );
+    
+    if (!luxonDate.isValid) {
+      throw new Error(`Invalid date/time for timezone ${timezone}: ${luxonDate.invalidReason}`);
+    }
+
+    const dateObj = luxonDate.toJSDate();
     // Standard timezone offset for calculation (we can use 0 since dateObj is absolute UTC timestamp underneath)
     const observer = new Observer(parseFloat(lat), parseFloat(lon), 0);
     

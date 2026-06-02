@@ -591,10 +591,7 @@ document.addEventListener('alpine:init', () => {
     autoCalcOpts: {
       day: '', month: '', year: '1990',
       hour: '12', minute: '00', ampm: 'PM',
-      placeSearch: '',
-      lat: null,
-      lon: null,
-      locationSelected: false
+      placeSearch: '', lat: null, lon: null, timezone: '', locationSelected: false
     },
     locationResults: [],
     isSearchingLocation: false,
@@ -638,6 +635,7 @@ document.addEventListener('alpine:init', () => {
       this.autoCalcOpts.placeSearch = `${loc.name}, ${loc.admin1 ? loc.admin1 + ', ' : ''}${loc.country}`;
       this.autoCalcOpts.lat = loc.latitude;
       this.autoCalcOpts.lon = loc.longitude;
+      this.autoCalcOpts.timezone = loc.timezone || 'Asia/Kolkata';
       this.autoCalcOpts.locationSelected = true;
       this.locationResults = [];
     },
@@ -659,26 +657,18 @@ document.addEventListener('alpine:init', () => {
       let hour24 = parseInt(this.autoCalcOpts.hour);
       if (this.autoCalcOpts.ampm === 'PM' && hour24 !== 12) hour24 += 12;
       if (this.autoCalcOpts.ampm === 'AM' && hour24 === 12) hour24 = 0;
-      
-      // ISO format: YYYY-MM-DDTHH:mm:00.000Z
-      // Note: This creates the date assuming the provided time is local to the user,
-      // but strictly speaking Vedic calculations usually need the timezone of the birthplace.
-      // However, for JS Date parsing from a generic input, we will construct an ISO string
-      // using the local time offset so the JS Date matches the exact moment in time.
-      const dateString = `${this.autoCalcOpts.year}-${this.autoCalcOpts.month}-${this.autoCalcOpts.day}T${String(hour24).padStart(2, '0')}:${this.autoCalcOpts.minute}:00`;
-      
-      // Because we don't know the exact timezone of the birth city, 
-      // standard practice is to assume the browser's local time matches or we pass the string to standard JS Date.
-      // For India (IST), we can hardcode offset if preferred, but JS new Date(string) uses local browser timezone.
-      // To be safe and precise across regions without timezone libs, let's treat it as local browser time for now.
-      const dateObj = new Date(dateString);
 
       try {
         const response = await fetch('/api/calculate-astro', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            dateIso: dateObj.toISOString(),
+            year: this.autoCalcOpts.year,
+            month: this.autoCalcOpts.month,
+            day: this.autoCalcOpts.day,
+            hour: hour24,
+            minute: this.autoCalcOpts.minute,
+            timezone: this.autoCalcOpts.timezone,
             lat: this.autoCalcOpts.lat,
             lon: this.autoCalcOpts.lon
           })
