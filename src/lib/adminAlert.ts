@@ -12,6 +12,7 @@ export async function sendAdminAlert(subject: string, body: string): Promise<voi
     const { error: emailError } = await resend.emails.send({
       from: fromEmail,
       to: 'ariyappan@touchmarkdes.com',
+      cc: 'info@touchmarkdes.com',
       subject: `🚨 [Astro Raja Alert] ${subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -35,7 +36,7 @@ export async function sendAdminAlert(subject: string, body: string): Promise<voi
       throw new Error(emailError.message);
     }
 
-    console.log('[Admin Alert] Email sent to ariyappan@touchmarkdes.com:', subject);
+    console.log('[Admin Alert] Email sent to ariyappan@touchmarkdes.com (cc: info@touchmarkdes.com):', subject);
   } catch (err) {
     console.error('[Admin Alert] Failed to send alert email:', err);
   }
@@ -50,5 +51,17 @@ export function isModelDeprecatedError(error: any): boolean {
     error?.error?.type === 'not_found_error' &&
     typeof error?.error?.message === 'string' &&
     error.error.message.startsWith('model:')
+  );
+}
+
+/**
+ * Detects if an Anthropic API error is due to low credits.
+ */
+export function isLowCreditError(error: any): boolean {
+  return (
+    error?.status === 400 &&
+    error?.error?.type === 'invalid_request_error' &&
+    typeof error?.error?.message === 'string' &&
+    error.error.message.includes('credit balance is too low')
   );
 }

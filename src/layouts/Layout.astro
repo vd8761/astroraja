@@ -162,6 +162,13 @@ const isActive = (path) => {
 
     <script>
       document.addEventListener('DOMContentLoaded', () => {
+        // Referral Tracking Interception
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get('ref');
+        if (refCode && refCode.trim().length > 0) {
+          localStorage.setItem('referralCode', refCode.trim().toUpperCase());
+        }
+
         const btn = document.getElementById('mobile-menu-btn');
         const menu = document.getElementById('mobile-menu');
         const links = document.querySelectorAll('.mobile-link');

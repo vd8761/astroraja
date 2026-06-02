@@ -7,7 +7,7 @@ export const config = {
   maxDuration: 300,
 };
 
-import { sendAdminAlert, isModelDeprecatedError } from '../../lib/adminAlert';
+import { sendAdminAlert, isModelDeprecatedError, isLowCreditError } from '../../lib/adminAlert';
 import skillTemplate from '../../lib/skill.md?raw';
 
 export const POST: APIRoute = async ({ request }) => {
@@ -119,12 +119,19 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
     } catch (aiError: any) {
       if (isModelDeprecatedError(aiError)) {
         await sendAdminAlert(
-          'Claude Model Deprecated — Immediate Action Required',
+          'Claude Model Deprecated - Immediate Action Required',
           'The Claude AI model has been deprecated by Anthropic and is returning a 404 error.\n\n' +
           'Deprecated Model: ' + claudeModel + '\n' +
           'Error: ' + aiError.error.message + '\n\n' +
           'Fix: Update ANTHROPIC_MODEL in your Vercel Environment Variables\n' +
           'Latest Models: https://docs.anthropic.com/en/docs/about-claude/models'
+        );
+      } else if (isLowCreditError(aiError)) {
+        await sendAdminAlert(
+          'Anthropic API - Low Credit Balance',
+          'Your Anthropic API account has run out of credits.\n\n' +
+          'Error: ' + aiError.error.message + '\n\n' +
+          'Fix: Please go to the Anthropic Billing Console to add funds immediately so user reports can continue generating.'
         );
       }
       throw aiError;

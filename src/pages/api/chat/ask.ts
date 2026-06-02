@@ -131,7 +131,7 @@ ${contextString}`;
     } catch (aiError: any) {
       if (isModelDeprecatedError(aiError)) {
         await sendAdminAlert(
-          'Claude Model Deprecated — Chat API Broken',
+          'Claude Model Deprecated - Chat API Broken',
           'The Claude AI model used in the Chat API has been deprecated.\n\n' +
           'Deprecated Model: ' + claudeModel + '\n' +
           'Error: ' + aiError.error.message + '\n\n' +

@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout basePath="" title="Get Your Reading — Ask Astro Raja">
+<Layout basePath="" title="Get Your Reading - Ask Astro Raja">
   <script is:inline src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <div class="max-w-4xl mx-auto py-12 px-4" x-data="readingForm()">
@@ -10,7 +10,7 @@ import Layout from '../layouts/Layout.astro';
     <!-- Progress Indicator -->
     <div class="mb-12" x-show="step < 5 && !isComplete">
       <div class="flex items-center justify-between text-xs font-semibold text-brand-saffron-dark uppercase tracking-wider mb-3">
-        <span x-text="`Step ${step + 1} of 6 — ${stepLabels[step]}`"></span>
+        <span x-text="`Step ${step + 1} of 6 - ${stepLabels[step]}`"></span>
         <span x-text="`${Math.round(((step + 1) / 6) * 100)}%`"></span>
       </div>
       <div class="h-2 bg-brand-border/50 rounded-full overflow-hidden">
@@ -22,7 +22,7 @@ import Layout from '../layouts/Layout.astro';
     <div x-show="step === 0 && !isComplete" x-transition.opacity.duration.300ms>
       <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 1 of 6</div>
       <h2 class="text-4xl font-bold text-brand-navy mb-4">Your base <span class="text-brand-saffron italic">parameters</span></h2>
-      <p class="text-brand-text-muted mb-8 leading-relaxed max-w-2xl">Enter your Vedic birth details. These three — Raasi, Lagnam, and Nakshatra — are the foundation of your entire reading.</p>
+      <p class="text-brand-text-muted mb-8 leading-relaxed max-w-2xl">Enter your Vedic birth details. These three - Raasi, Lagnam, and Nakshatra - are the foundation of your entire reading.</p>
 
       <div class="space-y-6">
         <div>
@@ -71,23 +71,32 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
 
+        <!-- Referral Code -->
+        <div>
+          <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Referral Code <span class="text-brand-text-muted font-normal">(Optional)</span></label>
+          <input type="text" x-model="formData.referralCode" placeholder="Enter code if you have one" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all uppercase" maxlength="6">
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Raasi (Moon Sign) <span class="text-brand-saffron">*</span></label>
+            <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2 flex justify-between items-center">
+              <span>Raasi (Moon Sign) <span class="text-brand-saffron">*</span></span>
+              <button type="button" x-show="formData.raasi && formData.lagnam && !showAutoCalculator" @click="showAutoCalculator = true" class="text-brand-saffron hover:underline normal-case font-medium tracking-normal">Calculate for me</button>
+            </label>
             <select x-model="formData.raasi" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all appearance-none" :class="{'border-red-500': errors.raasi}">
               <option value="">Select your Raasi</option>
-              <option value="Mesham">Mesham (மேஷம்) — Aries</option>
-              <option value="Rishabam">Rishabam (ரிஷபம்) — Taurus</option>
-              <option value="Midhunam">Midhunam (மிதுனம்) — Gemini</option>
-              <option value="Kadagam">Kadagam (கடகம்) — Cancer</option>
-              <option value="Simbha">Simbha (சிம்மம்) — Leo</option>
-              <option value="Kanni">Kanni (கன்னி) — Virgo</option>
-              <option value="Thulam">Thulam (துலாம்) — Libra</option>
-              <option value="Vrichigam">Vrichigam (விருச்சிகம்) — Scorpio</option>
-              <option value="Dhanusu">Dhanusu (தனுசு) — Sagittarius</option>
-              <option value="Magaram">Magaram (மகரம்) — Capricorn</option>
-              <option value="Kumbam">Kumbam (கும்பம்) — Aquarius</option>
-              <option value="Meenam">Meenam (மீனம்) — Pisces</option>
+              <option value="Mesham">Mesham (மேஷம்) - Aries</option>
+              <option value="Rishabam">Rishabam (ரிஷபம்) - Taurus</option>
+              <option value="Midhunam">Midhunam (மிதுனம்) - Gemini</option>
+              <option value="Kadagam">Kadagam (கடகம்) - Cancer</option>
+              <option value="Simbha">Simbha (சிம்மம்) - Leo</option>
+              <option value="Kanni">Kanni (கன்னி) - Virgo</option>
+              <option value="Thulam">Thulam (துலாம்) - Libra</option>
+              <option value="Vrichigam">Vrichigam (விருச்சிகம்) - Scorpio</option>
+              <option value="Dhanusu">Dhanusu (தனுசு) - Sagittarius</option>
+              <option value="Magaram">Magaram (மகரம்) - Capricorn</option>
+              <option value="Kumbam">Kumbam (கும்பம்) - Aquarius</option>
+              <option value="Meenam">Meenam (மீனம்) - Pisces</option>
             </select>
             <p x-show="errors.raasi" class="text-red-500 text-xs mt-1">Please select your Raasi.</p>
           </div>
@@ -163,7 +172,7 @@ import Layout from '../layouts/Layout.astro';
         </div>
 
         <!-- Auto Calculator UI -->
-        <div class="mt-8 p-6 bg-slate-50 border border-brand-border rounded-2xl relative overflow-hidden">
+        <div x-show="!formData.raasi || !formData.lagnam || showAutoCalculator" class="mt-8 p-6 bg-slate-50 border border-brand-border rounded-2xl relative overflow-hidden">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-start gap-4">
               <div class="w-10 h-10 rounded-full bg-white border border-brand-border flex items-center justify-center flex-shrink-0 shadow-sm text-brand-navy">
@@ -479,7 +488,7 @@ import Layout from '../layouts/Layout.astro';
         <h3 class="text-2xl font-serif font-bold text-white mb-2">Initializing AI Engine</h3>
         <p class="text-brand-saffron/80 text-lg tracking-wide animate-pulse" x-text="loadingMessage"></p>
         <div class="mt-8 relative">
-          <div class="flex justify-between text-xs text-white/70 mb-2 font-mono">
+          <div class="flex justify-between text-xs white/70 mb-2 font-mono">
             <span>0%</span>
             <span x-text="generationProgress + '%'" class="text-brand-saffron font-bold text-sm">0%</span>
             <span>100%</span>
@@ -507,7 +516,7 @@ document.addEventListener('alpine:init', () => {
     stepLabels: ['Your Details', 'Current Struggles', 'Daily Life', 'Life Goals', 'Spiritual Orientation'],
     formData: {
       name: '', email: '', countryCode: '+91', mobile: '', language: 'English', raasi: '', lagnam: '', nakshatra: '', padam: '',
-      struggles: [], dailyLife: '', goals: [], spiritual: ''
+      struggles: [], dailyLife: '', goals: [], spiritual: '', referralCode: ''
     },
     errors: {
       name: false, email: false, mobile: false, raasi: false, lagnam: false, nakshatra: false,
@@ -700,6 +709,16 @@ document.addEventListener('alpine:init', () => {
     isPaying: false,
     
     init() {
+      // Check URL for referral code first
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlRef = urlParams.get('ref');
+      if (urlRef && urlRef.trim().length > 0) {
+        this.formData.referralCode = urlRef.trim().toUpperCase();
+        localStorage.setItem('referralCode', this.formData.referralCode);
+      } else {
+        this.formData.referralCode = localStorage.getItem('referralCode') || '';
+      }
+      
       const params = new URLSearchParams(window.location.search);
       if (params.has('new')) {
         sessionStorage.removeItem('astroraja_form_state');
@@ -875,13 +894,15 @@ document.addEventListener('alpine:init', () => {
       this.generationProgress = 0;
       this.loadingMessage = 'Connecting to Astro Raja AI...';
       
+      const payload = { ...this.formData };
+      
       try {
         const response = await fetch('/api/queue-reading', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(this.formData),
+          body: JSON.stringify(payload),
         });
         
         const result = await response.json();
