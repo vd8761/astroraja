@@ -1,5 +1,9 @@
 import { neon } from '@neondatabase/serverless';
 import pg from 'pg';
+import dns from 'node:dns';
+
+// Fix local Node.js IPv6 resolution timeout issues (28-second fetch failed error)
+dns.setDefaultResultOrder('ipv4first');
 
 const databaseUrl = import.meta.env?.DATABASE_URL || process.env.DATABASE_URL;
 
