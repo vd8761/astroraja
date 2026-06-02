@@ -13,7 +13,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const body = await request.json();
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, custom_credits } = body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, custom_credits, is_report } = body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return new Response(JSON.stringify({ error: 'Missing payment details' }), { status: 400 });
@@ -47,13 +47,25 @@ export const POST: APIRoute = async ({ request }) => {
     let tokensToAdd = parseInt(import.meta.env.TOKEN_PACK_AMOUNT || process.env.TOKEN_PACK_AMOUNT || '10000');
     let priceInr = parseInt(import.meta.env.TOKEN_PACK_PRICE_INR || process.env.TOKEN_PACK_PRICE_INR || '99');
     
-    if (isSandboxBypass && custom_credits) {
+    if (is_report) {
+      tokensToAdd = 0;
+      // Fetch order from Razorpay to get the actual amount paid for report
+      try {
+        const key_id = import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID || import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID;
+        const razorpay = new Razorpay({ key_id, key_secret });
+        const order = await razorpay.orders.fetch(razorpay_order_id);
+        priceInr = Math.round((order.amount as number) / 100);
+      } catch (e) {
+        // Fallback: report pricing is usually 249 or 999
+        priceInr = 249; 
+      }
+    } else if (isSandboxBypass && custom_credits) {
       tokensToAdd = parseInt(custom_credits);
       priceInr = Math.round((tokensToAdd / 10000) * 99);
     } else {
       // For real payments, fetch order from Razorpay to get the actual amount paid!
       try {
-        const key_id = import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID;
+        const key_id = import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID || import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID;
         const razorpay = new Razorpay({ key_id, key_secret });
         const order = await razorpay.orders.fetch(razorpay_order_id);
         priceInr = Math.round((order.amount as number) / 100);
@@ -73,17 +85,19 @@ export const POST: APIRoute = async ({ request }) => {
     // Use a transaction if possible, but neon serverless sql handles simple queries. 
     // We will do them sequentially safely.
     
-    // Add tokens to user
-    await sql`
-      UPDATE users 
-      SET token_balance = COALESCE(token_balance, 0) + ${tokensToAdd} 
-      WHERE id = ${user.userId as string}
-    `;
+    // Add tokens to user (ONLY if it is a token purchase, NOT a report purchase)
+    if (!is_report && tokensToAdd > 0) {
+      await sql`
+        UPDATE users 
+        SET token_balance = COALESCE(token_balance, 0) + ${tokensToAdd} 
+        WHERE id = ${user.userId as string}
+      `;
+    }
 
     // Log the transaction
     const newTx = await sql`
-      INSERT INTO transactions (user_id, amount, currency, tokens_added, razorpay_order_id, razorpay_payment_id, status, ip_address)
-      VALUES (${user.userId as string}, ${priceInr}, 'INR', ${tokensToAdd}, ${razorpay_order_id}, ${razorpay_payment_id}, 'successful', ${clientIp})
+      INSERT INTO transactions (user_id, amount, currency, tokens_added, razorpay_order_id, razorpay_payment_id, status, ip_address, transaction_type)
+      VALUES (${user.userId as string}, ${priceInr}, 'INR', ${tokensToAdd}, ${razorpay_order_id}, ${razorpay_payment_id}, 'successful', ${clientIp}, ${is_report ? 'report' : 'credits'})
       RETURNING id
     `;
     const transactionId = newTx[0].id;
