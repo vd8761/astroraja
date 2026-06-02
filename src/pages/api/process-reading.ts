@@ -117,7 +117,7 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
     } catch (aiError: any) {
       if (isModelDeprecatedError(aiError)) {
         await sendAdminAlert(
-          'Claude Model Deprecated — Immediate Action Required',
+          'Claude Model Deprecated - Immediate Action Required',
           'The Claude AI model has been deprecated by Anthropic and is returning a 404 error.\n\n' +
           'Deprecated Model: ' + claudeModel + '\n' +
           'Error: ' + aiError.error.message + '\n\n' +
