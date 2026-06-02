@@ -60,10 +60,21 @@ import Layout from '../layouts/Layout.astro';
                   </div>
                 </div>
               </div>
-              <input type="tel" x-model="formData.mobile" placeholder="9876543210" class="flex-1 p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all" :class="{'border-red-500': errors.mobile}">
+              <div class="relative flex-1 flex items-center">
+                <input type="tel" x-model="formData.mobile" @input="onMobileInput($event)" @blur="onMobileBlur" :placeholder="mobilePlaceholder" class="w-full p-4 pr-16 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all" :class="{'border-red-500': errors.mobile}">
+                <div class="absolute right-4 text-xs font-medium text-brand-text-muted/60 bg-transparent pl-1 pointer-events-none">
+                  <span x-text="formData.mobile.length"></span>/<span x-text="mobileMaxLength"></span>
+                </div>
+              </div>
             </div>
-            <p x-show="errors.mobile" class="text-red-500 text-xs mt-1">Please enter your mobile number.</p>
+            <p x-show="errors.mobile" class="text-red-500 text-xs mt-1">Please enter a valid mobile number for this country.</p>
           </div>
+        </div>
+
+        <!-- Referral Code -->
+        <div>
+          <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Referral Code <span class="text-brand-text-muted font-normal">(Optional)</span></label>
+          <input type="text" x-model="formData.referralCode" placeholder="Enter code if you have one" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all uppercase" maxlength="6">
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -154,6 +165,110 @@ import Layout from '../layouts/Layout.astro';
               <option value="4">Paatham 4</option>
             </select>
             <p class="text-brand-text-muted text-xs mt-2">Optional, but highly recommended for accuracy.</p>
+          </div>
+        </div>
+
+        <!-- Auto Calculator UI -->
+        <div class="mt-8 p-6 bg-slate-50 border border-brand-border rounded-2xl relative overflow-hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-full bg-white border border-brand-border flex items-center justify-center flex-shrink-0 shadow-sm text-brand-navy">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-brand-navy text-base">Don't know your Raasi or Lagnam?</h3>
+                <p class="text-brand-text-muted text-sm mt-1">We can calculate it instantly from your exact birth details.</p>
+              </div>
+            </div>
+            <button type="button" @click="showAutoCalculator = !showAutoCalculator" class="px-5 py-2.5 bg-white border border-brand-border text-brand-navy font-bold text-sm rounded-xl hover:border-brand-saffron hover:text-brand-saffron transition-colors shadow-sm whitespace-nowrap">
+              <span x-text="showAutoCalculator ? 'Hide Calculator' : 'Calculate For Me'"></span>
+            </button>
+          </div>
+          
+          <div x-show="showAutoCalculator" x-collapse class="mt-6 pt-6 border-t border-brand-border">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              
+              <!-- Date Dropdowns -->
+              <div>
+                <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Date of Birth</label>
+                <div class="flex gap-2">
+                  <select x-model="autoCalcOpts.day" class="flex-1 p-3.5 bg-white border border-brand-border rounded-xl focus:border-brand-saffron outline-none transition-all appearance-none text-sm">
+                    <option value="">DD</option>
+                    <template x-for="d in days" :key="d">
+                      <option :value="d" x-text="d"></option>
+                    </template>
+                  </select>
+                  <select x-model="autoCalcOpts.month" class="flex-1 p-3.5 bg-white border border-brand-border rounded-xl focus:border-brand-saffron outline-none transition-all appearance-none text-sm">
+                    <option value="">MM</option>
+                    <template x-for="m in months" :key="m">
+                      <option :value="m" x-text="m"></option>
+                    </template>
+                  </select>
+                  <select x-model="autoCalcOpts.year" class="flex-[1.5] p-3.5 bg-white border border-brand-border rounded-xl focus:border-brand-saffron outline-none transition-all appearance-none text-sm">
+                    <option value="">YYYY</option>
+                    <template x-for="y in years" :key="y">
+                      <option :value="y" x-text="y"></option>
+                    </template>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Time Dropdowns -->
+              <div>
+                <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Time of Birth</label>
+                <div class="flex gap-2">
+                  <select x-model="autoCalcOpts.hour" class="flex-1 p-3.5 bg-white border border-brand-border rounded-xl focus:border-brand-saffron outline-none transition-all appearance-none text-sm">
+                    <option value="">HH</option>
+                    <template x-for="h in hours" :key="h">
+                      <option :value="h" x-text="h"></option>
+                    </template>
+                  </select>
+                  <span class="text-brand-navy font-bold flex items-center justify-center">:</span>
+                  <select x-model="autoCalcOpts.minute" class="flex-1 p-3.5 bg-white border border-brand-border rounded-xl focus:border-brand-saffron outline-none transition-all appearance-none text-sm">
+                    <option value="">MM</option>
+                    <template x-for="m in minutes" :key="m">
+                      <option :value="m" x-text="m"></option>
+                    </template>
+                  </select>
+                  <select x-model="autoCalcOpts.ampm" class="flex-1 p-3.5 bg-white border border-brand-border rounded-xl focus:border-brand-saffron outline-none transition-all appearance-none text-sm font-bold">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Place Search (Open-Meteo) -->
+            <div class="mb-6 relative">
+              <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Place of Birth (City)</label>
+              <div class="relative">
+                <input type="text" x-model="autoCalcOpts.placeSearch" @input="onPlaceSearchInput" placeholder="Type to search city..." class="w-full p-4 pl-11 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all text-sm">
+                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text-muted">
+                  <svg x-show="!isSearchingLocation" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <svg x-show="isSearchingLocation" class="animate-spin text-brand-saffron" style="display: none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"></path></svg>
+                </div>
+              </div>
+              
+              <!-- Location Dropdown -->
+              <div x-show="locationResults.length > 0" @click.away="locationResults = []" class="absolute z-50 w-full mt-1 bg-white border border-brand-border rounded-xl shadow-xl overflow-hidden" style="display: none;">
+                <template x-for="loc in locationResults" :key="loc.id">
+                  <button type="button" @click="selectLocation(loc)" class="w-full text-left px-4 py-3 hover:bg-slate-50 border-b border-brand-border/50 last:border-0 transition-colors flex flex-col">
+                    <span class="font-bold text-brand-navy text-sm" x-text="loc.name"></span>
+                    <span class="text-xs text-brand-text-muted" x-text="`${loc.admin1 ? loc.admin1 + ', ' : ''}${loc.country}`"></span>
+                  </button>
+                </template>
+              </div>
+            </div>
+
+            <!-- Error State -->
+            <div x-show="autoCalcError" class="p-3 mb-6 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm" style="display: none;" x-text="autoCalcError"></div>
+
+            <!-- Calculate Button -->
+            <button type="button" @click="calculateAstro" :disabled="isCalculating" class="w-full sm:w-auto px-8 py-3.5 bg-brand-navy text-white font-bold rounded-xl hover:bg-brand-saffron transition-all shadow-md flex items-center justify-center gap-2" :class="{'opacity-70 cursor-wait': isCalculating}">
+              <span x-text="isCalculating ? 'Calculating...' : 'Calculate My Details'"></span>
+              <svg x-show="!isCalculating" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -370,7 +485,7 @@ import Layout from '../layouts/Layout.astro';
         <h3 class="text-2xl font-serif font-bold text-white mb-2">Initializing AI Engine</h3>
         <p class="text-brand-saffron/80 text-lg tracking-wide animate-pulse" x-text="loadingMessage"></p>
         <div class="mt-8 relative">
-          <div class="flex justify-between text-xs text-white/70 mb-2 font-mono">
+          <div class="flex justify-between text-xs white/70 mb-2 font-mono">
             <span>0%</span>
             <span x-text="generationProgress + '%'" class="text-brand-saffron font-bold text-sm">0%</span>
             <span>100%</span>
@@ -388,6 +503,8 @@ import Layout from '../layouts/Layout.astro';
 
 <script>
 import Alpine from 'alpinejs';
+import { isValidPhoneNumber, validatePhoneNumberLength, getExampleNumber } from 'libphonenumber-js';
+import mobileExamples from 'libphonenumber-js/examples.mobile.json';
 import { countryList } from '../lib/countries.js';
 
 document.addEventListener('alpine:init', () => {
@@ -396,7 +513,7 @@ document.addEventListener('alpine:init', () => {
     stepLabels: ['Your Details', 'Current Struggles', 'Daily Life', 'Life Goals', 'Spiritual Orientation'],
     formData: {
       name: '', email: '', countryCode: '+91', mobile: '', language: 'English', raasi: '', lagnam: '', nakshatra: '', padam: '',
-      struggles: [], dailyLife: '', goals: [], spiritual: ''
+      struggles: [], dailyLife: '', goals: [], spiritual: '', referralCode: ''
     },
     errors: {
       name: false, email: false, mobile: false, raasi: false, lagnam: false, nakshatra: false,
@@ -434,6 +551,152 @@ document.addEventListener('alpine:init', () => {
       this.countrySearch = '';
     },
 
+    onMobileInput(e) {
+      // Clean the DOM input directly so Alpine recognizes the update
+      let clean = (e ? e.target.value : this.formData.mobile).replace(/\D/g, '');
+      
+      // Prevent typing beyond the maximum possible length for the country
+      while (clean.length > 0 && validatePhoneNumberLength(this.formData.countryCode + clean) === 'TOO_LONG') {
+        clean = clean.slice(0, -1);
+      }
+
+      if (e && e.target.value !== clean) {
+        e.target.value = clean;
+      }
+      this.formData.mobile = clean;
+
+      const full = this.formData.countryCode + this.formData.mobile;
+      if (isValidPhoneNumber(full)) {
+        this.errors.mobile = false;
+      }
+    },
+
+    onMobileBlur() {
+      if (this.formData.mobile.trim()) {
+        const full = this.formData.countryCode + this.formData.mobile;
+        this.errors.mobile = !isValidPhoneNumber(full);
+      }
+    },
+
+    get mobileMaxLength() {
+      const country = countryList.find(c => c.code === this.formData.countryCode);
+      const iso = country ? country.iso : 'IN';
+      try {
+        const ex = getExampleNumber(iso, mobileExamples);
+        return ex ? ex.nationalNumber.length : 10;
+      } catch(e) {
+        return 10;
+      }
+    },
+
+    get mobilePlaceholder() {
+      return '9'.repeat(this.mobileMaxLength);
+    },
+
+    showAutoCalculator: false,
+    autoCalcOpts: {
+      day: '', month: '', year: '1990',
+      hour: '12', minute: '00', ampm: 'PM',
+      placeSearch: '', lat: null, lon: null, timezone: '', locationSelected: false
+    },
+    locationResults: [],
+    isSearchingLocation: false,
+    isCalculating: false,
+    autoCalcError: '',
+
+    days: Array.from({length: 31}, (_, i) => String(i + 1).padStart(2, '0')),
+    months: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
+    years: Array.from({length: 100}, (_, i) => String(new Date().getFullYear() - i)),
+    hours: Array.from({length: 12}, (_, i) => String(i === 0 ? 12 : i).padStart(2, '0')),
+    minutes: Array.from({length: 60}, (_, i) => String(i).padStart(2, '0')),
+
+    searchLocationTimeout: null,
+    onPlaceSearchInput() {
+      this.autoCalcOpts.locationSelected = false;
+      this.autoCalcOpts.lat = null;
+      this.autoCalcOpts.lon = null;
+      
+      clearTimeout(this.searchLocationTimeout);
+      if (!this.autoCalcOpts.placeSearch.trim() || this.autoCalcOpts.placeSearch.length < 3) {
+        this.locationResults = [];
+        return;
+      }
+      
+      this.isSearchingLocation = true;
+      this.searchLocationTimeout = setTimeout(async () => {
+        try {
+          const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(this.autoCalcOpts.placeSearch)}&count=5&language=en&format=json`);
+          const data = await res.json();
+          this.locationResults = data.results || [];
+        } catch (e) {
+          console.error(e);
+          this.locationResults = [];
+        } finally {
+          this.isSearchingLocation = false;
+        }
+      }, 500);
+    },
+
+    selectLocation(loc) {
+      this.autoCalcOpts.placeSearch = `${loc.name}, ${loc.admin1 ? loc.admin1 + ', ' : ''}${loc.country}`;
+      this.autoCalcOpts.lat = loc.latitude;
+      this.autoCalcOpts.lon = loc.longitude;
+      this.autoCalcOpts.timezone = loc.timezone || 'Asia/Kolkata';
+      this.autoCalcOpts.locationSelected = true;
+      this.locationResults = [];
+    },
+
+    async calculateAstro() {
+      if (!this.autoCalcOpts.day || !this.autoCalcOpts.month || !this.autoCalcOpts.year) {
+        this.autoCalcError = 'Please select your Date of Birth.';
+        return;
+      }
+      if (!this.autoCalcOpts.locationSelected || this.autoCalcOpts.lat === null) {
+        this.autoCalcError = 'Please search and select your exact Place of Birth from the dropdown.';
+        return;
+      }
+
+      this.autoCalcError = '';
+      this.isCalculating = true;
+
+      // Construct UTC timestamp
+      let hour24 = parseInt(this.autoCalcOpts.hour);
+      if (this.autoCalcOpts.ampm === 'PM' && hour24 !== 12) hour24 += 12;
+      if (this.autoCalcOpts.ampm === 'AM' && hour24 === 12) hour24 = 0;
+
+      try {
+        const response = await fetch('/api/calculate-astro', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            year: this.autoCalcOpts.year,
+            month: this.autoCalcOpts.month,
+            day: this.autoCalcOpts.day,
+            hour: hour24,
+            minute: this.autoCalcOpts.minute,
+            timezone: this.autoCalcOpts.timezone,
+            lat: this.autoCalcOpts.lat,
+            lon: this.autoCalcOpts.lon
+          })
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) throw new Error(data.error || 'Calculation failed');
+
+        this.formData.raasi = data.data.raasi;
+        this.formData.lagnam = data.data.lagnam;
+        this.formData.nakshatra = data.data.nakshatra;
+        this.formData.padam = String(data.data.padam);
+        
+        this.showAutoCalculator = false;
+      } catch (e) {
+        this.autoCalcError = e.message || 'An error occurred during calculation. Please try again.';
+      } finally {
+        this.isCalculating = false;
+      }
+    },
+
     isGenerating: false,
     isComplete: false,
     loadingMessage: 'Initializing...',
@@ -444,6 +707,16 @@ document.addEventListener('alpine:init', () => {
     isPaying: false,
     
     init() {
+      // Check URL for referral code first
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlRef = urlParams.get('ref');
+      if (urlRef && urlRef.trim().length > 0) {
+        this.formData.referralCode = urlRef.trim().toUpperCase();
+        localStorage.setItem('referralCode', this.formData.referralCode);
+      } else {
+        this.formData.referralCode = localStorage.getItem('referralCode') || '';
+      }
+      
       const params = new URLSearchParams(window.location.search);
       if (params.has('new')) {
         sessionStorage.removeItem('astroraja_form_state');
@@ -483,7 +756,10 @@ document.addEventListener('alpine:init', () => {
       // Clear errors dynamically when user types/selects
       this.$watch('formData.name', (val) => { if(val.trim()) this.errors.name = false; });
       this.$watch('formData.email', (val) => { if(val.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) this.errors.email = false; });
-      this.$watch('formData.mobile', (val) => { if(val.trim()) this.errors.mobile = false; });
+      this.$watch('formData.countryCode', (val) => { 
+        this.formData.mobile = '';
+        this.errors.mobile = false;
+      });
       this.$watch('formData.raasi', (val) => { if(val) this.errors.raasi = false; });
       this.$watch('formData.lagnam', (val) => { if(val) this.errors.lagnam = false; });
       this.$watch('formData.nakshatra', (val) => { if(val) this.errors.nakshatra = false; });
@@ -507,7 +783,7 @@ document.addEventListener('alpine:init', () => {
       if (this.step === 0) {
         this.errors.name = !this.formData.name.trim();
         this.errors.email = !this.formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.formData.email);
-        this.errors.mobile = !this.formData.mobile.trim();
+        this.errors.mobile = !this.formData.mobile.trim() || !isValidPhoneNumber(this.formData.countryCode + this.formData.mobile);
         this.errors.raasi = !this.formData.raasi;
         this.errors.lagnam = !this.formData.lagnam;
         this.errors.nakshatra = !this.formData.nakshatra;
@@ -620,13 +896,15 @@ document.addEventListener('alpine:init', () => {
       this.generationProgress = 0;
       this.loadingMessage = 'Connecting to Astro Raja AI...';
       
+      const payload = { ...this.formData };
+      
       try {
         const response = await fetch('/api/queue-reading', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(this.formData),
+          body: JSON.stringify(payload),
         });
         
         const result = await response.json();
