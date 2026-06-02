@@ -129,7 +129,9 @@ export const POST: APIRoute = async ({ request }) => {
       success: true, 
       token,
       userId,
-      name: profileName
+      name: profileName,
+      email: userEmail,
+      mobile: userMobile
     }), { status: 200 });
 
   } catch (error: any) {

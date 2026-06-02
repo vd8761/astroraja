@@ -697,7 +697,6 @@ document.addEventListener('alpine:init', () => {
     generationProgress: 0,
     generationInterval: null,
     reportText: '',
-    hasPaid: false,
     isPaying: false,
     
     init() {
@@ -713,7 +712,6 @@ document.addEventListener('alpine:init', () => {
           const parsed = JSON.parse(saved);
           if (parsed.formData) this.formData = { ...this.formData, ...parsed.formData };
           if (parsed.step !== undefined) this.step = parsed.step;
-          if (parsed.hasPaid !== undefined) this.hasPaid = parsed.hasPaid;
           if (parsed.isSubmitted === true) this.isComplete = true;
         } catch(e) {}
       }
@@ -727,14 +725,12 @@ document.addEventListener('alpine:init', () => {
         sessionStorage.setItem('astroraja_form_state', JSON.stringify({
           formData: this.formData,
           step: this.step,
-          hasPaid: this.hasPaid,
           isSubmitted: this.isComplete
         }));
       };
 
       // 4. Watch for changes and auto-save
       this.$watch('step', saveState);
-      this.$watch('hasPaid', saveState);
       this.$watch('formData', saveState, { deep: true });
       
       // Clear errors dynamically when user types/selects
@@ -829,7 +825,6 @@ document.addEventListener('alpine:init', () => {
             color: "#1e1b4b"
           },
           handler: (response) => {
-            this.hasPaid = true;
             this.isPaying = false;
             this.formData.price_paid = orderData.amount / 100;
             this.formData.currency = orderData.currency;
@@ -856,7 +851,7 @@ document.addEventListener('alpine:init', () => {
 
     nextStep() {
       if (this.validateStep()) {
-        if (this.step === 0 && !this.hasPaid) {
+        if (this.step === 0) {
           this.initiatePayment();
         } else if (this.step < 5) {
           this.step++;
@@ -900,7 +895,6 @@ document.addEventListener('alpine:init', () => {
         sessionStorage.setItem('astroraja_form_state', JSON.stringify({
           formData: this.formData,
           step: this.step,
-          hasPaid: this.hasPaid,
           isSubmitted: true
         }));
 

@@ -434,10 +434,7 @@ export const GET: APIRoute = async ({ request }) => {
 
     if (reportId) {
       try {
-        const { neon } = await import('@neondatabase/serverless');
-        const dbUrl = import.meta.env.DATABASE_URL || process.env.DATABASE_URL;
-        if (!dbUrl) throw new Error('DATABASE_URL not set');
-        const sql = neon(dbUrl);
+        const { default: sql } = await import('../../lib/db');
         const rows = await sql`
           SELECT r.raw_markdown_report, p.name, p.raasi, p.lagnam, p.nakshatra, p.padam
           FROM reports r
