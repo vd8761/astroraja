@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+const REWARD_TOKENS = import.meta.env.REFERRAL_REWARD_TOKENS || '10';
 ---
 
 <Layout title="Refer & Earn | Ask Astro Raja" description="Share Ask Astro Raja with your friends and earn free tokens for accurate astrology readings.">
@@ -10,7 +11,7 @@ import Layout from '../layouts/Layout.astro';
         <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] mix-blend-overlay"></div>
         <div class="relative z-10">
           <h1 class="text-3xl md:text-5xl font-serif font-bold mb-4">Refer & Earn Tokens</h1>
-          <p class="text-white/80 text-lg max-w-2xl mx-auto">Give your friends the gift of clarity. When they get their first reading, you earn 10 tokens to unlock advanced reports!</p>
+          <p class="text-white/80 text-lg max-w-2xl mx-auto">Give your friends the gift of clarity. When they get their first reading, you earn {REWARD_TOKENS} tokens to unlock advanced reports!</p>
         </div>
       </div>
 
@@ -96,7 +97,7 @@ import Layout from '../layouts/Layout.astro';
             <div class="relative z-10 bg-white pt-2 sm:pt-4 text-center">
               <div class="w-12 h-12 bg-brand-saffron text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4 border-4 border-white shadow-sm">3</div>
               <h4 class="font-bold text-brand-navy mb-2">You Earn</h4>
-              <p class="text-sm text-brand-text-muted">You instantly get 10 tokens added to your balance for each friend!</p>
+              <p class="text-sm text-brand-text-muted">You instantly get {REWARD_TOKENS} tokens added to your balance for each friend!</p>
             </div>
           </div>
         </div>
@@ -155,8 +156,10 @@ import Layout from '../layouts/Layout.astro';
 
         copyLink() {
           const link = this.getReferralLink();
-          navigator.clipboard.writeText(link).then(() => {
-            this.copyText = 'Copied!';
+          const message = `I've been using Ask Astro Raja for deeply accurate astrology readings. Use my special link to get your own highly personalized report: ${link}`;
+          
+          navigator.clipboard.writeText(message).then(() => {
+            this.copyText = 'Copied Message!';
             setTimeout(() => {
               this.copyText = 'Copy Link';
             }, 2000);

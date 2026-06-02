@@ -896,13 +896,15 @@ document.addEventListener('alpine:init', () => {
       this.generationProgress = 0;
       this.loadingMessage = 'Connecting to Astro Raja AI...';
       
+      const payload = { ...this.formData };
+      
       try {
         const response = await fetch('/api/queue-reading', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(this.formData),
+          body: JSON.stringify(payload),
         });
         
         const result = await response.json();

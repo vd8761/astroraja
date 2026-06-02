@@ -75,7 +75,7 @@ export const POST: APIRoute = async ({ request }) => {
       
       // If pastTxs.length === 1, it means the transaction we JUST inserted is their first ever
       if (pastTxs.length === 1) {
-        const REWARD_TOKENS = 10;
+        const REWARD_TOKENS = parseInt(import.meta.env.REFERRAL_REWARD_TOKENS || process.env.REFERRAL_REWARD_TOKENS || '10');
         
         // Add tokens to referrer
         await sql`

@@ -39,9 +39,9 @@ export const POST: APIRoute = async ({ request }) => {
       const existing = await sql`SELECT id FROM users WHERE mobile_number = ${data.mobile} LIMIT 1`;
       if (existing.length > 0) {
         user_id = existing[0].id;
-        await sql`UPDATE users SET email = ${data.email} WHERE id = ${user_id}`;
+        await sql`UPDATE users SET email = ${data.email}, country_code = ${data.countryCode} WHERE id = ${user_id}`;
       } else {
-        const inserted = await sql`INSERT INTO users (mobile_number, email, referral_code, referred_by) VALUES (${data.mobile}, ${data.email}, ${newRefCode}, ${referredById}) RETURNING id`;
+        const inserted = await sql`INSERT INTO users (mobile_number, country_code, email, referral_code, referred_by) VALUES (${data.mobile}, ${data.countryCode}, ${data.email}, ${newRefCode}, ${referredById}) RETURNING id`;
         user_id = inserted[0].id;
       }
     } else {
@@ -77,7 +77,7 @@ export const POST: APIRoute = async ({ request }) => {
         
         // If this is their first paid report
         if (pastReports.length === 1) {
-          const REWARD_TOKENS = 10;
+          const REWARD_TOKENS = parseInt(import.meta.env.REFERRAL_REWARD_TOKENS || process.env.REFERRAL_REWARD_TOKENS || '10');
           await sql`UPDATE users SET token_balance = COALESCE(token_balance, 0) + ${REWARD_TOKENS} WHERE id = ${referrerId}`;
           await sql`
             INSERT INTO referral_earnings (referrer_id, referred_user_id, tokens_awarded)
