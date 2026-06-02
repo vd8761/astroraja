@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout basePath="" title="Get Your Reading — Ask Astro Raja">
+<Layout basePath="" title="Get Your Reading - Ask Astro Raja">
   <script is:inline src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <div class="max-w-4xl mx-auto py-12 px-4" x-data="readingForm()">
@@ -10,7 +10,7 @@ import Layout from '../layouts/Layout.astro';
     <!-- Progress Indicator -->
     <div class="mb-12" x-show="step < 5 && !isComplete">
       <div class="flex items-center justify-between text-xs font-semibold text-brand-saffron-dark uppercase tracking-wider mb-3">
-        <span x-text="`Step ${step + 1} of 6 — ${stepLabels[step]}`"></span>
+        <span x-text="`Step ${step + 1} of 6 - ${stepLabels[step]}`"></span>
         <span x-text="`${Math.round(((step + 1) / 6) * 100)}%`"></span>
       </div>
       <div class="h-2 bg-brand-border/50 rounded-full overflow-hidden">
@@ -22,7 +22,7 @@ import Layout from '../layouts/Layout.astro';
     <div x-show="step === 0 && !isComplete" x-transition.opacity.duration.300ms>
       <div class="text-brand-saffron-dark font-bold tracking-widest uppercase mb-2 text-xs">Step 1 of 6</div>
       <h2 class="text-4xl font-bold text-brand-navy mb-4">Your base <span class="text-brand-saffron italic">parameters</span></h2>
-      <p class="text-brand-text-muted mb-8 leading-relaxed max-w-2xl">Enter your Vedic birth details. These three — Raasi, Lagnam, and Nakshatra — are the foundation of your entire reading.</p>
+      <p class="text-brand-text-muted mb-8 leading-relaxed max-w-2xl">Enter your Vedic birth details. These three - Raasi, Lagnam, and Nakshatra - are the foundation of your entire reading.</p>
 
       <div class="space-y-6">
         <div>
@@ -71,18 +71,18 @@ import Layout from '../layouts/Layout.astro';
             <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Raasi (Moon Sign) <span class="text-brand-saffron">*</span></label>
             <select x-model="formData.raasi" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all appearance-none" :class="{'border-red-500': errors.raasi}">
               <option value="">Select your Raasi</option>
-              <option value="Mesham">Mesham (மேஷம்) — Aries</option>
-              <option value="Rishabam">Rishabam (ரிஷபம்) — Taurus</option>
-              <option value="Midhunam">Midhunam (மிதுனம்) — Gemini</option>
-              <option value="Kadagam">Kadagam (கடகம்) — Cancer</option>
-              <option value="Simbha">Simbha (சிம்மம்) — Leo</option>
-              <option value="Kanni">Kanni (கன்னி) — Virgo</option>
-              <option value="Thulam">Thulam (துலாம்) — Libra</option>
-              <option value="Vrichigam">Vrichigam (விருச்சிகம்) — Scorpio</option>
-              <option value="Dhanusu">Dhanusu (தனுசு) — Sagittarius</option>
-              <option value="Magaram">Magaram (மகரம்) — Capricorn</option>
-              <option value="Kumbam">Kumbam (கும்பம்) — Aquarius</option>
-              <option value="Meenam">Meenam (மீனம்) — Pisces</option>
+              <option value="Mesham">Mesham (மேஷம்) - Aries</option>
+              <option value="Rishabam">Rishabam (ரிஷபம்) - Taurus</option>
+              <option value="Midhunam">Midhunam (மிதுனம்) - Gemini</option>
+              <option value="Kadagam">Kadagam (கடகம்) - Cancer</option>
+              <option value="Simbha">Simbha (சிம்மம்) - Leo</option>
+              <option value="Kanni">Kanni (கன்னி) - Virgo</option>
+              <option value="Thulam">Thulam (துலாம்) - Libra</option>
+              <option value="Vrichigam">Vrichigam (விருச்சிகம்) - Scorpio</option>
+              <option value="Dhanusu">Dhanusu (தனுசு) - Sagittarius</option>
+              <option value="Magaram">Magaram (மகரம்) - Capricorn</option>
+              <option value="Kumbam">Kumbam (கும்பம்) - Aquarius</option>
+              <option value="Meenam">Meenam (மீனம்) - Pisces</option>
             </select>
             <p x-show="errors.raasi" class="text-red-500 text-xs mt-1">Please select your Raasi.</p>
           </div>

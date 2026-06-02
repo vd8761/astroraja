@@ -29,7 +29,7 @@ pnpm-debug.log*
 
 # ───────────────────────── Scratch / generated ──────────────────
 # temp/ holds the originbi reference project, design sample scripts,
-# and throwaway generated PDFs — none of it belongs in the repo.
+# and throwaway generated PDFs - none of it belongs in the repo.
 temp/
 
 # Generated PDFs (reports are produced at runtime, never committed)

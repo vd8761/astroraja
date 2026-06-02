@@ -4,7 +4,7 @@ c = c.replace(/'Outfit'/g, "'Inter'");
 c = c.replace(/'Lora'/g, "'Haskoy'");
 c = c.replace(/C\.saffron/g, "C.white");
 c = c.replace(/C\.saffronDark/g, "C.muted");
-c = c.replace(/—/g, "-");
+c = c.replace(/-/g, "-");
 
 // Replace AI phrases
 c = c.replace(/A Message Before You Begin/g, "Executive Summary");

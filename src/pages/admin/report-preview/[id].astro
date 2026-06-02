@@ -92,7 +92,7 @@ const getTamil = (str: any, type: string) => {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Report Preview — {report.name} | Astro Raja Admin</title>
+  <title>Report Preview - {report.name} | Astro Raja Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,500&display=swap" rel="stylesheet" />
@@ -472,19 +472,19 @@ const getTamil = (str: any, type: string) => {
       <div class="meta-grid">
         <div class="meta-item">
           <label>Raasi (Moon Sign)</label>
-          <div class="val">{report.raasi || '—'}{report.raasi && getTamil(report.raasi, 'raasi') ? ` (${getTamil(report.raasi, 'raasi')})` : ''}</div>
+          <div class="val">{report.raasi || '-'}{report.raasi && getTamil(report.raasi, 'raasi') ? ` (${getTamil(report.raasi, 'raasi')})` : ''}</div>
         </div>
         <div class="meta-item">
           <label>Lagnam (Ascendant)</label>
-          <div class="val">{report.lagnam || '—'}{report.lagnam && getTamil(report.lagnam, 'raasi') ? ` (${getTamil(report.lagnam, 'raasi')})` : ''}</div>
+          <div class="val">{report.lagnam || '-'}{report.lagnam && getTamil(report.lagnam, 'raasi') ? ` (${getTamil(report.lagnam, 'raasi')})` : ''}</div>
         </div>
         <div class="meta-item">
           <label>Nakshatra</label>
-          <div class="val">{report.nakshatra || '—'}{report.nakshatra && getTamil(report.nakshatra, 'nakshatra') ? ` (${getTamil(report.nakshatra, 'nakshatra')})` : ''}</div>
+          <div class="val">{report.nakshatra || '-'}{report.nakshatra && getTamil(report.nakshatra, 'nakshatra') ? ` (${getTamil(report.nakshatra, 'nakshatra')})` : ''}</div>
         </div>
         <div class="meta-item">
           <label>Patham</label>
-          <div class="val">{report.padam || report.form_data?.padam || '—'}{(report.padam || report.form_data?.padam) ? ` (${report.padam || report.form_data?.padam}ம் பாதம்)` : ''}</div>
+          <div class="val">{report.padam || report.form_data?.padam || '-'}{(report.padam || report.form_data?.padam) ? ` (${report.padam || report.form_data?.padam}ம் பாதம்)` : ''}</div>
         </div>
         <div class="meta-item">
           <label>Language</label>
@@ -502,7 +502,7 @@ const getTamil = (str: any, type: string) => {
         </div>
         <div class="meta-item">
           <label>Email</label>
-          <div class="val" style="font-size:13px;word-break:break-all;">{report.email || '—'}</div>
+          <div class="val" style="font-size:13px;word-break:break-all;">{report.email || '-'}</div>
         </div>
         <div class="meta-item">
           <label>Generated</label>
