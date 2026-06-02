@@ -79,7 +79,10 @@ import Layout from '../layouts/Layout.astro';
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Raasi (Moon Sign) <span class="text-brand-saffron">*</span></label>
+            <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2 flex justify-between items-center">
+              <span>Raasi (Moon Sign) <span class="text-brand-saffron">*</span></span>
+              <button type="button" x-show="formData.raasi && formData.lagnam && !showAutoCalculator" @click="showAutoCalculator = true" class="text-brand-saffron hover:underline normal-case font-medium tracking-normal">Calculate for me</button>
+            </label>
             <select x-model="formData.raasi" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all appearance-none" :class="{'border-red-500': errors.raasi}">
               <option value="">Select your Raasi</option>
               <option value="Mesham">Mesham (மேஷம்) - Aries</option>
@@ -169,7 +172,7 @@ import Layout from '../layouts/Layout.astro';
         </div>
 
         <!-- Auto Calculator UI -->
-        <div class="mt-8 p-6 bg-slate-50 border border-brand-border rounded-2xl relative overflow-hidden">
+        <div x-show="!formData.raasi || !formData.lagnam || showAutoCalculator" class="mt-8 p-6 bg-slate-50 border border-brand-border rounded-2xl relative overflow-hidden">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-start gap-4">
               <div class="w-10 h-10 rounded-full bg-white border border-brand-border flex items-center justify-center flex-shrink-0 shadow-sm text-brand-navy">
