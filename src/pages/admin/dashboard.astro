@@ -32,6 +32,26 @@ const reportsResult = await sql`
   ORDER BY r.created_at DESC LIMIT 50
 `;
 
+const referralsResult = await sql`
+  SELECT 
+    referrer.id as referrer_id, referrer.mobile_number as referrer_mobile, referrer.email as referrer_email, referrer.referral_code,
+    referred.id as referred_id, referred.mobile_number as referred_mobile, referred.email as referred_email, referred.created_at as joined_at,
+    (SELECT COUNT(id) FROM reports WHERE user_id = referred.id AND price_paid > 0) as paid_reports_count
+  FROM users referred
+  JOIN users referrer ON referred.referred_by = referrer.id
+  ORDER BY referred.created_at DESC
+  LIMIT 100
+`;
+
+const earningsResult = await sql`
+  SELECT e.*, referrer.mobile_number as referrer_mobile, referred.mobile_number as referred_mobile
+  FROM referral_earnings e
+  JOIN users referrer ON e.referrer_id = referrer.id
+  JOIN users referred ON e.referred_user_id = referred.id
+  ORDER BY e.created_at DESC
+  LIMIT 50
+`;
+
 const totalUsersResult = await sql`SELECT COUNT(*) as count FROM users`;
 const totalReportsResult = await sql`SELECT COUNT(*) as count FROM reports`;
 const totalRevenueResult = await sql`SELECT SUM(price_paid) as total FROM reports WHERE status = 'completed' OR status = 'queued'`;
@@ -108,6 +128,12 @@ const totalRevenue = totalRevenueResult[0].total || 0;
         <button @click="activeTab = 'reports'" :class="activeTab === 'reports' ? 'border-brand-navy text-brand-navy' : 'border-transparent text-brand-text-muted hover:text-brand-navy hover:border-brand-border'" class="whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors">
           AI Reports
         </button>
+        <button @click="activeTab = 'referrals'" :class="activeTab === 'referrals' ? 'border-brand-navy text-brand-navy' : 'border-transparent text-brand-text-muted hover:text-brand-navy hover:border-brand-border'" class="whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors">
+          Referrals
+        </button>
+        <button @click="activeTab = 'earnings'" :class="activeTab === 'earnings' ? 'border-brand-navy text-brand-navy' : 'border-transparent text-brand-text-muted hover:text-brand-navy hover:border-brand-border'" class="whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors">
+          Earning Logs
+        </button>
       </nav>
     </div>
 
@@ -119,6 +145,7 @@ const totalRevenue = totalRevenueResult[0].total || 0;
             <tr>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Mobile Number</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Email</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Referral Code</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Available Balance</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Total Usage History</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Joined</th>
@@ -129,6 +156,7 @@ const totalRevenue = totalRevenueResult[0].total || 0;
               <tr class="hover:bg-brand-light-bg transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-brand-navy">{user.mobile_number || '-'}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text-muted">{user.email || '-'}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text-muted font-mono bg-slate-50">{user.referral_code || '-'}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     {user.token_balance} Tokens
@@ -145,7 +173,7 @@ const totalRevenue = totalRevenueResult[0].total || 0;
               </tr>
             ))}
             {usersResult.length === 0 && (
-              <tr><td colspan="4" class="px-6 py-8 text-center text-sm text-brand-text-muted">No users found.</td></tr>
+              <tr><td colspan="6" class="px-6 py-8 text-center text-sm text-brand-text-muted">No users found.</td></tr>
             )}
           </tbody>
         </table>
@@ -214,6 +242,78 @@ const totalRevenue = totalRevenueResult[0].total || 0;
             ))}
             {reportsResult.length === 0 && (
               <tr><td colspan="6" class="px-6 py-8 text-center text-sm text-brand-text-muted">No reports generated yet.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Referrals Table -->
+    <div x-show="activeTab === 'referrals'" class="bg-white shadow-sm rounded-xl border border-brand-border overflow-hidden" style="display: none;">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-brand-border">
+          <thead class="bg-brand-light-bg">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Referrer</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Ref Code</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Referred User</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Joined At</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Status</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-brand-border">
+            {referralsResult.map((ref: any) => (
+              <tr class="hover:bg-brand-light-bg transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-brand-navy">{ref.referrer_mobile || ref.referrer_email}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text-muted font-mono bg-slate-50">{ref.referral_code}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-brand-navy">{ref.referred_mobile || ref.referred_email}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text-muted">
+                  {new Date(ref.joined_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  {parseInt(ref.paid_reports_count) > 0 ? (
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Converted</span>
+                  ) : (
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pending Purchase</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {referralsResult.length === 0 && (
+              <tr><td colspan="5" class="px-6 py-8 text-center text-sm text-brand-text-muted">No referrals found.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Earning Logs Table -->
+    <div x-show="activeTab === 'earnings'" class="bg-white shadow-sm rounded-xl border border-brand-border overflow-hidden" style="display: none;">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-brand-border">
+          <thead class="bg-brand-light-bg">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Date</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Referrer</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Referred User</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-brand-text-muted uppercase tracking-wider">Tokens Awarded</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-brand-border">
+            {earningsResult.map((log: any) => (
+              <tr class="hover:bg-brand-light-bg transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text-muted">
+                  {new Date(log.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-brand-navy">{log.referrer_mobile || `ID: ${log.referrer_id}`}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-text-muted">{log.referred_mobile || `ID: ${log.referred_user_id}`}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-saffron/10 text-brand-saffron-dark">+ {log.tokens_awarded} Tokens</span>
+                </td>
+              </tr>
+            ))}
+            {earningsResult.length === 0 && (
+              <tr><td colspan="4" class="px-6 py-8 text-center text-sm text-brand-text-muted">No earning logs found.</td></tr>
             )}
           </tbody>
         </table>
