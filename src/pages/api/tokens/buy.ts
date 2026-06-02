@@ -10,9 +10,12 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
     }
 
+    // Check if Production Environment
+    const isProduction = (import.meta.env.IS_PRODUCTION || process.env.IS_PRODUCTION) === 'true';
+
     // 2. Initialize Razorpay
-    const key_id = import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID;
-    const key_secret = import.meta.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET;
+    const key_id = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_ID || process.env.RAZORPAY_PROD_KEY_ID) : (import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID);
+    const key_secret = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_SECRET || process.env.RAZORPAY_PROD_KEY_SECRET) : (import.meta.env.RAZORPAY_DEV_KEY_SECRET || process.env.RAZORPAY_DEV_KEY_SECRET);
     
     if (!key_id || !key_secret) {
       return new Response(JSON.stringify({ error: 'Razorpay keys not configured' }), { status: 500 });
@@ -21,7 +24,8 @@ export const POST: APIRoute = async ({ request }) => {
     const razorpay = new Razorpay({ key_id, key_secret });
 
     // 3. Define Price based on environment variable (in INR)
-    const priceInr = parseInt(import.meta.env.TOKEN_PACK_PRICE_INR || process.env.TOKEN_PACK_PRICE_INR || '99');
+    const priceInrRaw = isProduction ? (import.meta.env.TOKEN_PROD_PRICE_INR || process.env.TOKEN_PROD_PRICE_INR) : (import.meta.env.TOKEN_DEV_PRICE_INR || process.env.TOKEN_DEV_PRICE_INR);
+    const priceInr = parseInt(priceInrRaw || '99');
 
     // 4. Create Order
     const options = {
