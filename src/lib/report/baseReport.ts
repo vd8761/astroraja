@@ -236,10 +236,9 @@ export class BaseReport {
 
   protected buildDisclaimer(): any[] {
     return [
-      { text: 'DISCLAIMER', font: 'Outfit', bold: true, fontSize: 26.5, color: C.indigo, alignment: 'center', characterSpacing: 1.5, lineHeight: 1.12, margin: [0, 170, 0, 18] },
+      { text: 'DISCLAIMER', font: 'Outfit', bold: true, fontSize: 26.5, color: C.indigo, alignment: 'center', characterSpacing: 1.5, lineHeight: 1.12, margin: [0, 170, 0, 18], pageBreak: 'before' },
       { ...this.goldRule(250, 0), margin: [132.5, 0, 132.5, 0] },
       { text: DISCLAIMER, font: 'Inter', fontSize: 10.5, color: C.text, lineHeight: 1.7, alignment: 'center', margin: [60, 30, 60, 0] },
-      { text: '', pageBreak: 'after' },
     ];
   }
 
@@ -355,9 +354,9 @@ export class BaseReport {
     const content = [
       ...this.buildCover(tagline),
       ...this.buildVivekananda(),
-      ...this.buildDisclaimer(),
       ...this.buildMessage(),
       ...this.renderBlocks(blocks),
+      ...this.buildDisclaimer(),
     ];
     return {
       pageSize: 'A4',
