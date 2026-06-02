@@ -105,10 +105,11 @@ export class BaseReport {
       // >50%-page-left rule (pageBreakBefore) guarantees room to render it whole.
       id: 'sectionHeader',
       columns: [
-        { width: NUM_W, text: String(num).padStart(2, '0'), font: 'Serif', bold: true, fontSize: 46, color: C.gold },
+        // lineHeight 1 keeps the big digit from being pushed down inside its box
+        { width: NUM_W, text: String(num).padStart(2, '0'), font: 'Serif', bold: true, fontSize: 46, lineHeight: 1, color: C.gold },
         { width: '*', stack: [
-          { text: title.toUpperCase(), font: 'Serif', bold: true, fontSize: 16, color: C.indigo, characterSpacing: 1, margin: [0, 18, 0, 0] },
-          this.goldRule(lineW, -6),
+          { text: title.toUpperCase(), font: 'Serif', bold: true, fontSize: 16, lineHeight: 1, color: C.indigo, characterSpacing: 1, margin: [0, 22, 0, 0] },
+          this.goldRule(lineW, -1),
         ] },
       ],
       columnGap: GAP,
@@ -159,11 +160,13 @@ export class BaseReport {
     };
   }
 
-  protected list(items: string[], ordered: boolean): any {
-    return {
+  protected list(items: string[], ordered: boolean, start = 1): any {
+    const node: any = {
       [ordered ? 'ol' : 'ul']: items.map((it) => ({ text: this.inline(it) })),
       font: 'Inter', fontSize: 9.3, color: C.text, lineHeight: 1.45, markerColor: C.gold, margin: [6, 2, 0, 12],
     };
+    if (ordered && start > 1) node.start = start;
+    return node;
   }
 
   // ── Cover ────────────────────────────────────────────────────────
@@ -256,14 +259,21 @@ export class BaseReport {
           j++;
         }
         const next: any = blocks[j + 1];
+        let afterGroup: any | null = null;
         if (next) {
           const small =
             next.type === 'para' || next.type === 'quote' ||
-            (next.type === 'list' && next.items.length <= 10) ||
             (next.type === 'table' && next.rows.length <= 12);
           if (small) { group.push(this.renderOne(next)); j++; }
+          else if (next.type === 'list' && next.items.length > 0) {
+            group.push(this.list([next.items[0]], next.ordered));
+            const rest = next.items.slice(1);
+            if (rest.length) afterGroup = this.list(rest, next.ordered, next.ordered ? 2 : 1);
+            j++;
+          }
         }
         out.push({ stack: group, unbreakable: true });
+        if (afterGroup) out.push(afterGroup);
         i = j;
         continue;
       }
@@ -334,9 +344,8 @@ export class BaseReport {
       pageSize: 'A4',
       pageMargins: [40, 58, 40, 50],
       // A new chapter continues on the same page only if >50% remains, else new page.
-      pageBreakBefore: (currentNode: any, followingNodesOnPage: any[]) => {
+      pageBreakBefore: (currentNode: any) => {
         if (currentNode.id !== 'sectionHeader') return false;
-        if (followingNodesOnPage.length === 0) return true;
         const sp = currentNode.startPosition;
         if (sp && typeof sp.verticalRatio === 'number') return sp.verticalRatio >= 0.5;
         return false;
