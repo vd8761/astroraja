@@ -46,7 +46,35 @@ const affiliatesList = await sql`
       <h2 class="text-2xl font-serif font-bold mb-2">Create Affiliate Partner</h2>
       <p class="text-brand-saffron/80 mb-6 text-sm">Generate a new affiliate account and referral link.</p>
       
-      <form action="/api/admin/create-affiliate" method="POST" class="space-y-4" x-data="{ loading: false }" @submit="loading = true">
+      <form class="space-y-4" x-data="{ 
+        loading: false,
+        async submitForm(e) {
+          this.loading = true;
+          const formData = new FormData(e.target);
+          const data = Object.fromEntries(formData.entries());
+          if (!data.referral_code) {
+            const namePart = (data.name || 'AFF').substring(0, 3).toUpperCase();
+            data.referral_code = namePart + Math.floor(1000 + Math.random() * 9000);
+          }
+          try {
+            const res = await fetch('/api/admin/create-affiliate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if (res.ok && result.success) {
+              window.location.reload();
+            } else {
+              alert(result.error || 'Failed to create affiliate');
+              this.loading = false;
+            }
+          } catch(err) {
+            alert('Network error while creating affiliate');
+            this.loading = false;
+          }
+        }
+      }" @submit.prevent="submitForm($event)">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-bold text-brand-saffron mb-1 uppercase tracking-wider">Full Name</label>
