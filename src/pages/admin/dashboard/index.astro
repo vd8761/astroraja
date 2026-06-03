@@ -1,0 +1,46 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import sql from '../../../lib/db';
+
+// Fetch Dashboard Data
+const totalUsersResult = await sql`SELECT COUNT(*) as count FROM users`;
+const totalReportsResult = await sql`SELECT COUNT(*) as count FROM reports`;
+const totalRevenueResult = await sql`SELECT SUM(price_paid) as total FROM reports WHERE status = 'completed' OR status = 'queued'`;
+const totalCommissionsPaidResult = await sql`SELECT currency, SUM(amount_paid) as total FROM commission_settlements GROUP BY currency`;
+
+const totalUsers = totalUsersResult[0].count;
+const totalReports = totalReportsResult[0].count;
+const totalRevenue = totalRevenueResult[0].total || 0;
+const totalCommissionsFormatted = totalCommissionsPaidResult.map(c => `${c.currency} ${c.total}`).join(' | ') || '0';
+---
+
+<AdminLayout title="Overview" activeTab="overview">
+  <!-- Stats Row -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-sm border border-brand-border p-6 hover:shadow-md transition-shadow flex flex-col justify-between h-full min-h-[140px]">
+      <div class="text-sm font-medium text-brand-text-muted mb-2 uppercase tracking-wider">Total Users</div>
+      <div class="text-4xl font-bold text-brand-navy">{totalUsers}</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-brand-border p-6 hover:shadow-md transition-shadow flex flex-col justify-between h-full min-h-[140px]">
+      <div class="text-sm font-medium text-brand-text-muted mb-2 uppercase tracking-wider">Total Reports Generated</div>
+      <div class="text-4xl font-bold text-brand-navy">{totalReports}</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-brand-border p-6 hover:shadow-md transition-shadow flex flex-col justify-between h-full min-h-[140px]">
+      <div class="text-sm font-medium text-brand-text-muted mb-2 uppercase tracking-wider">Total Revenue</div>
+      <div class="text-4xl font-bold text-green-600">₹{totalRevenue}</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-brand-border p-6 hover:shadow-md transition-shadow flex flex-col justify-between h-full min-h-[140px]">
+      <div class="text-sm font-medium text-brand-text-muted mb-2 uppercase tracking-wider">Total Commissions Paid</div>
+      <div class="text-3xl font-bold text-brand-navy">{totalCommissionsFormatted}</div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="bg-white rounded-xl shadow-sm border border-brand-border p-6 max-w-2xl">
+    <h3 class="text-lg font-bold text-brand-navy mb-4 font-serif">Quick Actions</h3>
+    <div class="flex flex-wrap gap-4">
+      <a href="/admin/dashboard/affiliates" class="px-4 py-2 bg-brand-navy text-white font-medium rounded-lg hover:bg-brand-purple transition-colors">Manage Affiliates</a>
+      <a href="/admin/dashboard/stuck-reports" class="px-4 py-2 bg-yellow-50 text-brand-saffron border border-yellow-200 font-medium rounded-lg hover:bg-yellow-100 transition-colors">View Incomplete Reports</a>
+    </div>
+  </div>
+</AdminLayout>

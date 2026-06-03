@@ -1,0 +1,348 @@
+---
+import '../../styles/global.css';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Affiliate Dashboard | Ask Astro Raja</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-brand-light-bg min-h-screen font-sans text-brand-navy" x-data="affiliateDashboard">
+  
+  <!-- Auth Guard inline script -->
+  <script is:inline>
+    if (!localStorage.getItem('affiliate_token')) {
+      window.location.href = '/affiliate';
+    }
+  </script>
+
+  <!-- Navigation -->
+  <nav class="bg-white border-b border-brand-border sticky top-0 z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <div class="w-8 h-8 bg-brand-navy text-brand-saffron rounded flex items-center justify-center font-bold font-serif mr-3">AR</div>
+          <span class="font-bold text-xl font-serif text-brand-navy">Ask Astro Raja</span>
+          <span class="hidden sm:inline-block ml-4 text-xs font-bold text-brand-saffron uppercase tracking-widest bg-brand-saffron/10 px-2 py-1 rounded-full border border-brand-saffron/20">Affiliate</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <a href="/" target="_blank" class="text-sm font-medium text-brand-text hover:text-brand-navy">View Site</a>
+          <button @click="logout()" class="text-sm font-bold text-red-600 hover:text-red-800 transition-colors bg-red-50 px-4 py-2 rounded-lg">Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Full Screen Dashboard Area -->
+  <div x-show="isLoading" class="flex flex-col items-center justify-center py-20">
+    <svg class="animate-spin h-10 w-10 text-brand-saffron mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <p class="text-brand-text-muted font-medium">Loading your dashboard...</p>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-show="!isLoading" style="display: none;">
+    <!-- Welcome Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl md:text-3xl font-serif font-bold text-brand-navy">Welcome back, <span x-text="affiliateName"></span>!</h1>
+      <p class="text-brand-text-muted mt-1">Manage your referrals and track your earnings.</p>
+    </div>
+
+    <!-- Toast Notification -->
+    <div x-show="toast" x-transition.opacity.duration.300ms class="fixed top-4 right-4 z-50 rounded-lg p-4 shadow-lg text-white font-medium max-w-sm" :class="toast?.type === 'error' ? 'bg-red-600' : 'bg-green-600'" style="display: none;">
+      <span x-text="toast?.message"></span>
+    </div>
+
+    <!-- Your Link Section (Hero) -->
+    <div class="bg-white rounded-2xl shadow-sm border border-brand-border p-6 md:p-8 mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="w-full md:w-1/2">
+        <h3 class="text-lg font-bold text-brand-navy mb-2">Your Unique Link</h3>
+        <p class="text-sm text-brand-text-muted mb-4">Share this link to automatically track your referrals.</p>
+        <div class="flex flex-col sm:flex-row items-center gap-3">
+          <input type="text" readonly :value="getReferralLink()" class="w-full bg-slate-50 border border-brand-border p-3 rounded-xl text-brand-navy font-mono text-sm focus:outline-none font-bold">
+          <button @click="copyLink()" class="w-full sm:w-auto px-6 py-3 bg-brand-navy text-white font-bold rounded-xl hover:bg-brand-purple transition-colors flex items-center justify-center gap-2 whitespace-nowrap shadow-md">
+            <span x-text="copyText">Copy Link</span>
+          </button>
+        </div>
+      </div>
+      <div class="w-full md:w-1/3 bg-brand-saffron/5 border border-brand-saffron/20 rounded-xl p-5 text-center">
+        <p class="text-xs text-brand-text-muted uppercase tracking-wider font-bold mb-1">Your Code</p>
+        <div class="text-2xl font-mono font-bold text-brand-saffron" x-text="referralCode"></div>
+        <p class="text-xs text-brand-text-muted mt-2">Users can manually enter this during sign-up.</p>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Users Referred -->
+      <div class="bg-white border border-brand-border rounded-xl p-6 shadow-sm">
+        <div class="text-sm font-medium text-brand-text-muted mb-1">Total Referrals</div>
+        <div class="text-3xl font-bold text-brand-navy" x-text="stats.total_referred_users">0</div>
+      </div>
+
+      <!-- Unsettled / Pending -->
+      <div class="bg-white border border-brand-border rounded-xl p-6 shadow-sm">
+        <div class="text-sm font-medium text-brand-text-muted mb-1">Pending Unsettled</div>
+        <div class="text-3xl font-bold text-brand-saffron" x-text="stats.pending_unsettled">0</div>
+        <div class="text-xs text-brand-text-muted mt-1">Conversions pending payout</div>
+      </div>
+
+      <!-- Total Paid Conversions -->
+      <div class="bg-white border border-brand-border rounded-xl p-6 shadow-sm">
+        <div class="text-sm font-medium text-brand-text-muted mb-1">Settled Conversions</div>
+        <div class="text-3xl font-bold text-green-600" x-text="stats.total_settled">0</div>
+      </div>
+
+      <!-- Total Amount Paid -->
+      <div class="bg-white border border-brand-border rounded-xl p-6 shadow-sm">
+        <div class="text-sm font-medium text-brand-text-muted mb-1">Total Earned</div>
+        <div class="text-3xl font-bold text-green-600"><span x-text="stats.settlement_currency"></span> <span x-text="stats.total_amount_paid"></span></div>
+      </div>
+    </div>
+
+    <!-- Detailed Tables Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+      
+      <!-- Referrals Table -->
+      <div class="bg-white border border-brand-border rounded-xl shadow-sm overflow-hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-brand-border bg-slate-50 flex justify-between items-center">
+          <h3 class="font-bold text-brand-navy">Your Referrals</h3>
+          <span class="text-xs text-brand-text-muted font-medium bg-white px-2 py-1 rounded-md border border-brand-border"><span x-text="referrals.length"></span> Users</span>
+        </div>
+        <div class="p-0 overflow-x-auto flex-1">
+          <table class="w-full text-left text-sm whitespace-nowrap">
+            <thead class="text-xs text-brand-text-muted uppercase bg-slate-50/50">
+              <tr>
+                <th class="px-6 py-3 font-medium tracking-wider">User</th>
+                <th class="px-6 py-3 font-medium tracking-wider">Mail ID</th>
+                <th class="px-6 py-3 font-medium tracking-wider">Joined Date</th>
+                <th class="px-6 py-3 font-medium tracking-wider">Status</th>
+                <th class="px-6 py-3 font-medium tracking-wider">Commission</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-brand-border/50">
+              <template x-if="referrals.length === 0">
+                <tr>
+                  <td colspan="4" class="px-6 py-10 text-center text-brand-text-muted">No referrals yet. Share your link to get started!</td>
+                </tr>
+              </template>
+              <template x-for="ref in paginatedReferrals" :key="ref.id">
+                <tr class="hover:bg-slate-50 transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="font-medium text-brand-navy" x-text="ref.profile_name || 'Anonymous User'"></div>
+                    <div class="text-xs text-brand-text-muted" x-text="ref.contact_info"></div>
+                  </td>
+                  <td class="px-6 py-4 text-brand-text-muted" x-text="ref.email || 'N/A'"></td>
+                  <td class="px-6 py-4 text-brand-text-muted" x-text="new Date(ref.joined_date).toLocaleDateString()"></td>
+                  <td class="px-6 py-4">
+                    <span x-show="ref.has_converted" class="px-2.5 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-md">Report Generated</span>
+                    <span x-show="!ref.has_converted" class="px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-600 rounded-md">Registered</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span x-show="ref.has_converted && ref.commission_settled" class="px-2.5 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-md">Settled</span>
+                    <span x-show="ref.has_converted && !ref.commission_settled" class="px-2.5 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-md">Pending</span>
+                    <span x-show="!ref.has_converted" class="text-xs text-brand-text-muted">-</span>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Referrals Pagination Footer -->
+        <div class="px-6 py-4 border-t border-brand-border bg-slate-50 flex items-center justify-between">
+          <p class="text-sm text-brand-text-muted">
+            Showing <span class="font-medium text-brand-navy" x-text="Math.min((refPage - 1) * refLimit + 1, referrals.length)"></span>
+            to <span class="font-medium text-brand-navy" x-text="Math.min(refPage * refLimit, referrals.length)"></span>
+            of <span class="font-medium text-brand-navy" x-text="referrals.length"></span> users
+          </p>
+          <div class="flex gap-2">
+            <button 
+              @click="if(refPage > 1) refPage--" 
+              :disabled="refPage === 1"
+              class="px-3 py-1 text-sm border border-brand-border rounded-md hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-brand-navy font-medium">
+              Previous
+            </button>
+            <button 
+              @click="if(refPage < refTotalPages) refPage++" 
+              :disabled="refPage === refTotalPages"
+              class="px-3 py-1 text-sm border border-brand-border rounded-md hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-brand-navy font-medium">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settlements Table -->
+      <div class="bg-white border border-brand-border rounded-xl shadow-sm overflow-hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-brand-border bg-slate-50 flex justify-between items-center">
+          <h3 class="font-bold text-brand-navy">Settlement History</h3>
+        </div>
+        <div class="p-0 overflow-x-auto flex-1">
+          <table class="w-full text-left text-sm whitespace-nowrap">
+            <thead class="text-xs text-brand-text-muted uppercase bg-slate-50/50">
+              <tr>
+                <th class="px-6 py-3 font-medium tracking-wider">Date</th>
+                <th class="px-6 py-3 font-medium tracking-wider">Amount Paid</th>
+                <th class="px-6 py-3 font-medium tracking-wider">Referrals Covered</th>
+                <th class="px-6 py-3 font-medium tracking-wider">Notes</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-brand-border/50">
+              <template x-if="settlements.length === 0">
+                <tr>
+                  <td colspan="4" class="px-6 py-10 text-center text-brand-text-muted">No settlements yet.</td>
+                </tr>
+              </template>
+              <template x-for="set in paginatedSettlements" :key="set.id">
+                <tr class="hover:bg-slate-50 transition-colors">
+                  <td class="px-6 py-4 text-brand-navy font-medium" x-text="new Date(set.created_at).toLocaleDateString()"></td>
+                  <td class="px-6 py-4 text-green-600 font-bold"><span x-text="set.currency"></span> <span x-text="set.amount_paid"></span></td>
+                  <td class="px-6 py-4 text-brand-navy"><span x-text="set.referrals_covered_count"></span> conversions</td>
+                  <td class="px-6 py-4 text-brand-text-muted" x-text="set.notes || '-'"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Settlements Pagination Footer -->
+        <div class="px-6 py-4 border-t border-brand-border bg-slate-50 flex items-center justify-between">
+          <p class="text-sm text-brand-text-muted">
+            Showing <span class="font-medium text-brand-navy" x-text="Math.min((setPage - 1) * setLimit + 1, settlements.length)"></span>
+            to <span class="font-medium text-brand-navy" x-text="Math.min(setPage * setLimit, settlements.length)"></span>
+            of <span class="font-medium text-brand-navy" x-text="settlements.length"></span> settlements
+          </p>
+          <div class="flex gap-2">
+            <button 
+              @click="if(setPage > 1) setPage--" 
+              :disabled="setPage === 1"
+              class="px-3 py-1 text-sm border border-brand-border rounded-md hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-brand-navy font-medium">
+              Previous
+            </button>
+            <button 
+              @click="if(setPage < setTotalPages) setPage++" 
+              :disabled="setPage === setTotalPages"
+              class="px-3 py-1 text-sm border border-brand-border rounded-md hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-brand-navy font-medium">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script is:inline>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('affiliateDashboard', () => ({
+        isLoading: true,
+        copyText: 'Copy Link',
+        toast: null,
+        
+        affiliateName: '',
+        referralCode: '',
+        stats: {
+          total_referred_users: 0,
+          total_settled: 0,
+          pending_unsettled: 0,
+          total_amount_paid: 0,
+          settlement_currency: 'INR'
+        },
+        referrals: [],
+        settlements: [],
+        
+        refPage: 1,
+        refLimit: 20,
+        get paginatedReferrals() {
+          const start = (this.refPage - 1) * this.refLimit;
+          return this.referrals.slice(start, start + this.refLimit);
+        },
+        get refTotalPages() {
+          return Math.max(1, Math.ceil(this.referrals.length / this.refLimit));
+        },
+        
+        setPage: 1,
+        setLimit: 20,
+        get paginatedSettlements() {
+          const start = (this.setPage - 1) * this.setLimit;
+          return this.settlements.slice(start, start + this.setLimit);
+        },
+        get setTotalPages() {
+          return Math.max(1, Math.ceil(this.settlements.length / this.setLimit));
+        },
+        
+        async init() {
+          const token = localStorage.getItem('affiliate_token');
+          if (!token) return;
+
+          let storedName = localStorage.getItem('affiliate_name');
+          if (!storedName || storedName === 'null' || storedName === 'undefined') {
+            this.affiliateName = 'Partner';
+          } else {
+            this.affiliateName = storedName;
+          }
+          this.referralCode = localStorage.getItem('affiliate_refcode') || '';
+          
+          await this.fetchStats(token);
+        },
+
+        async fetchStats(token) {
+          try {
+            const response = await fetch('/api/affiliate/stats', {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+              this.stats = data.stats;
+              this.referrals = data.referrals || [];
+              this.settlements = data.settlements || [];
+            } else {
+              this.logout(); // Token expired or invalid
+            }
+          } catch(e) {
+            console.error(e);
+            this.showToast('error', 'Failed to load stats');
+          } finally {
+            this.isLoading = false;
+          }
+        },
+
+        logout() {
+          localStorage.removeItem('affiliate_token');
+          localStorage.removeItem('affiliate_name');
+          localStorage.removeItem('affiliate_refcode');
+          window.location.href = '/affiliate';
+        },
+
+        showToast(type, message) {
+          this.toast = { type, message };
+          setTimeout(() => this.toast = null, 4000);
+        },
+
+        getReferralLink() {
+          if (!this.referralCode) return '';
+          return `${window.location.origin}/get-reading?ref=${this.referralCode}`;
+        },
+
+        copyLink() {
+          const link = this.getReferralLink();
+          
+          navigator.clipboard.writeText(link).then(() => {
+            this.copyText = 'Copied!';
+            setTimeout(() => this.copyText = 'Copy Link', 2000);
+          });
+        }
+      }));
+    });
+  </script>
+</body>
+</html>

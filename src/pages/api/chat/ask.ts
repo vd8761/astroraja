@@ -104,7 +104,8 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // 4. Call Claude AI
-    const anthropic = new Anthropic();
+    const apiKey = import.meta.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
+    const anthropic = new Anthropic({ apiKey: apiKey });
     const claudeModel = import.meta.env.ANTHROPIC_MODEL || process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5';
     const systemPrompt = `You are Astro Raja AI, an expert, deeply empathetic astrologer. 
 Your goal is to answer the user's specific question based strictly on the Astrological Context provided below.

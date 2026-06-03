@@ -8,14 +8,33 @@ export const POST: APIRoute = async ({ request }) => {
     // Here we'll just allow it since the dashboard is already protected,
     // but in a real scenario you'd verify the admin auth cookie if it wasn't a cron call.
 
-    // 1. Find reports stuck in 'processing' for more than 30 minutes
-    const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    // Optional: Accept array of specific report IDs from frontend
+    let stuckReports = [];
     
-    const stuckReports = await sql`
-      SELECT id FROM reports 
-      WHERE status = 'processing' 
-      AND created_at < ${thirtyMinsAgo}
-    `;
+    if (request.method === 'POST' && request.headers.get('content-type')?.includes('application/json')) {
+      try {
+        const body = await request.json();
+        if (body && Array.isArray(body.report_ids) && body.report_ids.length > 0) {
+          const ids = body.report_ids;
+          // Security: validate IDs are strings
+          if (ids.every(id => typeof id === 'string')) {
+            stuckReports = await sql`SELECT id FROM reports WHERE id IN ${sql(ids)}`;
+          }
+        }
+      } catch (e) {
+        // ignore parse errors, fallback to default behavior
+      }
+    }
+
+    if (stuckReports.length === 0) {
+      // Default: Find reports stuck in 'processing' or 'queued' for more than 30 minutes
+      const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+      stuckReports = await sql`
+        SELECT id FROM reports 
+        WHERE (status = 'processing' OR status = 'queued' OR status = 'failed')
+        AND created_at < ${thirtyMinsAgo}
+      `;
+    }
 
     if (stuckReports.length === 0) {
       return new Response(JSON.stringify({ success: true, message: 'No stuck reports found.' }), { status: 200 });

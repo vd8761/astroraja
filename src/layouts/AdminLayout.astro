@@ -1,0 +1,105 @@
+---
+import crypto from 'crypto';
+import '../styles/global.css';
+
+const adminPassword = import.meta.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+
+if (!adminPassword) {
+  return Astro.redirect('/admin');
+}
+
+const expectedHash = crypto.scryptSync(adminPassword, 'admin_salt', 64).toString('hex');
+const authCookie = Astro.cookies.get('astro_admin_auth')?.value;
+
+if (authCookie !== expectedHash) {
+  return Astro.redirect('/admin');
+}
+
+export interface Props {
+  title?: string;
+  activeTab?: string;
+}
+
+const { title = "Admin Portal", activeTab = "overview" } = Astro.props;
+
+const navItems = [
+  { id: 'overview', label: 'Overview', href: '/admin/dashboard' },
+  { id: 'users', label: 'Users', href: '/admin/dashboard/users' },
+  { id: 'reports', label: 'AI Reports', href: '/admin/dashboard/reports' },
+  { id: 'stuck-reports', label: 'Incomplete Reports', href: '/admin/dashboard/stuck-reports' },
+  { id: 'affiliates', label: 'Affiliates', href: '/admin/dashboard/affiliates' },
+  { id: 'commissions', label: 'Commissions', href: '/admin/dashboard/commissions' },
+];
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Astro Raja - {title}</title>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-brand-light-bg min-h-screen text-brand-navy font-sans flex flex-col md:flex-row" x-data="{ sidebarOpen: false, toast: null }">
+  
+  <!-- Toast Notification -->
+  <div x-show="toast" x-transition.opacity.duration.300ms class="fixed top-4 right-4 z-50 rounded-lg p-4 shadow-lg text-white font-medium max-w-sm" :class="toast?.type === 'error' ? 'bg-red-600' : 'bg-green-600'" style="display: none;">
+    <span x-text="toast?.message"></span>
+  </div>
+
+  <!-- Mobile Sidebar Toggle -->
+  <div class="md:hidden bg-brand-navy text-white p-4 flex justify-between items-center z-20">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-brand-saffron text-brand-navy rounded flex items-center justify-center font-bold font-serif">AR</div>
+      <span class="font-serif font-bold text-lg">Admin Portal</span>
+    </div>
+    <button @click="sidebarOpen = !sidebarOpen" class="text-white focus:outline-none">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-brand-border transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto md:w-64 flex flex-col z-10">
+    <div class="h-16 flex items-center px-6 border-b border-brand-border hidden md:flex">
+      <div class="w-8 h-8 bg-brand-navy text-brand-saffron rounded flex items-center justify-center font-bold font-serif mr-3">AR</div>
+      <span class="font-bold text-lg font-serif text-brand-navy">Admin Portal</span>
+    </div>
+
+    <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+      {navItems.map(item => (
+        <a href={item.href} class={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeTab === item.id ? 'bg-brand-saffron/10 text-brand-navy font-bold' : 'text-brand-text-muted hover:bg-slate-50 hover:text-brand-navy'}`}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="p-4 border-t border-brand-border">
+      <div class="flex flex-col gap-2">
+        <a href="/" target="_blank" class="w-full text-center px-4 py-2 text-sm font-medium text-brand-text hover:text-brand-navy bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">View Site</a>
+        <button @click="logout()" class="w-full px-4 py-2 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors" x-data="{
+          async logout() {
+            await fetch('/api/admin/logout', { method: 'POST' });
+            window.location.href = '/admin';
+          }
+        }">Logout</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <!-- Top Header for Page Title -->
+    <header class="bg-white border-b border-brand-border h-16 flex items-center px-6 hidden md:flex shrink-0">
+      <h1 class="text-xl font-bold font-serif text-brand-navy">{title}</h1>
+    </header>
+
+    <!-- Content Area -->
+    <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+      <slot />
+    </div>
+  </main>
+</body>
+</html>

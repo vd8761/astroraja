@@ -1,0 +1,149 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import sql from '../../../lib/db';
+
+const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+
+const url = new URL(Astro.request.url);
+const page = parseInt(url.searchParams.get('page') || '1');
+const limit = 20;
+const offset = (page - 1) * limit;
+
+const [{ count }] = await sql`
+  SELECT COUNT(*) FROM reports 
+  WHERE (status = 'processing' OR status = 'queued' OR status = 'failed') 
+  AND created_at < ${thirtyMinsAgo}
+`;
+const totalReports = parseInt(count);
+const totalPages = Math.ceil(totalReports / limit);
+
+const stuckReportsResult = await sql`
+  SELECT r.id, r.language, r.status, r.price_paid, r.currency, r.created_at, p.name as profile_name
+  FROM reports r
+  LEFT JOIN profiles p ON r.profile_id = p.id
+  WHERE (r.status = 'processing' OR r.status = 'queued' OR r.status = 'failed')
+  AND r.created_at < ${thirtyMinsAgo}
+  ORDER BY r.created_at DESC
+  LIMIT ${limit} OFFSET ${offset}
+`;
+---
+
+<AdminLayout title="Incomplete Reports" activeTab="stuck-reports">
+  <div class="mb-6 flex justify-between items-center bg-white p-6 rounded-xl border border-brand-border shadow-sm">
+    <div>
+      <h2 class="text-xl font-bold font-serif text-brand-navy">Incomplete Reports</h2>
+      <p class="text-sm text-brand-text-muted mt-1">Reports that have been processing/queued for >30 minutes or have failed.</p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-brand-border overflow-hidden" x-data="{
+    selectedIds: [],
+    loading: false,
+    toggleAll(e) {
+      if(e.target.checked) {
+        this.selectedIds = Array.from(document.querySelectorAll('.report-checkbox')).map(cb => cb.value);
+      } else {
+        this.selectedIds = [];
+      }
+    },
+    async retrySelected() {
+      if(this.selectedIds.length === 0) {
+        alert('Please select at least one report to retry.');
+        return;
+      }
+      if(!confirm(`Are you sure you want to requeue ${this.selectedIds.length} report(s)?`)) return;
+      
+      this.loading = true;
+      try {
+        const res = await fetch('/api/admin/retry-stuck-reports', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ report_ids: this.selectedIds })
+        });
+        const data = await res.json();
+        alert(data.message || data.error);
+        if(data.success) {
+          window.location.reload();
+        }
+      } catch(e) {
+        alert('Failed to retry reports.');
+      } finally {
+        this.loading = false;
+      }
+    }
+  }">
+    
+    <div class="px-6 py-4 border-b border-brand-border bg-slate-50 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <h3 class="font-bold text-brand-navy">Reports List</h3>
+        <span class="px-2.5 py-1 text-xs font-bold bg-amber-100 text-amber-800 rounded-md" x-text="`${selectedIds.length} Selected`" x-show="selectedIds.length > 0"></span>
+      </div>
+      <button @click="retrySelected()" class="px-4 py-2 bg-brand-saffron text-brand-navy font-bold rounded-lg hover:bg-[#ffb040] transition-colors shadow-sm text-sm flex items-center gap-2" :disabled="loading || selectedIds.length === 0" :class="(loading || selectedIds.length === 0) ? 'opacity-50 cursor-not-allowed' : ''">
+        <svg x-show="!loading" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        <span x-show="!loading">Retry Selected</span>
+        <span x-show="loading">Requeuing...</span>
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm whitespace-nowrap">
+        <thead class="text-xs text-brand-text-muted uppercase bg-slate-50/50">
+          <tr>
+            <th class="px-6 py-3 font-medium tracking-wider w-10">
+              <input type="checkbox" @change="toggleAll" class="rounded text-brand-saffron focus:ring-brand-saffron border-brand-border h-4 w-4">
+            </th>
+            <th class="px-6 py-3 font-medium tracking-wider">Report ID</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Profile</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Status</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Created</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-brand-border/50">
+          {stuckReportsResult.map(report => (
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="px-6 py-4">
+                <input type="checkbox" x-model="selectedIds" value={report.id} class="report-checkbox rounded text-brand-saffron focus:ring-brand-saffron border-brand-border h-4 w-4">
+              </td>
+              <td class="px-6 py-4 text-xs font-mono text-brand-text-muted truncate max-w-[150px]">{report.id}</td>
+              <td class="px-6 py-4 text-brand-navy font-bold">{report.profile_name || 'Unknown'}</td>
+              <td class="px-6 py-4">
+                <span class={`px-2.5 py-1 text-xs font-medium rounded-md ${
+                  report.status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {report.status}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-brand-text-muted">{new Date(report.created_at).toLocaleString()}</td>
+            </tr>
+          ))}
+          {stuckReportsResult.length === 0 && (
+            <tr>
+              <td colspan="5" class="px-6 py-10 text-center text-brand-text-muted">No incomplete reports found! Everything is running smoothly.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="px-6 py-4 border-t border-brand-border bg-white flex items-center justify-between">
+      <div class="text-sm text-brand-text-muted">
+        Showing <span class="font-medium text-brand-navy">{totalReports === 0 ? 0 : offset + 1}</span> to <span class="font-medium text-brand-navy">{Math.min(offset + limit, totalReports)}</span> of <span class="font-medium text-brand-navy">{totalReports}</span> reports
+      </div>
+      <div class="flex items-center gap-2">
+        {page > 1 ? (
+          <a href={`?page=${page - 1}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Previous</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Previous</span>
+        )}
+        <span class="px-3 py-1 text-sm font-medium text-brand-navy">Page {page} of {Math.max(totalPages, 1)}</span>
+        {page < totalPages ? (
+          <a href={`?page=${page + 1}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Next</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Next</span>
+        )}
+      </div>
+    </div>
+
+  </div>
+</AdminLayout>

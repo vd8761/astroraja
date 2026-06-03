@@ -14,7 +14,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     if (password === adminPassword) {
-      const hash = crypto.createHash('sha256').update(adminPassword).digest('hex');
+      const hash = crypto.scryptSync(adminPassword, 'admin_salt', 64).toString('hex');
       
       cookies.set('astro_admin_auth', hash, {
         path: '/',

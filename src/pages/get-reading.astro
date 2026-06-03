@@ -61,7 +61,7 @@ import Layout from '../layouts/Layout.astro';
                 </div>
               </div>
               <div class="relative flex-1 flex items-center">
-                <input type="tel" x-model="formData.mobile" @input="onMobileInput($event)" @blur="onMobileBlur" :placeholder="mobilePlaceholder" class="w-full p-4 pr-16 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all" :class="{'border-red-500': errors.mobile}">
+                <input type="tel" x-model="formData.mobile" @input="onMobileInput($event)" @blur="onMobileBlur" :placeholder="mobilePlaceholder" :maxlength="mobileMaxLength" class="w-full p-4 pr-16 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all" :class="{'border-red-500': errors.mobile}">
                 <div class="absolute right-4 text-xs font-medium text-brand-text-muted/60 bg-transparent pl-1 pointer-events-none">
                   <span x-text="formData.mobile.length"></span>/<span x-text="mobileMaxLength"></span>
                 </div>
@@ -74,7 +74,7 @@ import Layout from '../layouts/Layout.astro';
         <!-- Referral Code -->
         <div>
           <label class="block text-xs font-bold text-brand-navy uppercase tracking-wider mb-2">Referral Code <span class="text-brand-text-muted font-normal">(Optional)</span></label>
-          <input type="text" x-model="formData.referralCode" placeholder="Enter code if you have one" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all uppercase" maxlength="6">
+          <input type="text" x-model="formData.referralCode" placeholder="Enter code if you have one" class="w-full p-4 bg-white border border-brand-border rounded-xl focus:border-brand-saffron focus:ring-2 focus:ring-brand-saffron/20 outline-none transition-all uppercase" maxlength="20">
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -428,6 +428,57 @@ import Layout from '../layouts/Layout.astro';
         </div>
       )}
 
+      <!-- WhatsApp Details (Step 6 addition) -->
+      <div class="bg-green-50 border border-green-200 rounded-xl p-6 mb-6">
+        <div class="flex items-start gap-4">
+          <div class="flex-shrink-0 mt-1">
+            <svg class="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.489-1.761-1.663-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="font-bold text-brand-navy mb-1 text-sm uppercase tracking-wider">WhatsApp Number</h3>
+            <p class="text-xs text-brand-text-muted mb-4">We will use this to invite you to our exclusive WhatsApp community for daily guidance.</p>
+            
+            <label class="flex items-center gap-3 cursor-pointer group mb-4">
+              <div class="relative flex items-center justify-center">
+                <input type="checkbox" x-model="formData.whatsappSameAsMobile" class="peer sr-only">
+                <div class="w-5 h-5 border-2 border-brand-border rounded transition-colors peer-checked:bg-green-500 peer-checked:border-green-500 group-hover:border-green-500"></div>
+                <svg class="w-3.5 h-3.5 text-white absolute inset-0 m-auto pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <span class="text-sm font-semibold text-brand-navy select-none">Same as my registered mobile number</span>
+            </label>
+
+            <!-- Custom WhatsApp Number Input -->
+            <div x-show="!formData.whatsappSameAsMobile" x-collapse>
+              <div class="mt-2 bg-white rounded-xl border-2 border-brand-border focus-within:border-green-500 transition-colors p-1 flex relative">
+                <!-- Country Code Selector -->
+                <button type="button" @click="waCountryOpen = !waCountryOpen" @click.outside="waCountryOpen = false" class="flex items-center gap-2 px-3 py-3 rounded-lg hover:bg-slate-50 transition-colors text-brand-navy font-semibold whitespace-nowrap min-w-[90px] border-r border-brand-border" aria-haspopup="listbox" :aria-expanded="waCountryOpen">
+                  <span x-text="countries.find(c => c.code === formData.whatsappCountryCode)?.flag || '🇮🇳'"></span>
+                  <span x-text="formData.whatsappCountryCode"></span>
+                  <svg class="w-4 h-4 text-brand-text-muted transition-transform" :class="waCountryOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                
+                <!-- Country Dropdown -->
+                <div x-show="waCountryOpen" x-transition.opacity style="display: none;" class="absolute top-full left-0 mt-2 w-72 max-h-80 overflow-y-auto bg-white border border-brand-border rounded-xl shadow-2xl z-50 py-2" role="listbox">
+                  <div class="px-3 pb-2 sticky top-0 bg-white">
+                    <input type="text" x-model="waCountrySearch" placeholder="Search country or code..." class="w-full bg-slate-50 border border-brand-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-navy" @click.stop>
+                  </div>
+                  <template x-for="country in waFilteredCountries" :key="country.code + country.iso">
+                    <button type="button" @click="selectWaCountry(country.code)" class="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors flex items-center justify-between group" :class="formData.whatsappCountryCode === country.code ? 'bg-brand-saffron/5' : ''" role="option" :aria-selected="formData.whatsappCountryCode === country.code">
+                      <span class="flex items-center gap-3">
+                        <span class="text-xl" x-text="country.flag"></span>
+                        <span class="text-sm font-medium text-brand-navy group-hover:text-brand-saffron transition-colors" x-text="country.name"></span>
+                      </span>
+                      <span class="text-xs font-mono text-brand-text-muted" x-text="country.code"></span>
+                    </button>
+                  </template>
+                </div>
+
+                <input type="tel" x-model="formData.whatsappNumber" placeholder="WhatsApp Number" class="flex-1 bg-transparent px-4 py-3 text-lg font-medium text-brand-navy placeholder:text-brand-text-muted/50 focus:outline-none w-full min-w-0" :maxlength="mobileMaxLength">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Success State -->
@@ -444,12 +495,31 @@ import Layout from '../layouts/Layout.astro';
         <p class="text-brand-text font-medium leading-relaxed">
           It will be delivered to <strong x-text="formData.email"></strong> very shortly.<br>
           <span class="text-brand-navy font-bold mt-3 mb-2 block">You can safely close this page. We'll email you the moment it's ready!</span>
-          <p class="text-xs text-brand-text-muted mt-4">
+          <p class="text-xs text-brand-text-muted mt-4 mb-4">
             (Don't forget to check your spam/junk folder just in case)
           </p>
         </p>
-        <div class="mt-8">
-          <a href="/get-reading?new=1" class="px-6 py-3 rounded-xl bg-brand-navy text-white font-bold hover:bg-brand-purple transition-colors shadow-md inline-block">
+        
+        <!-- WhatsApp Join Channel Button -->
+        <div class="mt-8 bg-green-50 border border-green-200 rounded-xl p-6 relative overflow-hidden text-left shadow-sm">
+          <div class="absolute -right-4 -bottom-4 opacity-10 pointer-events-none">
+            <svg class="w-32 h-32 text-green-600" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.489-1.761-1.663-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          </div>
+          <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <div class="text-[10px] font-bold text-green-600 uppercase tracking-widest mb-1">Stay Connected</div>
+              <h3 class="font-bold text-brand-navy text-lg leading-tight">Join the Astro Raja WhatsApp Channel</h3>
+              <p class="text-sm text-brand-text-muted mt-1">Get daily cosmic updates, exclusive guidance, and special offers.</p>
+            </div>
+            <a :href="userId ? `/api/join-whatsapp?userId=${userId}` : '/api/join-whatsapp'" target="_blank" rel="noopener noreferrer" class="px-6 py-3 rounded-xl bg-green-500 text-white font-bold hover:bg-green-600 transition-colors shadow-md shadow-green-500/20 whitespace-nowrap flex items-center gap-2 group flex-shrink-0 w-full md:w-auto justify-center">
+              Join Channel
+              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <a href="/get-reading?new=1" class="px-6 py-3 text-brand-text-muted text-sm font-semibold hover:text-brand-navy transition-colors inline-block underline">
             Get Another Reading
           </a>
         </div>
@@ -516,7 +586,8 @@ document.addEventListener('alpine:init', () => {
     stepLabels: ['Your Details', 'Current Struggles', 'Daily Life', 'Life Goals', 'Spiritual Orientation'],
     formData: {
       name: '', email: '', countryCode: '+91', mobile: '', language: 'English', raasi: '', lagnam: '', nakshatra: '', padam: '',
-      struggles: [], dailyLife: '', goals: [], spiritual: '', referralCode: ''
+      struggles: [], dailyLife: '', goals: [], spiritual: '', referralCode: '',
+      whatsappSameAsMobile: true, whatsappNumber: '', whatsappCountryCode: '+91'
     },
     errors: {
       name: false, email: false, mobile: false, raasi: false, lagnam: false, nakshatra: false,
@@ -542,9 +613,19 @@ document.addEventListener('alpine:init', () => {
     countrySearch: '',
     countryOpen: false,
     
+    waCountrySearch: '',
+    waCountryOpen: false,
+    userId: null,
+    
     get filteredCountries() {
       if (!this.countrySearch) return this.countries;
       const s = this.countrySearch.toLowerCase();
+      return this.countries.filter(c => c.name.toLowerCase().includes(s) || c.code.includes(s));
+    },
+
+    get waFilteredCountries() {
+      if (!this.waCountrySearch) return this.countries;
+      const s = this.waCountrySearch.toLowerCase();
       return this.countries.filter(c => c.name.toLowerCase().includes(s) || c.code.includes(s));
     },
 
@@ -552,6 +633,12 @@ document.addEventListener('alpine:init', () => {
       this.formData.countryCode = code;
       this.countryOpen = false;
       this.countrySearch = '';
+    },
+
+    selectWaCountry(code) {
+      this.formData.whatsappCountryCode = code;
+      this.waCountryOpen = false;
+      this.waCountrySearch = '';
     },
 
     onMobileInput(e) {
@@ -732,6 +819,7 @@ document.addEventListener('alpine:init', () => {
           if (parsed.formData) this.formData = { ...this.formData, ...parsed.formData };
           if (parsed.step !== undefined) this.step = parsed.step;
           if (parsed.isSubmitted === true) this.isComplete = true;
+          if (parsed.userId) this.userId = parsed.userId;
         } catch(e) {}
       }
 
@@ -911,12 +999,18 @@ document.addEventListener('alpine:init', () => {
           throw new Error(typeof result.error === 'string' ? result.error : (result.message || 'Unknown error'));
         }
         
+        // Save the userId to the Alpine state so we can generate the tracking link
+        if (result.userId) {
+          this.userId = result.userId;
+        }
+        
         // Immediately record that the request was successfully queued
         // If the user refreshes during the animation, they skip the form and go straight to the Success page
         sessionStorage.setItem('astroraja_form_state', JSON.stringify({
           formData: this.formData,
           step: this.step,
-          isSubmitted: true
+          isSubmitted: true,
+          userId: this.userId
         }));
 
         // --- Simulated Loading Process (35 seconds) ---
