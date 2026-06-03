@@ -18,7 +18,7 @@ export const POST: APIRoute = async ({ request }) => {
           const ids = body.report_ids;
           // Security: validate IDs are strings
           if (ids.every(id => typeof id === 'string')) {
-            stuckReports = await sql`SELECT id FROM reports WHERE id IN ${sql(ids)}`;
+            stuckReports = await sql`SELECT id FROM reports WHERE id = ANY(${ids})`;
           }
         }
       } catch (e) {
