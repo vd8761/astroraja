@@ -646,9 +646,6 @@ Read `/mnt/skills/public/docx/SKILL.md` before writing any code.
 | Weakness header | #7B1818 bg, white text |
 
 ### Heading Style
-- Report title: Centered, 36pt bold, #1A3C5E
-- Subtitle (identity sentence): Centered, 18pt italic, #2E75B6
-- Astro detail line: Centered, 12pt, #2C2C2C
 - SECTION headers: 18pt bold, #1A3C5E, with thick left border bar
 - Sub-section headers: 14pt bold, #2E75B6
 
