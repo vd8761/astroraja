@@ -32,7 +32,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     
     // Fallback for existing affiliates with legacy sha256 password hashes
     if (affiliate.password_hash.length === 64) {
-      hashedInput = crypto.createHash('sha256').update(password).digest('hex');
+      const buffer = await globalThis.crypto.subtle.digest("SHA-256", new TextEncoder().encode(password));
+      hashedInput = Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     if (hashedInput !== affiliate.password_hash) {
