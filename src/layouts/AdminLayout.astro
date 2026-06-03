@@ -2,19 +2,6 @@
 import crypto from 'crypto';
 import '../styles/global.css';
 
-const adminPassword = import.meta.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
-
-if (!adminPassword) {
-  return Astro.redirect('/admin');
-}
-
-const expectedHash = crypto.scryptSync(adminPassword, 'admin_salt', 64).toString('hex');
-const authCookie = Astro.cookies.get('astro_admin_auth')?.value;
-
-if (authCookie !== expectedHash) {
-  return Astro.redirect('/admin');
-}
-
 export interface Props {
   title?: string;
   activeTab?: string;
