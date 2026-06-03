@@ -104,6 +104,12 @@ export const POST: APIRoute = async ({ request }) => {
     `;
     const report_id = reports[0].id;
 
+    // Insert notification for the user queuing the report
+    await sql`
+      INSERT INTO notifications (user_id, title, message, category, action_type)
+      VALUES (${user_id}, 'Reading Request Received', 'Your birth chart reading request is now in queue. Our cosmic AI is preparing your personalized analysis.', 'Alert', 'chat')
+    `;
+
     // 3.5 Check for Referral Rewards on Paid Reports
     if (data.price_paid > 0) {
       const userInfo = await sql`SELECT referred_by FROM users WHERE id = ${user_id}`;
@@ -118,6 +124,10 @@ export const POST: APIRoute = async ({ request }) => {
           await sql`
             INSERT INTO referral_earnings (referrer_id, referred_user_id, tokens_awarded)
             VALUES (${referrerId}, ${user_id}, ${REWARD_TOKENS})
+          `;
+          await sql`
+            INSERT INTO notifications (user_id, title, message, category, action_type)
+            VALUES (${referrerId}, 'Referral Bonus Received!', ${`Your friend completed their first purchase! You have earned ${REWARD_TOKENS} bonus credits as a referral reward.`}, 'Promo', 'promo')
           `;
           console.log(`Referral reward of ${REWARD_TOKENS} granted to ${referrerId} for report ${report_id}`);
         }

@@ -92,6 +92,10 @@ export const POST: APIRoute = async ({ request }) => {
         SET token_balance = COALESCE(token_balance, 0) + ${tokensToAdd} 
         WHERE id = ${user.userId as string}
       `;
+      await sql`
+        INSERT INTO notifications (user_id, title, message, category, action_type)
+        VALUES (${user.userId as string}, 'Top-Up Successful', ${`Successfully added ${tokensToAdd} credits to your account. Your connection with the cosmos is fully powered!`}, 'Promo', 'promo')
+      `;
     }
 
     // Log the transaction
@@ -126,6 +130,11 @@ export const POST: APIRoute = async ({ request }) => {
         await sql`
           INSERT INTO referral_earnings (referrer_id, referred_user_id, tokens_awarded, trigger_transaction_id)
           VALUES (${referrerId}, ${user.userId as string}, ${REWARD_TOKENS}, ${transactionId})
+        `;
+        
+        await sql`
+          INSERT INTO notifications (user_id, title, message, category, action_type)
+          VALUES (${referrerId}, 'Referral Bonus Received!', ${`Your friend completed their first purchase! You have earned ${REWARD_TOKENS} bonus credits as a referral reward.`}, 'Promo', 'promo')
         `;
         console.log(`Referral reward of ${REWARD_TOKENS} granted to ${referrerId} for referring ${user.userId}`);
       }

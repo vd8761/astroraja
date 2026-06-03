@@ -22,7 +22,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // 2. Fetch Report & Profile from Database
     const reports = await sql`
-      SELECT r.id, r.language, r.form_data, r.raw_markdown_report, r.tokens_used, r.status, p.name, p.raasi, p.lagnam, p.nakshatra, u.email 
+      SELECT r.id, r.user_id, r.language, r.form_data, r.raw_markdown_report, r.tokens_used, r.status, p.name, p.raasi, p.lagnam, p.nakshatra, u.email 
       FROM reports r
       JOIN profiles p ON r.profile_id = p.id
       JOIN users u ON r.user_id = u.id
@@ -195,6 +195,11 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
       UPDATE reports 
       SET status = 'completed', raw_markdown_report = ${textContent}, tokens_used = ${totalTokensUsed}, form_data = ${data}
       WHERE id = ${report_id}
+    `;
+
+    await sql`
+      INSERT INTO notifications (user_id, title, message, category, action_type)
+      VALUES (${report.user_id}, 'Your Astro Reading is Ready!', ${`The stars have spoken. Your customized birth chart analysis for ${report.name} is complete. Open to view your celestial guidance.`}, 'Alert', 'chat')
     `;
 
     // 6. Generate Premium PDF via preview-pdf endpoint & Send Email
