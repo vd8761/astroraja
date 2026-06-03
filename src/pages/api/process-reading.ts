@@ -222,31 +222,31 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
           to: report.email,
           subject: 'Your Ask Astro Raja Life Transformation Report - ' + report.name,
           html: `
-            <div style="background-color: #f8fafc; padding: 40px 20px; font-family: 'Inter', Arial, sans-serif; color: #334155; line-height: 1.6;">
+            <div style="background-color: #faf8f5; padding: 40px 20px; font-family: 'Outfit', Arial, sans-serif; color: #334155; line-height: 1.6;">
               <style>
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Outfit:wght@100..900&display=swap');
               </style>
-              <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 4px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
-                <div style="background-color: #0f172a; padding: 30px; text-align: center; border-bottom: 2px solid #334155;">
-                  <h2 style="color: #ffffff; margin: 0; font-family: 'Inter', sans-serif; font-size: 24px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Ask Astro Raja</h2>
+              <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                <div style="background-color: #1e1b4b; padding: 30px; text-align: center; border-bottom: 4px solid #f59e0b;">
+                  <h2 style="color: #ffffff; margin: 0; font-family: 'Lora', Georgia, serif; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">Ask Astro Raja</h2>
                 </div>
                 <div style="padding: 40px 30px;">
-                  <h3 style="margin-top: 0; color: #0f172a; font-size: 20px;">Executive Summary Ready: <span style="color: #64748b;">${report.name}</span></h3>
-                  <p style="font-size: 16px; margin-bottom: 20px;">Your structured <strong>Life Transformation Report</strong> has been successfully generated.</p>
-                  <p style="font-size: 16px; margin-bottom: 30px;">A secure PDF document containing your personalized assessment and strategic advisory is attached to this email. Please review the material carefully to understand the actionable insights tailored to your profile.</p>
+                  <h3 style="margin-top: 0; color: #1e1b4b; font-family: 'Lora', Georgia, serif; font-size: 22px;">Hello <span style="color: #f59e0b;">${report.name}</span>,</h3>
+                  <p style="font-size: 16px; margin-bottom: 20px;">Your deeply personalized <strong style="color: #1e1b4b;">Life Transformation Report</strong> is ready.</p>
+                  <p style="font-size: 16px; margin-bottom: 30px;">We have securely attached your full report as a PDF document to this email. This report is based on your unique astrological blueprint and is designed to provide you with clarity, guidance, and actionable steps for your life.</p>
                   
-                  <div style="background-color: #f8fafc; padding: 25px; border-left: 3px solid #0f172a; margin: 30px 0;">
-                    <h4 style="margin: 0 0 10px 0; color: #0f172a; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px;">Review Instructions</h4>
-                    <p style="margin: 0; font-size: 15px; color: #475569;">Ensure you review this document in a quiet environment. The insights provided serve as a structural intervention and require focused reflection to implement effectively.</p>
+                  <div style="background-color: #faf8f5; padding: 25px; border-left: 4px solid #f59e0b; margin: 30px 0; border-radius: 0 8px 8px 0;">
+                    <h4 style="margin: 0 0 10px 0; color: #1e1b4b; font-family: 'Lora', Georgia, serif; font-size: 18px;">How to read this report:</h4>
+                    <p style="margin: 0; font-size: 15px; color: #475569;">Take your time. Find a quiet space, read through the sections carefully, and reflect on the insights provided. This isn't just a reading; it's a structural intervention for your life.</p>
                   </div>
                   
-                  <p style="font-size: 16px; margin-bottom: 10px;">For any inquiries regarding your assessment, please reply directly to this communication.</p>
-                  <p style="font-size: 16px; margin-top: 30px; margin-bottom: 0;">Prepared by,<br><strong style="color: #0f172a;">Ask Astro Raja</strong></p>
+                  <p style="font-size: 16px; margin-bottom: 10px;">If you have any questions or need further guidance, feel free to reply directly to this email.</p>
+                  <p style="font-size: 16px; margin-top: 30px; margin-bottom: 0;">Warm regards,<br><strong style="color: #1e1b4b;">Astro Raja Team</strong></p>
                 </div>
               </div>
-              <div style="text-align: center; margin-top: 25px; font-size: 13px; color: #64748b; font-family: 'Inter', Arial, sans-serif;">
-                <p style="margin: 5px 0;">&copy; ${new Date().getFullYear()} Ask Astro Raja. All rights reserved.</p>
-                <p style="margin: 5px 0;">This email was sent in response to your Life Transformation Report request.</p>
+              <div style="text-align: center; margin-top: 25px; font-size: 13px; color: #64748b; font-family: 'Outfit', Arial, sans-serif;">
+                <p style="margin: 5px 0;">&copy; ${new Date().getFullYear()} Astro Raja. All rights reserved.</p>
+                <p style="margin: 5px 0;">You are receiving this email because you requested a Life Transformation Report.</p>
               </div>
             </div>
           `,
