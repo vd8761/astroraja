@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import sql from '../../lib/db';
 import { qstash } from '../../lib/qstash';
+import { parsePhone } from '../../lib/auth';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -36,20 +37,34 @@ export const POST: APIRoute = async ({ request }) => {
     // 1. Get or Create User
     let user_id;
     if (data.mobile) {
-      const existing = await sql`SELECT id FROM users WHERE mobile_number = ${data.mobile} LIMIT 1`;
+      const { countryCode, mobileNumber } = parsePhone(data.mobile, data.countryCode);
+      const existing = await sql`
+        SELECT id FROM users 
+        WHERE (country_code = ${countryCode} AND mobile_number = ${mobileNumber})
+           OR mobile_number = ${data.mobile} 
+        LIMIT 1
+      `;
       if (existing.length > 0) {
         user_id = existing[0].id;
-        await sql`UPDATE users SET email = ${data.email}, country_code = ${data.countryCode} WHERE id = ${user_id}`;
+        await sql`
+          UPDATE users 
+          SET email = ${data.email}, country_code = ${countryCode}, mobile_number = ${mobileNumber} 
+          WHERE id = ${user_id}
+        `;
       } else {
         // Fallback: check if they already registered with this email
         const existingEmail = await sql`SELECT id FROM users WHERE email = ${data.email} LIMIT 1`;
         if (existingEmail.length > 0) {
           user_id = existingEmail[0].id;
-          await sql`UPDATE users SET mobile_number = ${data.mobile}, country_code = ${data.countryCode} WHERE id = ${user_id}`;
+          await sql`
+            UPDATE users 
+            SET country_code = ${countryCode}, mobile_number = ${mobileNumber} 
+            WHERE id = ${user_id}
+          `;
         } else {
           const inserted = await sql`
-            INSERT INTO users (mobile_number, country_code, email, referral_code, referred_by) 
-            VALUES (${data.mobile}, ${data.countryCode}, ${data.email}, ${newRefCode}, ${referredById}) 
+            INSERT INTO users (country_code, mobile_number, email, referral_code, referred_by) 
+            VALUES (${countryCode}, ${mobileNumber}, ${data.email}, ${newRefCode}, ${referredById}) 
             RETURNING id
           `;
           user_id = inserted[0].id;

@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import sql from '../../../lib/db';
 import { SignJWT } from 'jose';
+import { parsePhone } from '../../../lib/auth';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -54,9 +55,12 @@ export const POST: APIRoute = async ({ request }) => {
     // 2. Get or Create User
     let userId;
     if (email && mobile) {
+      const { countryCode, mobileNumber } = parsePhone(mobile);
       const existingUser = await sql`
         SELECT id FROM users 
-        WHERE email = ${email} OR mobile_number = ${mobile} 
+        WHERE email = ${email} 
+           OR (country_code = ${countryCode} AND mobile_number = ${mobileNumber})
+           OR mobile_number = ${mobile}
         LIMIT 1
       `;
       if (existingUser.length > 0) {
@@ -64,13 +68,13 @@ export const POST: APIRoute = async ({ request }) => {
         // Keep both fields updated if one was missing
         await sql`
           UPDATE users 
-          SET email = ${email}, mobile_number = ${mobile}, updated_at = NOW() 
+          SET email = ${email}, country_code = ${countryCode}, mobile_number = ${mobileNumber}, updated_at = NOW() 
           WHERE id = ${userId}
         `;
       } else {
         const newUser = await sql`
-          INSERT INTO users (email, mobile_number) 
-          VALUES (${email}, ${mobile}) 
+          INSERT INTO users (email, country_code, mobile_number) 
+          VALUES (${email}, ${countryCode}, ${mobileNumber}) 
           RETURNING id
         `;
         userId = newUser[0].id;
@@ -84,7 +88,13 @@ export const POST: APIRoute = async ({ request }) => {
         userId = newUser[0].id;
       }
     } else {
-      const existingUser = await sql`SELECT id FROM users WHERE mobile_number = ${mobile} LIMIT 1`;
+      const { countryCode, mobileNumber } = parsePhone(mobile);
+      const existingUser = await sql`
+        SELECT id FROM users 
+        WHERE (country_code = ${countryCode} AND mobile_number = ${mobileNumber})
+           OR mobile_number = ${mobile}
+        LIMIT 1
+      `;
       if (existingUser.length > 0) {
         userId = existingUser[0].id;
       } else {
@@ -105,8 +115,8 @@ export const POST: APIRoute = async ({ request }) => {
         }
 
         const newUser = await sql`
-          INSERT INTO users (mobile_number, referral_code, referred_by) 
-          VALUES (${mobile}, ${newRefCode}, ${referredById}) 
+          INSERT INTO users (country_code, mobile_number, referral_code, referred_by) 
+          VALUES (${countryCode}, ${mobileNumber}, ${newRefCode}, ${referredById}) 
           RETURNING id
         `;
         userId = newUser[0].id;
@@ -126,8 +136,10 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Retrieve full user record from DB to sign the token with absolute source-of-truth info
-    const dbUser = await sql`SELECT mobile_number, email FROM users WHERE id = ${userId} LIMIT 1`;
-    const userMobile = dbUser[0]?.mobile_number || null;
+    const dbUser = await sql`SELECT country_code, mobile_number, email FROM users WHERE id = ${userId} LIMIT 1`;
+    const userMobile = dbUser[0]?.mobile_number 
+      ? `${dbUser[0].country_code || ''}${dbUser[0].mobile_number}`.trim() 
+      : null;
     const userEmail = dbUser[0]?.email || null;
 
     // 3. Generate secure JWT token

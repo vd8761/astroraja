@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import sql from '../../../lib/db';
 import { Resend } from 'resend';
+import { parsePhone } from '../../../lib/auth';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -19,7 +20,13 @@ export const POST: APIRoute = async ({ request }) => {
         }
       }
       if (mobile) {
-        const existingMobile = await sql`SELECT id FROM users WHERE mobile_number = ${mobile} LIMIT 1`;
+        const { countryCode, mobileNumber } = parsePhone(mobile);
+        const existingMobile = await sql`
+          SELECT id FROM users 
+          WHERE (country_code = ${countryCode} AND mobile_number = ${mobileNumber})
+             OR mobile_number = ${mobile} 
+          LIMIT 1
+        `;
         if (existingMobile.length > 0) {
           return new Response(JSON.stringify({ error: 'Phone number is already registered.' }), { status: 400 });
         }
@@ -33,7 +40,13 @@ export const POST: APIRoute = async ({ request }) => {
         }
       }
       if (mobile) {
-        const existingMobile = await sql`SELECT id FROM users WHERE mobile_number = ${mobile} LIMIT 1`;
+        const { countryCode, mobileNumber } = parsePhone(mobile);
+        const existingMobile = await sql`
+          SELECT id FROM users 
+          WHERE (country_code = ${countryCode} AND mobile_number = ${mobileNumber})
+             OR mobile_number = ${mobile} 
+          LIMIT 1
+        `;
         if (existingMobile.length === 0) {
           return new Response(JSON.stringify({ error: 'No account found with this phone number. Please sign up first.' }), { status: 400 });
         }
