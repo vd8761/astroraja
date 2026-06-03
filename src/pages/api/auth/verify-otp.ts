@@ -141,6 +141,20 @@ export const POST: APIRoute = async ({ request }) => {
       .setExpirationTime('30d') // Token valid for 30 days
       .sign(jwtSecret);
 
+    // Ensure Welcome Bonus transaction exists in transactions table
+    const welcomeTx = await sql`
+      SELECT id FROM transactions 
+      WHERE user_id = ${userId} AND transaction_type = 'welcome_bonus' 
+      LIMIT 1
+    `;
+    if (welcomeTx.length === 0) {
+      await sql`
+        INSERT INTO transactions (user_id, amount, currency, tokens_added, status, transaction_type)
+        VALUES (${userId}, 0, 'INR', 100, 'successful', 'welcome_bonus')
+      `;
+      console.log(`Inserted welcome_bonus transaction for user: ${userId}`);
+    }
+
     // Retrieve the user's name from their "Self" profile if it exists
     const userProfile = await sql`SELECT name FROM profiles WHERE user_id = ${userId} AND relationship = 'Self' LIMIT 1`;
     const profileName = userProfile[0]?.name || null;
