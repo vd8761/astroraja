@@ -80,7 +80,20 @@ export const POST: APIRoute = async ({ request }) => {
       if (existingUser.length > 0) {
         userId = existingUser[0].id;
       } else {
-        const newUser = await sql`INSERT INTO users (email) VALUES (${email}) RETURNING id`;
+        // Handle referral code validation silently
+        let referredById = null;
+        if (referralCode && typeof referralCode === 'string') {
+          const referrer = await sql`SELECT id FROM affiliates WHERE referral_code = ${referralCode.trim().toUpperCase()} LIMIT 1`;
+          if (referrer.length > 0) {
+            referredById = referrer[0].id;
+          }
+        }
+
+        const newUser = await sql`
+          INSERT INTO users (email, referred_by) 
+          VALUES (${email}, ${referredById}) 
+          RETURNING id
+        `;
         userId = newUser[0].id;
       }
     } else {
@@ -91,22 +104,15 @@ export const POST: APIRoute = async ({ request }) => {
         // Handle referral code validation silently
         let referredById = null;
         if (referralCode && typeof referralCode === 'string') {
-          const referrer = await sql`SELECT id FROM users WHERE referral_code = ${referralCode.trim().toUpperCase()} LIMIT 1`;
+          const referrer = await sql`SELECT id FROM affiliates WHERE referral_code = ${referralCode.trim().toUpperCase()} LIMIT 1`;
           if (referrer.length > 0) {
             referredById = referrer[0].id;
           }
         }
 
-        // Generate a secure 6-character alphanumeric referral code
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let newRefCode = '';
-        for (let i = 0; i < 6; i++) {
-          newRefCode += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-
         const newUser = await sql`
-          INSERT INTO users (mobile_number, referral_code, referred_by) 
-          VALUES (${mobile}, ${newRefCode}, ${referredById}) 
+          INSERT INTO users (mobile_number, referred_by) 
+          VALUES (${mobile}, ${referredById}) 
           RETURNING id
         `;
         userId = newUser[0].id;

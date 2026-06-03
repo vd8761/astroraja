@@ -23,16 +23,11 @@ export const GET: APIRoute = async ({ request }) => {
     const referredUsers = await sql`SELECT count(id) FROM users WHERE referred_by = ${userId}`;
     const friendsReferred = parseInt(referredUsers[0].count) || 0;
 
-    // Fetch total tokens earned from referrals
-    const earnings = await sql`SELECT SUM(tokens_awarded) FROM referral_earnings WHERE referrer_id = ${userId}`;
-    const tokensEarned = parseInt(earnings[0].sum) || 0;
-
     return new Response(JSON.stringify({
       success: true,
       referralCode: referral_code,
       tokenBalance: token_balance,
-      friendsReferred,
-      tokensEarned
+      friendsReferred
     }), { status: 200 });
 
   } catch (error: any) {
