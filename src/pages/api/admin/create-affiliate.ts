@@ -11,7 +11,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(JSON.stringify({ success: false, error: 'Admin password not configured' }), { status: 401 });
     }
 
-    const expectedHash = crypto.createHash('sha256').update(adminPassword).digest('hex');
+    const expectedHash = crypto.scryptSync(adminPassword, 'admin_salt', 64).toString('hex');
     const authCookie = cookies.get('astro_admin_auth')?.value;
 
     if (authCookie !== expectedHash) {
@@ -27,7 +27,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     // 3. Hash the affiliate password
-    const password_hash = crypto.createHash('sha256').update(password).digest('hex');
+    const password_hash = crypto.scryptSync(password, 'astroraja_salt', 64).toString('hex');
 
     // 4. Ensure referral_code is unique
     const upperRefCode = referral_code.trim().toUpperCase();

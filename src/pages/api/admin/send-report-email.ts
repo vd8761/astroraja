@@ -13,7 +13,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   if (!adminPassword) {
     return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403 });
   }
-  const expectedHash = crypto.createHash('sha256').update(adminPassword).digest('hex');
+  const expectedHash = crypto.scryptSync(adminPassword, 'admin_salt', 64).toString('hex');
   const authCookie = cookies.get('astro_admin_auth')?.value;
   if (authCookie !== expectedHash) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });

@@ -28,7 +28,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const affiliate = affiliates[0];
 
     // Verify password
-    const hashedInput = crypto.createHash('sha256').update(password).digest('hex');
+    let hashedInput = crypto.scryptSync(password, 'astroraja_salt', 64).toString('hex');
+    
+    // Fallback for existing affiliates with legacy sha256 password hashes
+    if (affiliate.password_hash.length === 64) {
+      hashedInput = crypto.createHash('sha256').update(password).digest('hex');
+    }
+
     if (hashedInput !== affiliate.password_hash) {
       return new Response(JSON.stringify({ success: false, error: 'Invalid credentials' }), { status: 401 });
     }

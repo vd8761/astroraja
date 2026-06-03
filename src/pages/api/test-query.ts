@@ -21,6 +21,7 @@ export const GET: APIRoute = async () => {
     `;
     return new Response(JSON.stringify(referrals));
   } catch(e) {
-    return new Response(JSON.stringify({msg: String(e)}), {status:500});
+    console.error("Test query failed:", e);
+    return new Response(JSON.stringify({msg: "Internal Server Error"}), {status:500});
   }
 };
