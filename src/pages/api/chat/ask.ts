@@ -2,160 +2,240 @@ import type { APIRoute } from 'astro';
 import sql from '../../../lib/db';
 import { verifyAuthHeader } from '../../../lib/auth';
 import Anthropic from '@anthropic-ai/sdk';
-import { sendAdminAlert, isModelDeprecatedError } from '../../../lib/adminAlert';
+import { sendAdminAlert, isModelDeprecatedError, isLowCreditError } from '../../../lib/adminAlert';
+import { buildChatSystemPrompt } from '../../../lib/chatSystemPrompt';
+
+// In-memory rate limiting map (10 messages/minute per user)
+const rateLimits = new Map<string, { count: number; resetTime: number }>();
+
+function checkRateLimit(userId: string): boolean {
+  const now = Date.now();
+  const userLimit = rateLimits.get(userId);
+
+  if (!userLimit) {
+    rateLimits.set(userId, { count: 1, resetTime: now + 60000 });
+    return false;
+  }
+
+  if (now > userLimit.resetTime) {
+    userLimit.count = 1;
+    userLimit.resetTime = now + 60000;
+    return false;
+  }
+
+  userLimit.count++;
+  return userLimit.count > 10;
+}
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     // 1. Authenticate
     const user = await verifyAuthHeader(request);
-    if (!user) {
+    if (!user || !user.userId) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
     }
 
-    const { profile_ids, query } = await request.json();
+    const userId = user.userId as string;
 
-    if (!profile_ids || !Array.isArray(profile_ids) || profile_ids.length === 0 || !query) {
-      return new Response(JSON.stringify({ error: 'Missing profile_ids array or query' }), { status: 400 });
+    // Rate Limit Check
+    if (checkRateLimit(userId)) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please wait a minute before sending another message.' }), 
+        { status: 429 }
+      );
     }
 
-    // 2. Pre-flight Token Check (Minimum 2000 buffer)
-    const userRecord = await sql`SELECT token_balance FROM users WHERE id = ${user.userId as string}`;
+    // Parse Request Body
+    let body;
+    try {
+      body = await request.json();
+    } catch (e) {
+      return new Response(JSON.stringify({ error: 'Malformed JSON body' }), { status: 400 });
+    }
+
+    const { profile_ids, query, conversation_history } = body;
+
+    if (!query) {
+      return new Response(JSON.stringify({ error: 'Missing query' }), { status: 400 });
+    }
+
+    const profileIdsList = (profile_ids && Array.isArray(profile_ids)) ? profile_ids : [];
+
+    // 2. Pre-flight Token Check (Minimum 300 buffer)
+    const userRecord = await sql`SELECT token_balance FROM users WHERE id = ${userId}`;
     const tokenBalance = userRecord[0]?.token_balance || 0;
 
-    if (tokenBalance < 2000) {
+    if (tokenBalance < 300) {
       return new Response(JSON.stringify({ 
         error: 'Insufficient tokens. Please purchase a token pack to continue chatting.',
         current_balance: tokenBalance
       }), { status: 402 }); // 402 Payment Required
     }
 
-    // 2.5 Auto-seed a default completed report and profile if user has none, to make testing seamless
-    const existingReports = await sql`
-      SELECT r.id FROM reports r 
-      WHERE r.user_id = ${user.userId as string} AND r.status = 'completed'
-      LIMIT 1
-    `;
-
-    if (existingReports.length === 0) {
-      let pId;
-      const selfProfiles = await sql`
-        SELECT id FROM profiles 
-        WHERE user_id = ${user.userId as string} AND relationship = 'Self'
-        LIMIT 1
-      `;
-      if (selfProfiles.length > 0) {
-        pId = selfProfiles[0].id;
-      } else {
-        const newProfile = await sql`
-          INSERT INTO profiles (user_id, name, raasi, lagnam, nakshatra, relationship)
-          VALUES (${user.userId as string}, 'Self', 'Simbha', 'Mesham', 'Purva Phalguni', 'Self')
-          RETURNING id
-        `;
-        pId = newProfile[0].id;
-      }
-
-      await sql`
-        INSERT INTO reports (profile_id, user_id, status, raw_markdown_report, language, price_paid, currency)
-        VALUES (
-          ${pId}, 
-          ${user.userId as string}, 
-          'completed', 
-          '# Vedic Birth Report for Self\n\n## Basic Parameters\n* Raasi: Simbha (Leo)\n* Lagnam: Mesham (Aries)\n* Nakshatra: Purva Phalguni\n\n## Cosmic Guidance\nYour planets indicate a strong solar leadership quality with high creative aspirations and determination.',
-          'English',
-          0,
-          'INR'
-        )
-      `;
-    }
-
-    // 2.6 Map client-side mock/default profile IDs to real database UUIDs
-    let mappedProfileIds = [...profile_ids];
-    const dbProfiles = await sql`SELECT id FROM profiles WHERE user_id = ${user.userId as string} LIMIT 1`;
-    if (dbProfiles.length > 0) {
-      const firstDbProfileId = dbProfiles[0].id;
-      mappedProfileIds = mappedProfileIds.map(id => {
-        if (id.startsWith('default_') || id.length < 36) {
-          return firstDbProfileId;
-        }
-        return id;
-      });
-    }
-
     // 3. Fetch Reports Context
-    // We need to fetch the completed reports for the requested profiles
-    let contextString = "--- ASTROLOGICAL CONTEXT ---\n\n";
-    for (const pid of mappedProfileIds) {
+    const fetchedReports = [];
+    for (const pid of profileIdsList) {
       const reports = await sql`
-        SELECT r.raw_markdown_report, p.name, p.relationship 
+        SELECT r.raw_markdown_report as "reportText", r.form_data, p.name, p.relationship, p.raasi, p.lagnam, p.nakshatra, p.padam, p.id as "profileId"
         FROM reports r 
         JOIN profiles p ON r.profile_id = p.id
-        WHERE p.id = ${pid} AND p.user_id = ${user.userId as string} AND r.status = 'completed'
+        WHERE p.id = ${pid} AND p.user_id = ${userId} AND r.status = 'completed'
         ORDER BY r.created_at DESC LIMIT 1
       `;
-      
       if (reports.length > 0) {
-        contextString += `[Profile: ${reports[0].name} (${reports[0].relationship})]\n`;
-        contextString += reports[0].raw_markdown_report + "\n\n";
+        fetchedReports.push(reports[0]);
       }
     }
 
-    if (contextString === "--- ASTROLOGICAL CONTEXT ---\n\n") {
-      return new Response(JSON.stringify({ error: 'No completed reports found for the selected profiles. Please generate a report first.' }), { status: 400 });
+    if (profileIdsList.length > 0 && fetchedReports.length < profileIdsList.length) {
+      const fetchedProfileIds = fetchedReports.map(r => r.profileId);
+      const missingProfileIds = profileIdsList.filter(id => !fetchedProfileIds.includes(id));
+      
+      const missingProfiles = await sql`
+        SELECT name FROM profiles WHERE id = ANY(${missingProfileIds}) AND user_id = ${userId}
+      `;
+      const missingNames = missingProfiles.map((p: any) => p.name).join(', ');
+
+      return new Response(
+        JSON.stringify({ 
+          error: `A completed birth chart report is required for all attached profiles to align their stars. Please generate a report first for: ${missingNames}.` 
+        }), 
+        { status: 400 }
+      );
     }
 
-    // 4. Call Claude AI
-    const apiKey = import.meta.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
-    const anthropic = new Anthropic({ apiKey: apiKey });
-    const claudeModel = import.meta.env.ANTHROPIC_MODEL || process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5';
-    const systemPrompt = `You are Astro Raja AI, an expert, deeply empathetic astrologer. 
-Your goal is to answer the user's specific question based strictly on the Astrological Context provided below.
-CRITICAL INSTRUCTIONS:
-1. Be highly concise but deeply accurate. Do not ramble.
-2. Directly answer the question asked. 
-3. Use the minimum number of words necessary to deliver a high-quality answer. This saves the user tokens!
-4. Never cut off mid-sentence. Always finish your thought completely.
-5. If the context does not contain the answer, politely say so. Do not invent astrological facts.
+    // 4. Validate & Format Conversation History
+    const cleanHistory: { role: 'user' | 'assistant'; content: string }[] = [];
+    if (Array.isArray(conversation_history)) {
+      for (const msg of conversation_history) {
+        if (msg && typeof msg === 'object' && (msg.role === 'user' || msg.role === 'assistant') && typeof msg.content === 'string') {
+          cleanHistory.push({ role: msg.role, content: msg.content });
+        }
+      }
+    }
 
-${contextString}`;
+    // Format history as JSON (cap at last 10 messages/5 turns to prevent JSON bloat)
+    const recentHistory = cleanHistory.slice(-10);
+
+    // Build System Prompt (inject profile data + compressed history JSON)
+    const systemPrompt = buildChatSystemPrompt(fetchedReports, recentHistory);
+
+    // Since past history is summarized in system instruction, the messages array only needs the current query
+    const cappedHistory: { role: 'user' | 'assistant'; content: string }[] = [{ role: 'user', content: query }];
+
+    // 5. Build System Prompt & Call AI
+    
+    // Detect if this is a new session (first message)
+    const isNewSession = cleanHistory.length === 0;
+
+    let aiResponse = '';
+    let inputTokens = 0;
+    let outputTokens = 0;
+
+    const apiKey = import.meta.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      await sendAdminAlert(
+        'Anthropic API Key Missing',
+        'The ANTHROPIC_API_KEY is not defined in the backend environment variables. The chat service is currently down.'
+      );
+      return new Response(JSON.stringify({ error: 'Chat service is temporarily unavailable.' }), { status: 503 });
+    }
+
+    const claudeModel = import.meta.env.ANTHROPIC_MODEL || process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5';
+    const anthropic = new Anthropic({ apiKey });
 
     let message;
     try {
       message = await anthropic.messages.create({
         model: claudeModel,
-        max_tokens: 1500,
-        temperature: 0.7,
-        system: systemPrompt,
-        messages: [
-          { role: "user", content: query }
-        ]
+        max_tokens: 2048,
+        temperature: 0.5,
+        system: [
+          {
+            type: "text",
+            text: systemPrompt,
+            cache_control: { type: "ephemeral" }
+          }
+        ],
+        messages: cappedHistory
+      }, {
+        headers: { "anthropic-beta": "prompt-caching-2024-07-31" }
       });
     } catch (aiError: any) {
+      console.error('Claude API Call Failed:', aiError);
+      
       if (isModelDeprecatedError(aiError)) {
         await sendAdminAlert(
           'Claude Model Deprecated - Chat API Broken',
-          'The Claude AI model used in the Chat API has been deprecated.\n\n' +
-          'Deprecated Model: ' + claudeModel + '\n' +
-          'Error: ' + aiError.error.message + '\n\n' +
-          'Fix: Update ANTHROPIC_MODEL in your Vercel Environment Variables\n' +
-          'Latest Models: https://docs.anthropic.com/en/docs/about-claude/models'
+          `The Claude AI model used in the Chat API has been deprecated.\n\nDeprecated Model: ${claudeModel}\nError: ${aiError.error?.message || aiError.message}\n\nFix: Update ANTHROPIC_MODEL in your environment variables.`
+        );
+      } else if (isLowCreditError(aiError) || aiError.status === 401 || aiError.status === 403) {
+        await sendAdminAlert(
+          'Anthropic API Error - Check Billing/Credits',
+          `Anthropic API call failed. This might be due to exhausted billing credits or an invalid key.\n\nError: ${aiError.message || aiError}`
         );
       }
-      throw aiError;
+      return new Response(JSON.stringify({ error: 'Failed to communicate with AI service. Please try again later.' }), { status: 503 });
     }
 
-    const aiResponse = message.content[0].type === 'text' ? message.content[0].text : 'No text generated';
-    const inputTokens = message.usage.input_tokens;
-    const outputTokens = message.usage.output_tokens;
-    const totalTokensUsed = inputTokens + outputTokens;
+    aiResponse = message.content[0]?.type === 'text' ? message.content[0].text : '';
+    inputTokens = message.usage.input_tokens;
+    outputTokens = message.usage.output_tokens;
 
-    // 5. Deduct Exact Tokens from Database
-    await sql`
+    if (!aiResponse || aiResponse.trim() === '') {
+      return new Response(JSON.stringify({ error: 'I\'m having trouble right now. Please try again.' }), { status: 500 });
+    }
+
+    const totalTokensUsed = Math.ceil((inputTokens + outputTokens) * 0.5);
+
+    // 6. Deduct Exact Tokens from Database (clamp token_balance to 0 minimum)
+    const updatedUser = await sql`
       UPDATE users 
-      SET token_balance = token_balance - ${totalTokensUsed} 
-      WHERE id = ${user.userId as string}
+      SET token_balance = GREATEST(0, token_balance - ${totalTokensUsed}) 
+      WHERE id = ${userId}
+      RETURNING token_balance
     `;
+    const remainingBalance = updatedUser[0]?.token_balance ?? 0;
 
-    // 6. Return response to Mobile App
+    // 6.5. Aggregate Chat Token Usage per session
+    try {
+      if (isNewSession) {
+        // Force start a brand new session card
+        await sql`
+          INSERT INTO transactions (user_id, transaction_type, tokens_added, status, amount, currency)
+          VALUES (${userId}, 'chat_usage', ${-totalTokensUsed}, 'successful', 0, 'INR')
+        `;
+      } else {
+        // Find existing transaction within the last 1 hour
+        const lastSessionTx = await sql`
+          SELECT id, tokens_added FROM transactions 
+          WHERE user_id = ${userId} 
+            AND transaction_type = 'chat_usage' 
+            AND created_at >= NOW() - INTERVAL '1 hour'
+            AND status = 'successful'
+          ORDER BY created_at DESC LIMIT 1
+        `;
+
+        if (lastSessionTx.length > 0) {
+          const currentTokens = lastSessionTx[0].tokens_added || 0;
+          const updatedTokens = Number(currentTokens) - totalTokensUsed;
+          await sql`
+            UPDATE transactions 
+            SET tokens_added = ${updatedTokens}, created_at = NOW() 
+            WHERE id = ${lastSessionTx[0].id}
+          `;
+        } else {
+          await sql`
+            INSERT INTO transactions (user_id, transaction_type, tokens_added, status, amount, currency)
+            VALUES (${userId}, 'chat_usage', ${-totalTokensUsed}, 'successful', 0, 'INR')
+          `;
+        }
+      }
+    } catch (txErr) {
+      console.error('Failed to log session credit spend transaction:', txErr);
+    }
+
+    // 7. Return response to Mobile App
     return new Response(JSON.stringify({ 
       success: true, 
       response: aiResponse,
@@ -164,8 +244,11 @@ ${contextString}`;
         output: outputTokens,
         total: totalTokensUsed
       },
-      remaining_balance: tokenBalance - totalTokensUsed
-    }), { status: 200 });
+      remaining_balance: remainingBalance
+    }), { 
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
 
   } catch (error: any) {
     console.error('Chat API Error:', error);

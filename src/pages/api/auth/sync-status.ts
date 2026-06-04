@@ -20,7 +20,7 @@ export const GET: APIRoute = async ({ request }) => {
       ORDER BY created_at ASC
     `;
 
-    // 3. Check if the user has any completed report
+        // 3. Check if the user has any completed report
     const dbReports = await sql`
       SELECT id FROM reports
       WHERE user_id = ${userId} AND status = 'completed'
@@ -28,9 +28,25 @@ export const GET: APIRoute = async ({ request }) => {
     `;
     const hasGeneratedReport = dbReports.length > 0;
 
+    // 4. Check if the user has paid for more reports than they have generated
+    const txRes = await sql`
+      SELECT COUNT(*)::integer as count FROM transactions
+      WHERE user_id = ${userId} AND transaction_type = 'report' AND status = 'successful'
+    `;
+    const txCount = parseInt(txRes[0]?.count?.toString() || '0', 10);
+
+    const reportsRes = await sql`
+      SELECT COUNT(*)::integer as count FROM reports
+      WHERE user_id = ${userId} AND status != 'failed'
+    `;
+    const reportsCount = parseInt(reportsRes[0]?.count?.toString() || '0', 10);
+
+    const hasPaidReport = txCount > reportsCount;
+
     return new Response(JSON.stringify({
       success: true,
       hasGeneratedReport,
+      hasPaidReport,
       profiles: dbProfiles
     }), {
       status: 200,

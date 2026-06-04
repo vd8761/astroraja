@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import sql from '../../lib/db';
 import { qstash } from '../../lib/qstash';
+import { parsePhone } from '../../lib/auth';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -29,20 +30,41 @@ export const POST: APIRoute = async ({ request }) => {
     // 1. Get or Create User
     let user_id;
     if (data.mobile) {
-      const existing = await sql`SELECT id FROM users WHERE mobile_number = ${data.mobile} LIMIT 1`;
+      const { countryCode, mobileNumber } = parsePhone(data.mobile, data.countryCode);
+      const existing = await sql`
+        SELECT id FROM users 
+        WHERE (country_code = ${countryCode} AND mobile_number = ${mobileNumber})
+           OR mobile_number = ${data.mobile} 
+        LIMIT 1
+      `;
       if (existing.length > 0) {
         user_id = existing[0].id;
-        await sql`UPDATE users SET email = ${data.email}, country_code = ${data.countryCode} WHERE id = ${user_id}`;
+        await sql`
+          UPDATE users 
+          SET email = ${data.email}, country_code = ${countryCode}, mobile_number = ${mobileNumber} 
+          WHERE id = ${user_id}
+        `;
       } else {
         // Fallback: check if they already registered with this email
         const existingEmail = await sql`SELECT id FROM users WHERE email = ${data.email} LIMIT 1`;
         if (existingEmail.length > 0) {
           user_id = existingEmail[0].id;
-          await sql`UPDATE users SET mobile_number = ${data.mobile}, country_code = ${data.countryCode} WHERE id = ${user_id}`;
+          await sql`
+            UPDATE users 
+            SET country_code = ${countryCode}, mobile_number = ${mobileNumber} 
+            WHERE id = ${user_id}
+          `;
         } else {
+          // Generate a secure 6-character alphanumeric referral code for the new user
+          const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+          let newRefCode = '';
+          for (let i = 0; i < 6; i++) {
+            newRefCode += chars.charAt(Math.floor(Math.random() * chars.length));
+          }
+
           const inserted = await sql`
-            INSERT INTO users (mobile_number, country_code, email, referred_by) 
-            VALUES (${data.mobile}, ${data.countryCode}, ${data.email}, ${referredById}) 
+            INSERT INTO users (country_code, mobile_number, email, referral_code, referred_by) 
+            VALUES (${countryCode}, ${mobileNumber}, ${data.email}, ${newRefCode}, ${referredById}) 
             RETURNING id
           `;
           user_id = inserted[0].id;
@@ -62,7 +84,27 @@ export const POST: APIRoute = async ({ request }) => {
       }
     }
 
-    // 1.5 Save WhatsApp Number if provided
+    // 1.5 Verify that this user has an available paid report slot
+    const txRes = await sql`
+      SELECT COUNT(*)::integer as count FROM transactions
+      WHERE user_id = ${user_id} AND transaction_type = 'report' AND status = 'successful'
+    `;
+    const txCount = parseInt(txRes[0]?.count?.toString() || '0', 10);
+
+    const reportsRes = await sql`
+      SELECT COUNT(*)::integer as count FROM reports
+      WHERE user_id = ${user_id} AND status != 'failed'
+    `;
+    const reportsCount = parseInt(reportsRes[0]?.count?.toString() || '0', 10);
+
+    if (txCount <= reportsCount) {
+      return new Response(JSON.stringify({ error: 'Payment required. No available paid report slot.' }), { 
+        status: 402,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // 1.6 Save WhatsApp Number if provided
     if (data.whatsappNumber) {
       await sql`
         UPDATE users 
@@ -91,7 +133,35 @@ export const POST: APIRoute = async ({ request }) => {
     `;
     const report_id = reports[0].id;
 
+    // Insert notification for the user queuing the report
+    await sql`
+      INSERT INTO notifications (user_id, title, message, category, action_type)
+      VALUES (${user_id}, 'Reading Request Received', 'Your birth chart reading request is now in queue. Our cosmic AI is preparing your personalized analysis.', 'Alert', 'chat')
+    `;
 
+    // 3.5 Check for Referral Rewards on Paid Reports
+    if (data.price_paid > 0) {
+      const userInfo = await sql`SELECT referred_by FROM users WHERE id = ${user_id}`;
+      if (userInfo.length > 0 && userInfo[0].referred_by) {
+        const referrerId = userInfo[0].referred_by;
+        const pastReports = await sql`SELECT id FROM reports WHERE user_id = ${user_id} AND price_paid > 0`;
+        
+        // If this is their first paid report
+        if (pastReports.length === 1) {
+          const REWARD_TOKENS = parseInt(import.meta.env.REFERRAL_REWARD_TOKENS || process.env.REFERRAL_REWARD_TOKENS || '10');
+          await sql`UPDATE users SET token_balance = COALESCE(token_balance, 0) + ${REWARD_TOKENS} WHERE id = ${referrerId}`;
+          await sql`
+            INSERT INTO referral_earnings (referrer_id, referred_user_id, tokens_awarded)
+            VALUES (${referrerId}, ${user_id}, ${REWARD_TOKENS})
+          `;
+          await sql`
+            INSERT INTO notifications (user_id, title, message, category, action_type)
+            VALUES (${referrerId}, 'Referral Bonus Received!', ${`Your friend completed their first purchase! You have earned ${REWARD_TOKENS} bonus credits as a referral reward.`}, 'Promo', 'promo')
+          `;
+          console.log(`Referral reward of ${REWARD_TOKENS} granted to ${referrerId} for report ${report_id}`);
+        }
+      }
+    }
 
     // 4. Send Job to QStash (Bypass in local development to avoid QStash delivery failure)
     const baseUrl = new URL(request.url).origin;
