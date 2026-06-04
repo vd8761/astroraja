@@ -1,0 +1,335 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import sql from '../../../lib/db';
+
+const url = new URL(Astro.request.url);
+const aff_page = parseInt(url.searchParams.get('aff_page') || '1');
+const hist_page = parseInt(url.searchParams.get('hist_page') || '1');
+const limit = 20;
+
+const aff_offset = (aff_page - 1) * limit;
+const hist_offset = (hist_page - 1) * limit;
+
+const [{ count: affCount }] = await sql`SELECT COUNT(DISTINCT referred_by) FROM users WHERE referred_by IS NOT NULL`;
+const totalAffiliates = parseInt(affCount);
+const totalAffPages = Math.ceil(totalAffiliates / limit);
+
+const [{ count: histCount }] = await sql`SELECT COUNT(*) FROM commission_settlements`;
+const totalHistory = parseInt(histCount);
+const totalHistPages = Math.ceil(totalHistory / limit);
+
+const commissionReferrersResult = await sql`
+  WITH ReferrerStats AS (
+    SELECT 
+      referrer.id as referrer_id, 
+      referrer.mobile_number as referrer_mobile, 
+      referrer.country_code as referrer_country_code, 
+      referrer.email as referrer_email, 
+      referrer.referral_code,
+      referrer.name as referrer_name,
+      COUNT(referred.id) as total_referred_users,
+      SUM(CASE WHEN referred.commission_settled = true THEN 1 ELSE 0 END) as total_settled,
+      SUM(CASE WHEN referred.commission_settled = false AND (SELECT COUNT(id) FROM reports WHERE user_id = referred.id AND price_paid > 0) > 0 THEN 1 ELSE 0 END) as pending_unsettled,
+      SUM(CASE WHEN referred.commission_settled = false THEN (SELECT COALESCE(SUM(price_paid), 0) FROM reports WHERE user_id = referred.id AND price_paid > 0) ELSE 0 END) as pending_unsettled_revenue,
+      (SELECT COALESCE(SUM(amount_paid), 0) FROM commission_settlements WHERE referrer_id = referrer.id) as total_amount_paid,
+      referrer.currency as settlement_currency,
+      referrer.commission_type,
+      referrer.commission_value
+    FROM affiliates referrer
+    JOIN users referred ON referred.referred_by = referrer.id
+    GROUP BY referrer.id
+  )
+  SELECT * FROM ReferrerStats
+  WHERE total_referred_users > 0
+  ORDER BY pending_unsettled DESC, total_referred_users DESC
+  LIMIT ${limit} OFFSET ${aff_offset}
+`;
+
+const settlementHistoryResult = await sql`
+  SELECT 
+    cs.id, cs.amount_paid, cs.currency, cs.referrals_covered_count, cs.created_at, cs.referrer_id, cs.notes,
+    u.mobile_number, u.country_code, u.email,
+    u.name as referrer_name
+  FROM commission_settlements cs
+  JOIN affiliates u ON cs.referrer_id = u.id
+  ORDER BY cs.created_at DESC
+  LIMIT ${limit} OFFSET ${hist_offset}
+`;
+---
+
+<AdminLayout title="Affiliate Commissions" activeTab="commissions">
+  
+  <div class="space-y-8">
+    
+    <!-- Pending & Active Affiliates Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-brand-border overflow-hidden">
+      <div class="px-6 py-4 border-b border-brand-border bg-slate-50">
+        <h3 class="font-bold text-brand-navy">Affiliate Commissions Summary</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm whitespace-nowrap">
+          <thead class="text-xs text-brand-text-muted uppercase bg-slate-50/50">
+            <tr>
+              <th class="px-6 py-3 font-medium tracking-wider">Affiliate</th>
+              <th class="px-6 py-3 font-medium tracking-wider text-center">Total Referrals</th>
+              <th class="px-6 py-3 font-medium tracking-wider text-center">Pending (Unsettled)</th>
+              <th class="px-6 py-3 font-medium tracking-wider text-center">Already Settled</th>
+              <th class="px-6 py-3 font-medium tracking-wider text-right">Total Paid</th>
+              <th class="px-6 py-3 font-medium tracking-wider text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-brand-border/50">
+            {commissionReferrersResult.map(ref => (
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4">
+                  <div class="font-bold text-brand-navy">{ref.referrer_name || ref.referrer_email}</div>
+                  <div class="text-xs text-brand-text-muted font-mono">{ref.referral_code}</div>
+                </td>
+                <td class="px-6 py-4 text-center font-medium">{ref.total_referred_users}</td>
+                <td class="px-6 py-4 text-center">
+                  {ref.pending_unsettled > 0 ? (
+                    <span class="px-2.5 py-1 text-xs font-bold bg-amber-100 text-amber-800 rounded-md">{ref.pending_unsettled}</span>
+                  ) : (
+                    <span class="text-brand-text-muted">0</span>
+                  )}
+                </td>
+                <td class="px-6 py-4 text-center text-green-600 font-medium">{ref.total_settled}</td>
+                <td class="px-6 py-4 text-right font-medium">
+                  {ref.total_amount_paid > 0 ? `${ref.settlement_currency || ''} ${ref.total_amount_paid}` : '-'}
+                </td>
+                <td class="px-6 py-4 text-center">
+                  {ref.pending_unsettled > 0 ? (
+                    <button class="px-3 py-1.5 text-xs font-bold bg-brand-navy text-white rounded-md hover:bg-brand-purple transition-colors shadow-sm" 
+                      @click={`window.dispatchEvent(new CustomEvent('open-settle-modal', {
+                        detail: { 
+                          referrerName: '${(ref.referrer_name || ref.referrer_email).replace(/'/g, "\\'")}', 
+                          referrerId: '${ref.referrer_id}', 
+                          pendingCount: ${ref.pending_unsettled}, 
+                          refCode: '${ref.referral_code}', 
+                          currency: '${ref.settlement_currency || 'INR'}',
+                          commissionType: '${ref.commission_type || 'fixed'}',
+                          commissionValue: ${ref.commission_value || 0},
+                          pendingRevenue: ${ref.pending_unsettled_revenue || 0}
+                        }
+                      }))`}>
+                      Settle Now
+                    </button>
+                  ) : (
+                    <span class="text-xs text-brand-text-muted italic">All Settled</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {commissionReferrersResult.length === 0 && (
+              <tr>
+                <td colspan="6" class="px-6 py-10 text-center text-brand-text-muted">No affiliate activity found.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination Controls (Affiliates) -->
+    <div class="px-6 py-4 border-t border-brand-border bg-white flex items-center justify-between mt-0 rounded-b-xl border-t-0 shadow-sm border border-brand-border">
+      <div class="text-sm text-brand-text-muted">
+        Showing <span class="font-medium text-brand-navy">{totalAffiliates === 0 ? 0 : aff_offset + 1}</span> to <span class="font-medium text-brand-navy">{Math.min(aff_offset + limit, totalAffiliates)}</span> of <span class="font-medium text-brand-navy">{totalAffiliates}</span> affiliates
+      </div>
+      <div class="flex items-center gap-2">
+        {aff_page > 1 ? (
+          <a href={`?aff_page=${aff_page - 1}&hist_page=${hist_page}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Previous</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Previous</span>
+        )}
+        <span class="px-3 py-1 text-sm font-medium text-brand-navy">Page {aff_page} of {Math.max(totalAffPages, 1)}</span>
+        {aff_page < totalAffPages ? (
+          <a href={`?aff_page=${aff_page + 1}&hist_page=${hist_page}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Next</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Next</span>
+        )}
+      </div>
+    </div>
+
+    <!-- Settlement History Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-brand-border overflow-hidden mt-8">
+      <div class="px-6 py-4 border-b border-brand-border bg-slate-50 flex justify-between items-center">
+        <h3 class="font-bold text-brand-navy">Settlement History</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm whitespace-nowrap">
+          <thead class="text-xs text-brand-text-muted uppercase bg-slate-50/50">
+            <tr>
+              <th class="px-6 py-3 font-medium tracking-wider">Date</th>
+              <th class="px-6 py-3 font-medium tracking-wider">Affiliate</th>
+              <th class="px-6 py-3 font-medium tracking-wider">Amount Paid</th>
+              <th class="px-6 py-3 font-medium tracking-wider">Referrals Covered</th>
+              <th class="px-6 py-3 font-medium tracking-wider">Notes</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-brand-border/50">
+            {settlementHistoryResult.map(settlement => (
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 text-brand-text-muted">{new Date(settlement.created_at).toLocaleString()}</td>
+                <td class="px-6 py-4 font-medium text-brand-navy">{settlement.referrer_name || settlement.email}</td>
+                <td class="px-6 py-4 font-bold text-green-600">{settlement.currency} {settlement.amount_paid}</td>
+                <td class="px-6 py-4 text-brand-navy">{settlement.referrals_covered_count}</td>
+                <td class="px-6 py-4 text-brand-text-muted">{settlement.notes || '-'}</td>
+              </tr>
+            ))}
+            {settlementHistoryResult.length === 0 && (
+              <tr>
+                <td colspan="5" class="px-6 py-10 text-center text-brand-text-muted">No settlements made yet.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination Controls (History) -->
+    <div class="px-6 py-4 border-t border-brand-border bg-white flex items-center justify-between mt-0 rounded-b-xl border-t-0 shadow-sm border border-brand-border">
+      <div class="text-sm text-brand-text-muted">
+        Showing <span class="font-medium text-brand-navy">{totalHistory === 0 ? 0 : hist_offset + 1}</span> to <span class="font-medium text-brand-navy">{Math.min(hist_offset + limit, totalHistory)}</span> of <span class="font-medium text-brand-navy">{totalHistory}</span> settlements
+      </div>
+      <div class="flex items-center gap-2">
+        {hist_page > 1 ? (
+          <a href={`?aff_page=${aff_page}&hist_page=${hist_page - 1}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Previous</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Previous</span>
+        )}
+        <span class="px-3 py-1 text-sm font-medium text-brand-navy">Page {hist_page} of {Math.max(totalHistPages, 1)}</span>
+        {hist_page < totalHistPages ? (
+          <a href={`?aff_page=${aff_page}&hist_page=${hist_page + 1}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Next</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Next</span>
+        )}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Settle Modal -->
+  <div x-data="{
+    open: false,
+    loading: false,
+    referrerName: '',
+    referrerId: '',
+    pendingCount: 0,
+    refCode: '',
+    amount: '',
+    currency: 'INR',
+    notes: '',
+    commissionType: '',
+    commissionValue: 0,
+    pendingRevenue: 0,
+    init() {
+      window.addEventListener('open-settle-modal', (e) => {
+        this.referrerName = e.detail.referrerName;
+        this.referrerId = e.detail.referrerId;
+        this.pendingCount = e.detail.pendingCount;
+        this.refCode = e.detail.refCode;
+        this.currency = e.detail.currency;
+        this.commissionType = e.detail.commissionType;
+        this.commissionValue = e.detail.commissionValue;
+        this.pendingRevenue = e.detail.pendingRevenue;
+        
+        let suggestedPayout = 0;
+        if (this.commissionType === 'percentage') {
+          suggestedPayout = this.pendingRevenue * (this.commissionValue / 100);
+        } else {
+          suggestedPayout = this.pendingCount * this.commissionValue;
+        }
+        
+        this.amount = suggestedPayout > 0 ? parseFloat(suggestedPayout.toFixed(2)) : '';
+        this.notes = '';
+        this.open = true;
+      });
+    },
+    async settle() {
+      if(!this.amount || !this.referrerId) return;
+      this.loading = true;
+      try {
+        const res = await fetch('/api/admin/settle-commission', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            referrer_id: this.referrerId,
+            amount: parseFloat(this.amount),
+            currency: this.currency,
+            notes: this.notes
+          })
+        });
+        const data = await res.json();
+        if(data.success) {
+          window.location.reload();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch(e) {
+        alert('Failed to settle');
+      } finally { this.loading = false; }
+    }
+  }" x-show="open" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0" style="display: none;">
+    <div class="fixed inset-0 bg-brand-navy/60 backdrop-blur-sm transition-opacity" @click="open = false" x-transition.opacity></div>
+    
+    <div class="relative bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden transform transition-all" x-transition>
+      <div class="px-6 py-4 border-b border-brand-border bg-slate-50 flex justify-between items-center">
+        <h3 class="font-bold text-brand-navy font-serif text-lg">Settle Commission</h3>
+        <button @click="open = false" class="text-brand-text-muted hover:text-brand-navy transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      
+      <form class="p-6 space-y-5" @submit.prevent="settle()">
+        <div>
+          <div class="text-sm text-brand-text-muted mb-1">Affiliate Partner</div>
+          <div class="font-bold text-brand-navy text-lg" x-text="referrerName"></div>
+          <div class="text-xs font-mono text-brand-text-muted" x-text="refCode"></div>
+        </div>
+        
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex justify-between items-center">
+          <div>
+            <div class="text-sm font-medium text-amber-800">Pending Conversions</div>
+            <div class="text-xs text-amber-600 mt-0.5">These will be marked as settled</div>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-bold text-amber-600" x-text="pendingCount"></div>
+            <div class="text-xs text-amber-600/80 mt-1" x-show="commissionType === 'percentage'">
+              Total Revenue: <span x-text="currency + ' ' + pendingRevenue"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <div class="col-span-2">
+            <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Amount to Pay</label>
+            <div class="relative">
+              <input type="number" step="0.01" min="0" x-model="amount" required placeholder="0.00" class="w-full bg-white border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:border-brand-saffron focus:ring-1 focus:ring-brand-saffron transition-colors">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Currency</label>
+            <div class="w-full bg-slate-100 border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none transition-colors flex items-center justify-between opacity-80 cursor-not-allowed">
+              <span x-text="currency" class="font-bold"></span>
+              <svg class="w-4 h-4 text-brand-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Notes (Optional)</label>
+          <input type="text" x-model="notes" placeholder="e.g. Bank Transfer Ref: 123456" class="w-full bg-white border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:border-brand-saffron focus:ring-1 focus:ring-brand-saffron transition-colors">
+        </div>
+
+        <div class="pt-4 flex gap-3">
+          <button type="button" @click="open = false" class="flex-1 px-4 py-3 border border-brand-border text-brand-navy font-bold rounded-xl hover:bg-slate-50 transition-colors">Cancel</button>
+          <button type="submit" class="flex-1 px-4 py-3 bg-brand-navy text-white font-bold rounded-xl hover:bg-brand-purple transition-colors shadow-md flex justify-center items-center gap-2" :disabled="loading" :class="loading ? 'opacity-70 cursor-not-allowed' : ''">
+            <span x-show="!loading">Mark as Settled</span>
+            <span x-show="loading">Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</AdminLayout>

@@ -1,0 +1,416 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import sql from '../../../lib/db';
+
+const url = new URL(Astro.request.url);
+const aff_page = parseInt(url.searchParams.get('aff_page') || '1');
+const ref_page = parseInt(url.searchParams.get('ref_page') || '1');
+const limit = 20;
+
+const aff_offset = (aff_page - 1) * limit;
+const ref_offset = (ref_page - 1) * limit;
+
+const [{ count: affCount }] = await sql`SELECT COUNT(*) FROM affiliates`;
+const totalAffiliates = parseInt(affCount);
+const totalAffPages = Math.ceil(totalAffiliates / limit);
+
+const [{ count: refCount }] = await sql`SELECT COUNT(*) FROM users WHERE referred_by IS NOT NULL`;
+const totalReferrals = parseInt(refCount);
+const totalRefPages = Math.ceil(totalReferrals / limit);
+
+const referralsResult = await sql`
+  SELECT 
+    referrer.id as referrer_id, referrer.mobile_number as referrer_mobile, referrer.country_code as referrer_country_code, referrer.email as referrer_email, referrer.referral_code,
+    referrer.name as referrer_name,
+    referred.id as referred_id, referred.mobile_number as referred_mobile, referred.country_code as referred_country_code, referred.email as referred_email, referred.created_at as joined_at,
+    (SELECT name FROM profiles WHERE user_id = referred.id ORDER BY created_at ASC LIMIT 1) as referred_name,
+    (SELECT COUNT(id) FROM reports WHERE user_id = referred.id AND price_paid > 0) as paid_reports_count
+  FROM users referred
+  JOIN affiliates referrer ON referred.referred_by = referrer.id
+  ORDER BY referred.created_at DESC
+  LIMIT ${limit} OFFSET ${ref_offset}
+`;
+
+const affiliatesList = await sql`
+  SELECT id, name, email, mobile_number, country_code, referral_code, currency, commission_type, commission_value, created_at
+  FROM affiliates
+  ORDER BY created_at DESC
+  LIMIT ${limit} OFFSET ${aff_offset}
+`;
+---
+
+<AdminLayout title="Affiliate Accounts" activeTab="affiliates">
+  
+  <div class="mb-8 bg-brand-navy rounded-2xl p-8 text-white shadow-lg relative overflow-hidden">
+    <div class="relative z-10 max-w-2xl">
+      <h2 class="text-2xl font-serif font-bold mb-2">Create Affiliate Partner</h2>
+      <p class="text-brand-saffron/80 mb-6 text-sm">Generate a new affiliate account and referral link.</p>
+      
+      <form class="space-y-4" x-data="{ 
+        loading: false,
+        async submitForm(e) {
+          this.loading = true;
+          const formData = new FormData(e.target);
+          const data = Object.fromEntries(formData.entries());
+          if (!data.referral_code) {
+            const namePart = (data.name || 'AFF').substring(0, 3).toUpperCase();
+            data.referral_code = namePart + Math.floor(1000 + Math.random() * 9000);
+          }
+          try {
+            const res = await fetch('/api/admin/create-affiliate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if (res.ok && result.success) {
+              window.location.reload();
+            } else {
+              alert(result.error || 'Failed to create affiliate');
+              this.loading = false;
+            }
+          } catch(err) {
+            alert('Network error while creating affiliate');
+            this.loading = false;
+          }
+        }
+      }" @submit.prevent="submitForm($event)">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-brand-saffron mb-1 uppercase tracking-wider">Full Name</label>
+            <input type="text" name="name" required class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-brand-saffron transition-colors" placeholder="e.g. John Doe">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-brand-saffron mb-1 uppercase tracking-wider">Email Address</label>
+            <input type="email" name="email" required class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-brand-saffron transition-colors" placeholder="john@example.com">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-brand-saffron mb-1 uppercase tracking-wider">Mobile (Optional)</label>
+            <div class="flex">
+              <input type="text" name="country_code" value="+91" class="w-16 bg-white/10 border border-white/20 rounded-l-xl px-3 py-3 text-white focus:outline-none border-r-0 text-center">
+              <input type="text" name="mobile_number" class="w-full bg-white/10 border border-white/20 rounded-r-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-brand-saffron transition-colors" placeholder="9876543210">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-brand-saffron mb-1 uppercase tracking-wider">Password</label>
+            <input type="text" name="password" required minlength="6" class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-brand-saffron transition-colors" placeholder="Set initial password">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-brand-saffron mb-1 uppercase tracking-wider">Custom Referral Code (Optional)</label>
+            <input type="text" name="referral_code" class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-brand-saffron transition-colors uppercase" placeholder="Leave empty to auto-generate">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-brand-saffron mb-1 uppercase tracking-wider">Settlement Currency</label>
+            <select name="currency" class="w-full bg-[#1e1b4b] border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-saffron transition-colors">
+              <option value="INR">INR (₹)</option>
+              <option value="USD">USD ($)</option>
+              <option value="SGD">SGD (S$)</option>
+              <option value="MYR">MYR (RM)</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-brand-saffron mb-1 uppercase tracking-wider">Commission Type</label>
+            <select name="commissionType" class="w-full bg-[#1e1b4b] border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-saffron transition-colors">
+              <option value="fixed">Fixed Amount per Report</option>
+              <option value="percentage">Percentage of Revenue</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-brand-saffron mb-1 uppercase tracking-wider">Commission Value</label>
+            <input type="number" step="0.01" min="0" name="commissionValue" required class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-brand-saffron transition-colors" placeholder="e.g. 50 or 20">
+          </div>
+        </div>
+        <div class="pt-2">
+          <button type="submit" class="w-full md:w-auto px-8 py-3 bg-brand-saffron text-brand-navy font-bold rounded-xl hover:bg-[#ffb040] transition-colors shadow-md flex items-center justify-center gap-2" :disabled="loading" :class="loading ? 'opacity-70 cursor-not-allowed' : ''">
+            <span x-show="!loading">Create Affiliate</span>
+            <span x-show="loading">Creating...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+    <!-- Decorative background elements -->
+    <div class="absolute -top-24 -right-24 w-64 h-64 bg-brand-purple rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
+    <div class="absolute -bottom-24 -right-12 w-48 h-48 bg-brand-saffron rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-brand-border overflow-hidden mb-8">
+    <div class="px-6 py-4 border-b border-brand-border bg-slate-50">
+      <h3 class="font-bold text-brand-navy">Registered Affiliates</h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm whitespace-nowrap">
+        <thead class="text-xs text-brand-text-muted uppercase bg-slate-50/50">
+          <tr>
+            <th class="px-6 py-3 font-medium tracking-wider">Name</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Contact</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Referral Code</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Joined Date</th>
+            <th class="px-6 py-3 font-medium tracking-wider text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-brand-border/50">
+          {affiliatesList.map(aff => (
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="px-6 py-4 font-bold text-brand-navy">{aff.name || 'Partner'}</td>
+              <td class="px-6 py-4">
+                <div class="text-brand-navy">{aff.email}</div>
+                {aff.mobile_number && <div class="text-xs text-brand-text-muted">{aff.country_code || ''} {aff.mobile_number}</div>}
+              </td>
+              <td class="px-6 py-4 font-mono text-brand-saffron font-bold">{aff.referral_code}</td>
+              <td class="px-6 py-4">
+                <div>{new Date(aff.created_at).toLocaleDateString()}</div>
+                <div class="text-xs font-medium text-brand-saffron">{aff.currency || 'INR'}</div>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <button 
+                  class="px-3 py-1.5 text-xs font-bold bg-slate-100 text-brand-navy rounded-md hover:bg-slate-200 transition-colors border border-slate-300"
+                  data-affiliate={JSON.stringify({
+                    id: aff.id,
+                    name: aff.name || '',
+                    email: aff.email || '',
+                    country_code: aff.country_code || '+91',
+                    mobile_number: aff.mobile_number || '',
+                    currency: aff.currency || 'INR',
+                    commissionType: aff.commission_type || 'fixed',
+                    commissionValue: aff.commission_value || 0
+                  })}
+                  @click="$dispatch('open-edit-affiliate', JSON.parse($el.getAttribute('data-affiliate')))"
+                >
+                  Edit Details
+                </button>
+              </td>
+            </tr>
+          ))}
+          {affiliatesList.length === 0 && (
+            <tr>
+              <td colspan="5" class="px-6 py-10 text-center text-brand-text-muted">No affiliates found.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls (Affiliates) -->
+    <div class="px-6 py-4 border-t border-brand-border bg-white flex items-center justify-between">
+      <div class="text-sm text-brand-text-muted">
+        Showing <span class="font-medium text-brand-navy">{totalAffiliates === 0 ? 0 : aff_offset + 1}</span> to <span class="font-medium text-brand-navy">{Math.min(aff_offset + limit, totalAffiliates)}</span> of <span class="font-medium text-brand-navy">{totalAffiliates}</span> affiliates
+      </div>
+      <div class="flex items-center gap-2">
+        {aff_page > 1 ? (
+          <a href={`?aff_page=${aff_page - 1}&ref_page=${ref_page}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Previous</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Previous</span>
+        )}
+        <span class="px-3 py-1 text-sm font-medium text-brand-navy">Page {aff_page} of {Math.max(totalAffPages, 1)}</span>
+        {aff_page < totalAffPages ? (
+          <a href={`?aff_page=${aff_page + 1}&ref_page=${ref_page}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Next</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Next</span>
+        )}
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-brand-border overflow-hidden">
+    <div class="px-6 py-4 border-b border-brand-border bg-slate-50">
+      <h3 class="font-bold text-brand-navy">Recent Affiliate Referrals</h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm whitespace-nowrap">
+        <thead class="text-xs text-brand-text-muted uppercase bg-slate-50/50">
+          <tr>
+            <th class="px-6 py-3 font-medium tracking-wider">Referrer (Affiliate)</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Referred User</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Joined Date</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-brand-border/50">
+          {referralsResult.map(ref => (
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="px-6 py-4">
+                <div class="font-bold text-brand-navy">{ref.referrer_name || ref.referrer_email}</div>
+                <div class="text-xs text-brand-text-muted font-mono">{ref.referral_code}</div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="font-medium text-brand-navy">{ref.referred_name || 'Anonymous'}</div>
+                <div class="text-xs text-brand-text-muted">{ref.referred_mobile ? `${ref.referred_country_code || ''} ${ref.referred_mobile}` : ref.referred_email}</div>
+              </td>
+              <td class="px-6 py-4 text-brand-text-muted">{new Date(ref.joined_at).toLocaleDateString()}</td>
+              <td class="px-6 py-4">
+                {ref.paid_reports_count > 0 ? (
+                  <span class="px-2.5 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-md">Converted</span>
+                ) : (
+                  <span class="px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-600 rounded-md">Registered</span>
+                )}
+              </td>
+            </tr>
+          ))}
+          {referralsResult.length === 0 && (
+            <tr>
+              <td colspan="4" class="px-6 py-10 text-center text-brand-text-muted">No referrals tracked yet.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls (Referrals) -->
+    <div class="px-6 py-4 border-t border-brand-border bg-white flex items-center justify-between">
+      <div class="text-sm text-brand-text-muted">
+        Showing <span class="font-medium text-brand-navy">{totalReferrals === 0 ? 0 : ref_offset + 1}</span> to <span class="font-medium text-brand-navy">{Math.min(ref_offset + limit, totalReferrals)}</span> of <span class="font-medium text-brand-navy">{totalReferrals}</span> referrals
+      </div>
+      <div class="flex items-center gap-2">
+        {ref_page > 1 ? (
+          <a href={`?aff_page=${aff_page}&ref_page=${ref_page - 1}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Previous</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Previous</span>
+        )}
+        <span class="px-3 py-1 text-sm font-medium text-brand-navy">Page {ref_page} of {Math.max(totalRefPages, 1)}</span>
+        {ref_page < totalRefPages ? (
+          <a href={`?aff_page=${aff_page}&ref_page=${ref_page + 1}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Next</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Next</span>
+        )}
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Affiliate Modal -->
+  <div x-data="{
+    open: false,
+    loading: false,
+    affiliateId: '',
+    name: '',
+    email: '',
+    country_code: '+91',
+    mobile_number: '',
+    password: '',
+    currency: 'INR',
+    commissionType: 'fixed',
+    commissionValue: 0,
+    
+    init() {
+      window.addEventListener('open-edit-affiliate', (e) => {
+        this.affiliateId = e.detail.id;
+        this.name = e.detail.name;
+        this.email = e.detail.email;
+        this.country_code = e.detail.country_code;
+        this.mobile_number = e.detail.mobile_number;
+        this.currency = e.detail.currency || 'INR';
+        this.commissionType = e.detail.commissionType || 'fixed';
+        this.commissionValue = e.detail.commissionValue || 0;
+        this.password = ''; // Only update if filled
+        this.open = true;
+      });
+    },
+    
+    async saveChanges() {
+      if(!this.affiliateId || !this.email) return;
+      this.loading = true;
+      try {
+        const res = await fetch('/api/admin/update-affiliate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: this.affiliateId,
+            name: this.name,
+            email: this.email,
+            country_code: this.country_code,
+            mobile_number: this.mobile_number,
+            currency: this.currency,
+            commissionType: this.commissionType,
+            commissionValue: this.commissionValue,
+            password: this.password
+          })
+        });
+        const data = await res.json();
+        if(data.success) {
+          window.location.reload();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch(e) {
+        alert('Failed to update affiliate');
+      } finally { 
+        this.loading = false; 
+      }
+    }
+  }" x-show="open" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0" style="display: none;">
+    <div class="fixed inset-0 bg-brand-navy/60 backdrop-blur-sm transition-opacity" @click="open = false" x-transition.opacity></div>
+    
+    <div class="relative bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden transform transition-all max-h-[90vh] flex flex-col" x-transition>
+      <div class="px-6 py-4 border-b border-brand-border bg-slate-50 flex justify-between items-center shrink-0">
+        <h3 class="font-bold text-brand-navy font-serif text-lg">Edit Affiliate</h3>
+        <button type="button" @click="open = false" class="text-brand-text-muted hover:text-brand-navy transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      
+      <form class="p-6 space-y-4 overflow-y-auto" @submit.prevent="saveChanges()">
+        <div>
+          <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Full Name</label>
+          <input type="text" x-model="name" class="w-full bg-white border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:border-brand-saffron transition-colors" placeholder="e.g. John Doe">
+        </div>
+        
+        <div>
+          <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Email Address</label>
+          <input type="email" x-model="email" required class="w-full bg-white border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:border-brand-saffron transition-colors">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Mobile (Optional)</label>
+          <div class="flex">
+            <input type="text" x-model="country_code" class="w-16 bg-white border border-brand-border rounded-l-xl px-3 py-3 text-brand-navy focus:outline-none border-r-0 text-center">
+            <input type="text" x-model="mobile_number" class="w-full bg-white border border-brand-border rounded-r-xl px-4 py-3 text-brand-navy focus:outline-none focus:border-brand-saffron transition-colors" placeholder="9876543210">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Settlement Currency</label>
+          <select x-model="currency" class="w-full bg-white border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:border-brand-saffron transition-colors">
+            <option value="INR">INR (₹)</option>
+            <option value="USD">USD ($)</option>
+            <option value="SGD">SGD (S$)</option>
+            <option value="MYR">MYR (RM)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Commission Type</label>
+            <select x-model="commissionType" class="w-full bg-white border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:border-brand-saffron transition-colors">
+              <option value="fixed">Fixed Amount</option>
+              <option value="percentage">Percentage</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Commission Value</label>
+            <input type="number" step="0.01" min="0" x-model="commissionValue" required class="w-full bg-white border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:border-brand-saffron transition-colors">
+          </div>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <label class="block text-xs font-bold text-amber-800 mb-1 uppercase tracking-wider">Reset Password (Optional)</label>
+          <p class="text-xs text-amber-600 mb-2">Leave blank to keep the current password.</p>
+          <input type="text" x-model="password" minlength="6" class="w-full bg-white border border-amber-200 rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:border-amber-400 transition-colors" placeholder="New Password">
+        </div>
+
+        <div class="pt-4 flex gap-3">
+          <button type="button" @click="open = false" class="flex-1 px-4 py-3 border border-brand-border text-brand-navy font-bold rounded-xl hover:bg-slate-50 transition-colors">Cancel</button>
+          <button type="submit" class="flex-1 px-4 py-3 bg-brand-navy text-white font-bold rounded-xl hover:bg-brand-purple transition-colors shadow-md flex justify-center items-center gap-2" :disabled="loading" :class="loading ? 'opacity-70 cursor-not-allowed' : ''">
+            <span x-show="!loading">Save Changes</span>
+            <span x-show="loading">Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</AdminLayout>

@@ -3,14 +3,6 @@ import crypto from 'crypto';
 import sql from '../../../lib/db';
 import { marked } from 'marked';
 
-// ── Auth Guard ────────────────────────────────────────────────────────────────
-const adminPassword = import.meta.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
-if (!adminPassword) return Astro.redirect('/admin');
-
-const expectedHash = crypto.createHash('sha256').update(adminPassword).digest('hex');
-const authCookie = Astro.cookies.get('astro_admin_auth')?.value;
-if (authCookie !== expectedHash) return Astro.redirect('/admin');
-
 // ── Fetch Report ──────────────────────────────────────────────────────────────
 const { id } = Astro.params;
 

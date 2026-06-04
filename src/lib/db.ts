@@ -15,7 +15,24 @@ let sql: any;
 
 if (databaseUrl.includes('.neon.tech')) {
   // Production / Remote Neon database
-  sql = neon(databaseUrl);
+  const neonSql = neon(databaseUrl);
+  sql = async function(strings: TemplateStringsArray, ...values: any[]) {
+    let attempt = 0;
+    const maxRetries = 3;
+    while (true) {
+      try {
+        return await neonSql(strings, ...values);
+      } catch (e: any) {
+        if (attempt < maxRetries && e.message && e.message.includes('fetch failed')) {
+          attempt++;
+          console.warn(`Neon fetch failed, retrying attempt ${attempt}...`);
+          await new Promise(res => setTimeout(res, 1000 * attempt));
+          continue;
+        }
+        throw e;
+      }
+    }
+  };
 } else {
   // Local PostgreSQL database
   const pool = new pg.Pool({ connectionString: databaseUrl });

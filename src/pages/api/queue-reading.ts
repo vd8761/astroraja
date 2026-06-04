@@ -18,17 +18,10 @@ export const POST: APIRoute = async ({ request }) => {
     const ipHeader = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     const clientIp = ipHeader.split(',')[0].trim();
 
-    // Generate random referral code
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let newRefCode = '';
-    for (let i = 0; i < 6; i++) {
-      newRefCode += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-
     // Determine referrer if passed
     let referredById = null;
     if (data.referralCode && typeof data.referralCode === 'string') {
-      const referrer = await sql`SELECT id FROM users WHERE referral_code = ${data.referralCode.trim().toUpperCase()} LIMIT 1`;
+      const referrer = await sql`SELECT id FROM affiliates WHERE referral_code = ${data.referralCode.trim().toUpperCase()} LIMIT 1`;
       if (referrer.length > 0) {
         referredById = referrer[0].id;
       }
@@ -62,6 +55,13 @@ export const POST: APIRoute = async ({ request }) => {
             WHERE id = ${user_id}
           `;
         } else {
+          // Generate a secure 6-character alphanumeric referral code for the new user
+          const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+          let newRefCode = '';
+          for (let i = 0; i < 6; i++) {
+            newRefCode += chars.charAt(Math.floor(Math.random() * chars.length));
+          }
+
           const inserted = await sql`
             INSERT INTO users (country_code, mobile_number, email, referral_code, referred_by) 
             VALUES (${countryCode}, ${mobileNumber}, ${data.email}, ${newRefCode}, ${referredById}) 
@@ -76,8 +76,8 @@ export const POST: APIRoute = async ({ request }) => {
         user_id = existing[0].id;
       } else {
         const inserted = await sql`
-          INSERT INTO users (email, referral_code, referred_by) 
-          VALUES (${data.email}, ${newRefCode}, ${referredById}) 
+          INSERT INTO users (email, referred_by) 
+          VALUES (${data.email}, ${referredById}) 
           RETURNING id
         `;
         user_id = inserted[0].id;
@@ -102,6 +102,15 @@ export const POST: APIRoute = async ({ request }) => {
         status: 402,
         headers: { 'Content-Type': 'application/json' }
       });
+    }
+
+    // 1.6 Save WhatsApp Number if provided
+    if (data.whatsappNumber) {
+      await sql`
+        UPDATE users 
+        SET whatsapp_number = ${data.whatsappNumber}, whatsapp_country_code = ${data.whatsappCountryCode || data.countryCode} 
+        WHERE id = ${user_id}
+      `;
     }
 
     // 2. Create Profile
@@ -211,7 +220,7 @@ export const POST: APIRoute = async ({ request }) => {
       }
     }
 
-    return new Response(JSON.stringify({ success: true, queued: true, report_id }), { 
+    return new Response(JSON.stringify({ success: true, queued: true, report_id, userId: user_id }), { 
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
