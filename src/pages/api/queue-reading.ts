@@ -84,6 +84,26 @@ export const POST: APIRoute = async ({ request }) => {
       }
     }
 
+    // 1.5 Verify that this user has an available paid report slot
+    const txRes = await sql`
+      SELECT COUNT(*)::integer as count FROM transactions
+      WHERE user_id = ${user_id} AND transaction_type = 'report' AND status = 'successful'
+    `;
+    const txCount = parseInt(txRes[0]?.count?.toString() || '0', 10);
+
+    const reportsRes = await sql`
+      SELECT COUNT(*)::integer as count FROM reports
+      WHERE user_id = ${user_id} AND status != 'failed'
+    `;
+    const reportsCount = parseInt(reportsRes[0]?.count?.toString() || '0', 10);
+
+    if (txCount <= reportsCount) {
+      return new Response(JSON.stringify({ error: 'Payment required. No available paid report slot.' }), { 
+        status: 402,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     // 2. Create Profile
     const relationship = data.relationship || 'Self';
     const profiles = await sql`

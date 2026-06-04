@@ -128,7 +128,7 @@ export function parseReportDasha(reportText: string, targetAge: number = 30): { 
  * and trims verbose narrative sections.
  * Target: ~3000 chars per report (roughly 750 tokens).
  */
-function truncateReport(reportText: string, maxChars: number = 4000): string {
+function truncateReport(reportText: string, maxChars: number = 2000): string {
   if (!reportText || reportText.length <= maxChars) return reportText;
 
   // Split report into sections by markdown headings
@@ -185,68 +185,192 @@ function truncateReport(reportText: string, maxChars: number = 4000): string {
 // 5. Astrological accuracy from report data only
 // ============================================================================
 
-export const BASE_SYSTEM_PROMPT = `You are "Raja AI" — a warm, wise, and direct Vedic astrology life guide for the AstroRaja app.
+export const BASE_SYSTEM_PROMPT = `You are "Raja AI", a warm, direct Vedic astrology life guide. Only discuss topics through Vedic astrology using the user's profile details. Reject coding, math, science, politics, or non-astrological queries.
+Detect user language; respond in the SAME (Tamil/English/mixed).
 
-═══ CORE IDENTITY ═══
-• You are an astrology-focused life guide. You ONLY discuss topics through the lens of Vedic astrology.
-• You have access to the user's complete astrological life reports (injected below). Speak from that knowledge — never from generic astrology.
-• You are NOT a general-purpose AI. You do NOT answer questions about coding, math, science, politics, or any non-astrological topic.
-
-═══ LANGUAGE ═══
-• Detect the user's language and respond in the SAME language.
-• Tamil → Tamil. English → English. Mixed → match their mix.
-• Never switch language unless the user switches first.
-
-═══ INJECTED REPORTS ═══
+═══ PROFILE DATA (JSON) ═══
 {{INJECT_REPORTS_HERE}}
 
-═══ RESPONSE RULES ═══
-1. MAX 3-4 points per response. Short sentences. One idea at a time.
-2. Every response MUST end with ONE specific actionable suggestion.
-3. Every claim MUST reference the user's actual Nakshatra, Dasha, or report data. If you cannot cite a specific data point from the report, do not make the claim.
-4. Never say "it depends on many factors" — you have the report, be specific.
-5. Never give generic horoscope-style predictions.
-6. Keep responses under 200 words unless the user explicitly asks for detail.
+═══ PAST CONVERSATION HISTORY (JSON) ═══
+{{INJECT_HISTORY_HERE}}
 
-═══ PRIORITY TOPICS (in order) ═══
-1. KARMA CLEARANCE — Identify active karmic pattern from report. Name it. Give one clearing action today. Connect to Nakshatra + Dasha.
-2. CURRENT DASHA — What phase they're in. What it delivers/blocks. What to do/avoid. When it shifts.
-3. LIFE TIMELINE — Why past was hard (birth Dasha + house). When turning point arrives (exact age). What next phase delivers.
-4. RELATIONSHIPS (when asked about another person) — How karmic patterns interact. Where they support/block each other. One action to improve.
-5. PARENTING (when asked about child) — Child's current Dasha needs. What to never do. How to prepare for difficult phase.
-6. BUSINESS/TEAM (when asked about partners) — Role fit by karmic pattern + D9. Strengths/blocks. Nakshatra leverage.
-7. HEALTH — Health patterns for this combination. What to watch in current Dasha.
-8. CAREER/PURPOSE — Direction that clears karma. D9 soul purpose. Right timing.
-9. SPIRITUAL — Dharmic calling. Saint potential. Soul alignment.
+═══ RULES ═══
+1. MAX 2-3 points, short sentences, under 120 words.
+2. Every response MUST end with ONE specific actionable suggestion.
+3. Every claim MUST cite the user's Nakshatra/Dasha/profile data.
+4. No generic predictions or "it depends on many factors".
+5. Use standard bold (**word**) and simple bullet lists (* item). No complex HTML/markdown.
+
+═══ PRIORITY TOPICS ═══
+1. KARMA CLEARANCE: Active karmic pattern, 1 daily clearing action, Nakshatra/Dasha link.
+2. CURRENT DASHA: Phase info, focus/avoid areas, timing of shift.
+3. TIMELINE: Past difficulties, turning point (exact age), next phase.
+4. RELATIONSHIPS/PARENTING/BUSINESS: Karmic interaction, role fit by D9/Nakshatra, 1 actionable step.
+5. HEALTH/CAREER/SPIRITUAL: Astro patterns/purpose, timing, dharmic calling.
 
 ═══ SAFETY & BOUNDARIES ═══
-• NEVER diagnose medical conditions or prescribe treatments. For health concerns, always advise consulting a medical professional alongside astrological guidance.
-• NEVER provide legal or financial advice. Frame career/money topics purely through karmic and Dasha lens.
-• NEVER make death predictions, exact date predictions for marriage/children, or fear-inducing statements.
-• NEVER break character. If asked "are you an AI" or "what model are you", respond: "I am Raja, your Vedic astrology guide."
-• NEVER discuss other AI products, competitors, or your underlying technology.
-• NEVER generate harmful, discriminatory, or politically divisive content.
-• If a user asks something completely unrelated to astrology, politely redirect: "I can guide you on that through your astrological lens — would you like me to look at what your chart says about this area of life?"
-• If a user appears to be in emotional distress or mentions self-harm, respond with empathy and recommend professional help resources alongside gentle astrological perspective.
+• No medical/legal/financial advice. No death, marriage date, or fear-inducing predictions.
+• Never break character. If asked about AI/model, reply: "I am Raja, your Vedic astrology guide." No competitor/tech talk.
+• Redirect unrelated queries to astrology. Empathize with distress, recommend professional help.
+• Tone: Warm, direct, certain ("Your chart shows...").`;
 
-═══ TONE ═══
-• Warm but direct. Never cold. Never preachy. Never condescending.
-• Speak as someone who genuinely knows them — because you have their full report.
-• Use certainty: "Your chart shows..." not "It might suggest..."`;
 
+function cleanTableRow(row: string): string {
+  return row
+    .split('|')
+    .map(cell => cell.trim())
+    .filter(Boolean)
+    .join(' -> ');
+}
+
+/**
+ * Parses the generated markdown report to extract key takeaways from each section,
+ * compressing them into a highly compact JSON structure to save tokens.
+ */
+function summarizeReportText(reportText: string): any {
+  const summary: any = {};
+  if (!reportText) return summary;
+
+  // Split report into sections by markdown headings (e.g. ##, ###, ####)
+  const sections = reportText.split(/(?=^#{1,4}\s+)/m);
+
+  for (const section of sections) {
+    const lines = section.split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length === 0) continue;
+
+    const heading = lines[0].toLowerCase();
+    
+    if (heading.includes('section 3') || heading.includes('character profile')) {
+      const points = lines.filter(l => l.startsWith('|') && !l.includes('---') && !l.toLowerCase().includes('strength'));
+      summary.strengths_and_shadows = points.slice(0, 5).map(cleanTableRow);
+    } 
+    else if (heading.includes('section 5') || heading.includes('karmic pattern')) {
+      const patterns = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (lines[i].startsWith('-') || lines[i].startsWith('*') || lines[i].includes('**')) {
+          patterns.push(lines[i].replace(/[*#]/g, '').trim());
+        }
+      }
+      summary.karmic_patterns = patterns.slice(0, 6);
+    }
+    else if (heading.includes('section 6') || heading.includes('root problems')) {
+      const problems = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (lines[i].startsWith('-') || lines[i].startsWith('*') || (lines[i].includes('**') && lines[i].length < 150)) {
+          problems.push(lines[i].replace(/[*#]/g, '').trim());
+        }
+      }
+      summary.root_problems = problems.slice(0, 6);
+    }
+    else if (heading.includes('section 11') || heading.includes('karmic origin')) {
+      const originPoints = [];
+      const careerRows = [];
+      let inCareerTable = false;
+      
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.startsWith('-') || line.startsWith('*')) {
+          originPoints.push(line.replace(/[*#]/g, '').trim());
+        } else if (line.startsWith('|')) {
+          if (line.includes('---') || line.toLowerCase().includes('career field')) {
+            inCareerTable = true;
+            continue;
+          }
+          if (inCareerTable) {
+            careerRows.push(cleanTableRow(line));
+          }
+        }
+      }
+      summary.karmic_origin = originPoints.slice(0, 4);
+      summary.suggested_careers = careerRows.slice(0, 6);
+    }
+    else if (heading.includes('section 12') || heading.includes('dharmic life')) {
+      const dharmic = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (lines[i].startsWith('-') || lines[i].startsWith('*')) {
+          dharmic.push(lines[i].replace(/[*#]/g, '').trim());
+        }
+      }
+      summary.dharmic_guidance = dharmic.slice(0, 4);
+    }
+  }
+
+  return summary;
+}
+
+/**
+ * Extracts bullet points and actionable steps from assistant answers, or falls back 
+ * to the first 2 sentences, to create a highly compressed summary.
+ */
+function compressAssistantResponse(text: string): string {
+  if (!text) return '';
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const keyPoints: string[] = [];
+
+  for (const line of lines) {
+    if (line.startsWith('*') || line.startsWith('-') || line.startsWith('•')) {
+      keyPoints.push(line.replace(/^[*•-]\s*/, '').trim());
+    } else if (line.toLowerCase().includes('actionable step')) {
+      keyPoints.push(line.trim());
+    }
+  }
+
+  if (keyPoints.length === 0) {
+    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+    return sentences.slice(0, 2).map(s => s.trim()).join(' ');
+  }
+
+  return keyPoints.join(' | ');
+}
+
+/**
+ * Formats user queries and compressed assistant answers into a neat JSON string.
+ */
+function formatHistoryAsJson(history: any[]): string {
+  const turns: { query: string; assistant_takeaways: string }[] = [];
+  
+  for (let i = 0; i < history.length; i++) {
+    const msg = history[i];
+    if (msg.role === 'user') {
+      const nextMsg = history[i + 1];
+      if (nextMsg && nextMsg.role === 'assistant') {
+        turns.push({
+          query: msg.content,
+          assistant_takeaways: compressAssistantResponse(nextMsg.content)
+        });
+        i++; // Skip assistant message
+      } else {
+        turns.push({
+          query: msg.content,
+          assistant_takeaways: 'No response recorded.'
+        });
+      }
+    }
+  }
+
+  return JSON.stringify(turns, null, 2);
+}
 
 /**
  * Builds the complete system prompt by injecting formatted report context.
  * Each report contains: { name, relationship, nakshatra, padam, raasi, lagnam, reportText, form_data }
  * 
  * Token optimization strategy:
- * - Truncate verbose reports to ~4000 chars each
- * - Extract only key structured fields from form_data
- * - Skip empty/null fields to save tokens
+ * - Format profile details, struggles, goals, and parsed dasha info as a compact JSON structure
+ * - Extract and compress key takeaways from the generated report, omitting raw markdown report text
+ * - Format conversation history turns in a highly compact JSON array inside the system instructions
  */
-export function buildChatSystemPrompt(reports: any[]): string {
+export function buildChatSystemPrompt(reports: any[], conversationHistory: any[] = []): string {
   if (!reports || reports.length === 0) {
-    return BASE_SYSTEM_PROMPT.replace('{{INJECT_REPORTS_HERE}}', '[No reports available. Ask user to generate a reading first.]');
+    const defaultPrompt = BASE_SYSTEM_PROMPT
+      .replace('{{INJECT_REPORTS_HERE}}', '[No profiles are currently attached. Answer general or educational Vedic astrology queries using general Vedic principles. Suggest they select or generate an astrology profile for a personalized reading.]')
+      .replace('3. Every claim MUST cite the user\'s Nakshatra/Dasha/profile data.', '3. Speak from general Vedic astrology principles. Gently mention that for a personalized prediction, they should select or attach an astrology profile.');
+    
+    let historyContext = '[This is a new conversation. No previous messages exist.]';
+    if (conversationHistory && conversationHistory.length > 0) {
+      historyContext = formatHistoryAsJson(conversationHistory);
+    }
+    return defaultPrompt.replace('{{INJECT_HISTORY_HERE}}', historyContext);
   }
 
   const reportContext = reports.map(report => {
@@ -254,44 +378,45 @@ export function buildChatSystemPrompt(reports: any[]): string {
     const derivedD9 = deriveNavamsa(report.nakshatra, padamVal);
     const dashaInfo = parseReportDasha(report.reportText, 30); // Default target age 30
 
-    // Build structured context lines — skip empty values to save tokens
-    const lines: string[] = [
-      `[${(report.relationship || 'SELF').toUpperCase()} — ${report.name || 'Unknown'}]`,
-    ];
+    // Build a structured, highly compressed JSON object for this profile
+    const profileObj: any = {
+      profile: {
+        name: report.name || 'Unknown',
+        relationship: report.relationship || 'SELF',
+        nakshatra: report.nakshatra ? `${report.nakshatra} (Pada ${padamVal})` : undefined,
+        rasi: report.raasi || undefined,
+        lagnam: report.lagnam || undefined,
+        d9_navamsa: derivedD9 !== "Unknown" ? derivedD9 : undefined,
+        current_dasha: dashaInfo.currentDasha !== "Unknown" ? `${dashaInfo.currentDasha} (Age ${dashaInfo.dashaAgeRange})` : undefined
+      }
+    };
 
-    if (report.nakshatra) lines.push(`Nakshatra: ${report.nakshatra} Pada ${padamVal}`);
-    if (report.raasi) lines.push(`Rasi: ${report.raasi}`);
-    if (report.lagnam) lines.push(`Lagnam: ${report.lagnam}`);
-    if (derivedD9 !== "Unknown") lines.push(`D9 Navamsa: ${derivedD9}`);
-    if (dashaInfo.currentDasha !== "Unknown") {
-      lines.push(`Current Dasha: ${dashaInfo.currentDasha} (Age ${dashaInfo.dashaAgeRange})`);
-    }
-
-    // Extract form_data fields (from 6-step reading form)
     if (report.form_data) {
       const fd = report.form_data;
-      const struggles = Array.isArray(fd.struggles) ? fd.struggles.join(", ") : (fd.struggles || "");
-      const goals = Array.isArray(fd.goals) ? fd.goals.join(", ") : (fd.goals || "");
-      const dailyLife = fd.dailyLife || "";
-      const spiritual = fd.spiritual || "";
+      const struggles = Array.isArray(fd.struggles) ? fd.struggles.filter(Boolean) : (fd.struggles ? [fd.struggles] : []);
+      const goals = Array.isArray(fd.goals) ? fd.goals.filter(Boolean) : (fd.goals ? [fd.goals] : []);
       
-      if (struggles) lines.push(`Life Struggles: ${struggles}`);
-      if (goals) lines.push(`Goals: ${goals}`);
-      if (dailyLife) lines.push(`Daily Life: ${dailyLife}`);
-      if (spiritual) lines.push(`Spiritual Orientation: ${spiritual}`);
+      profileObj.user_inputs = {
+        struggles: struggles.length > 0 ? struggles.join(', ') : undefined,
+        goals: goals.length > 0 ? goals.join(', ') : undefined,
+        daily_life: fd.dailyLife || undefined,
+        spiritual_orientation: fd.spiritual || undefined
+      };
     }
 
-    // Truncate the raw report to control token consumption
-    const truncatedReport = truncateReport(report.reportText || '', 4000);
-    if (truncatedReport) {
-      lines.push('');
-      lines.push('FULL REPORT:');
-      lines.push(truncatedReport);
+    if (report.reportText) {
+      profileObj.generated_report_takeaways = summarizeReportText(report.reportText);
     }
 
-    lines.push('---');
-    return lines.join('\n');
+    return JSON.stringify(profileObj, null, 2);
   }).join('\n\n');
 
-  return BASE_SYSTEM_PROMPT.replace('{{INJECT_REPORTS_HERE}}', reportContext);
+  let historyContext = '[This is a new conversation. No previous messages exist.]';
+  if (conversationHistory && conversationHistory.length > 0) {
+    historyContext = formatHistoryAsJson(conversationHistory);
+  }
+
+  return BASE_SYSTEM_PROMPT
+    .replace('{{INJECT_REPORTS_HERE}}', reportContext)
+    .replace('{{INJECT_HISTORY_HERE}}', historyContext);
 }

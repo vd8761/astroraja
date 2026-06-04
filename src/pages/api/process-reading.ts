@@ -11,10 +11,12 @@ import { sendAdminAlert, isModelDeprecatedError, isLowCreditError } from '../../
 import skillTemplate from '../../lib/skill.md?raw';
 
 export const POST: APIRoute = async ({ request }) => {
+  let reportIdToMarkFailed: any = null;
   try {
     // 1. Parse QStash payload
     const body = await request.json();
     const { report_id } = body;
+    reportIdToMarkFailed = report_id;
 
     if (!report_id) {
       return new Response(JSON.stringify({ error: 'Missing report_id' }), { status: 400 });
@@ -48,10 +50,6 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // 4. Generate AI Report
-    const apiKey = import.meta.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
-    const claudeModel = import.meta.env.ANTHROPIC_MODEL || process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5';
-    const anthropic = new Anthropic({ apiKey: apiKey });
-
     const userPrompt = `
 Generate a life transformation report:
 Name: ${report.name}
@@ -81,6 +79,10 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
     let isComplete = false;
     let messages: any[] = data.ai_messages || [{ role: "user", content: [{ type: "text", text: userPrompt }] }];
     let totalTokensUsed = report.tokens_used || 0;
+
+    const apiKey = import.meta.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
+    const claudeModel = import.meta.env.ANTHROPIC_MODEL || process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5';
+    const anthropic = new Anthropic({ apiKey: apiKey });
 
     try {
       const msg: any = await anthropic.messages.create({
@@ -274,6 +276,13 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
   } catch (error: any) {
     console.error("Queue Processing Error:", error);
     // If it fails, we mark it failed so we know. QStash will still retry if it receives a 500.
+    if (reportIdToMarkFailed) {
+      try {
+        await sql`UPDATE reports SET status = 'failed' WHERE id = ${reportIdToMarkFailed}`;
+      } catch (dbErr) {
+        console.error("Failed to update report status to failed:", dbErr);
+      }
+    }
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
