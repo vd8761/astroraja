@@ -258,16 +258,43 @@ CRITICAL FORMATTING INSTRUCTION: Use standard Markdown tables for all tables req
             </div>
           `,
           attachments: [{
-            filename: 'AstroRaja_Life_Report_' + filenameSafeName + '.pdf',
+            filename: `${filenameSafeName}_report.pdf`,
             content: pdfBuffer
           }]
         });
 
         if (emailError) {
-          throw new Error(emailError.message);
+          console.error('Resend email error:', emailError);
+        } else {
+          console.log('Premium PDF emailed successfully:', emailData);
         }
-      } catch (emailError) {
-        console.error('Failed to generate/send premium PDF email:', emailError);
+
+        // 7. Schedule the automated 24-hour feedback email via QStash
+        try {
+          const feedbackUrl = new URL('/api/webhook/send-feedback-email', request.url).toString();
+          const feedbackQstashUrl = `${process.env.QSTASH_URL}/v2/publish/${feedbackUrl}`;
+          
+          const qstashFeedbackRes = await fetch(feedbackQstashUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.QSTASH_TOKEN}`,
+              'Content-Type': 'application/json',
+              'Upstash-Delay': '24h', // This tells QStash to wait exactly 24 hours
+            },
+            body: JSON.stringify({ report_id }),
+          });
+
+          if (!qstashFeedbackRes.ok) {
+            console.error('Failed to schedule 24h feedback email:', await qstashFeedbackRes.text());
+          } else {
+            console.log('Successfully scheduled 24h feedback email via QStash');
+          }
+        } catch (feedbackErr) {
+          console.error('Error scheduling feedback email:', feedbackErr);
+        }
+
+      } catch (pdfErr) {
+        console.error('Failed to generate or send PDF email:', pdfErr);
       }
     }
 
