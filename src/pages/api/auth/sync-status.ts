@@ -43,11 +43,15 @@ export const GET: APIRoute = async ({ request }) => {
 
     const hasPaidReport = txCount > reportsCount;
 
+    const freeCreditsEnv = import.meta.env.FREE_CREDITS || process.env.FREE_CREDITS;
+    const freeCreditsLimit = freeCreditsEnv ? parseInt(freeCreditsEnv, 10) : 100;
+
     return new Response(JSON.stringify({
       success: true,
       hasGeneratedReport,
       hasPaidReport,
-      profiles: dbProfiles
+      profiles: dbProfiles,
+      freeCreditsLimit
     }), {
       status: 200,
       headers: {

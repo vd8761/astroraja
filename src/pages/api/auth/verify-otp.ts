@@ -173,15 +173,32 @@ export const POST: APIRoute = async ({ request }) => {
       LIMIT 1
     `;
     if (welcomeTx.length === 0) {
+      const freeCreditsEnv = import.meta.env.FREE_CREDITS || process.env.FREE_CREDITS;
+      const welcomeCredits = freeCreditsEnv ? parseInt(freeCreditsEnv, 10) : 100;
+
       await sql`
         INSERT INTO transactions (user_id, amount, currency, tokens_added, status, transaction_type)
-        VALUES (${userId}, 0, 'INR', 100, 'successful', 'welcome_bonus')
+        VALUES (${userId}, 0, 'INR', ${welcomeCredits}, 'successful', 'welcome_bonus')
       `;
+
+      // Update user token balance to match the dynamic welcome credits
+      await sql`
+        UPDATE users 
+        SET token_balance = ${welcomeCredits} 
+        WHERE id = ${userId}
+      `;
+
       await sql`
         INSERT INTO notifications (user_id, title, message, category, action_type)
-        VALUES (${userId}, '100 Welcome Credits Added!', 'Welcome to AstroRaja! We have credited 100 bonus tokens to your account. Ask our AI Astrologer anything about your future.', 'Promo', 'promo')
+        VALUES (
+          ${userId}, 
+          ${`${welcomeCredits} Welcome Credits Added!`}, 
+          ${`Welcome to AstroRaja! We have credited ${welcomeCredits} bonus tokens to your account. Ask our AI Astrologer anything about your future.`}, 
+          'Promo', 
+          'promo'
+        )
       `;
-      console.log(`Inserted welcome_bonus transaction and notification for user: ${userId}`);
+      console.log(`Inserted welcome_bonus transaction (${welcomeCredits} tokens), updated user balance, and notification for user: ${userId}`);
     }
 
     // Retrieve the user's name from their "Self" profile if it exists
