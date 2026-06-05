@@ -1,0 +1,313 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import sql from '../../../lib/db';
+
+const page = parseInt(Astro.url.searchParams.get('page') || '1');
+const statusFilter = Astro.url.searchParams.get('status') || '';
+const categoryFilter = Astro.url.searchParams.get('category') || '';
+const priorityFilter = Astro.url.searchParams.get('priority') || '';
+const limit = 20;
+const offset = (page - 1) * limit;
+
+// Stats computation
+const totalCountResult = await sql`SELECT COUNT(*) as count FROM support_tickets`;
+const pendingCountResult = await sql`SELECT COUNT(*) as count FROM support_tickets WHERE status = 'Under Review'`;
+const resolvedCountResult = await sql`SELECT COUNT(*) as count FROM support_tickets WHERE status = 'Resolved'`;
+
+const totalTicketsGlobal = totalCountResult[0].count;
+const pendingTickets = pendingCountResult[0].count;
+const resolvedTickets = resolvedCountResult[0].count;
+
+// Get total count for pagination with current filters
+const countResult = await sql`
+  SELECT COUNT(*) as total FROM support_tickets
+  WHERE (${statusFilter} = '' OR status = ${statusFilter})
+  AND (${categoryFilter} = '' OR category = ${categoryFilter})
+  AND (${priorityFilter} = '' OR priority = ${priorityFilter})
+`;
+const totalTickets = parseInt(countResult[0].total);
+const totalPages = Math.ceil(totalTickets / limit);
+
+// Fetch support tickets with filter and join with users and primary profiles
+const ticketsResult = await sql`
+  SELECT t.*, u.mobile_number, u.country_code, u.email,
+    (SELECT name FROM profiles WHERE user_id = u.id ORDER BY created_at ASC LIMIT 1) as user_name
+  FROM support_tickets t
+  LEFT JOIN users u ON t.user_id = u.id
+  WHERE (${statusFilter} = '' OR t.status = ${statusFilter})
+  AND (${categoryFilter} = '' OR t.category = ${categoryFilter})
+  AND (${priorityFilter} = '' OR t.priority = ${priorityFilter})
+  ORDER BY t.created_at DESC
+  LIMIT ${limit} OFFSET ${offset}
+`;
+---
+
+<AdminLayout title="Support Tickets" activeTab="support">
+  <!-- Stats Row -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-sm border border-brand-border p-6 hover:shadow-md transition-shadow flex flex-col justify-between h-full min-h-[120px]">
+      <div class="text-sm font-medium text-brand-text-muted mb-2 uppercase tracking-wider">Total Tickets</div>
+      <div class="text-3xl font-bold text-brand-navy">{totalTicketsGlobal}</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-brand-border p-6 hover:shadow-md transition-shadow flex flex-col justify-between h-full min-h-[120px]">
+      <div class="text-sm font-medium text-brand-text-muted mb-2 uppercase tracking-wider">Under Review</div>
+      <div class="text-3xl font-bold text-amber-500">{pendingTickets}</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-brand-border p-6 hover:shadow-md transition-shadow flex flex-col justify-between h-full min-h-[120px]">
+      <div class="text-sm font-medium text-brand-text-muted mb-2 uppercase tracking-wider">Resolved</div>
+      <div class="text-3xl font-bold text-green-600">{resolvedTickets}</div>
+    </div>
+  </div>
+
+  <!-- Filters Area -->
+  <div class="bg-white rounded-xl shadow-sm border border-brand-border p-6 mb-6">
+    <h3 class="font-serif font-bold text-brand-navy mb-4">Filter Tickets</h3>
+    <form method="GET" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Status</label>
+        <select name="status" class="w-full bg-white border border-brand-border rounded-xl px-4 py-2.5 text-brand-navy focus:outline-none focus:border-brand-saffron transition-colors" onchange="this.form.submit()">
+          <option value="">All Statuses</option>
+          <option value="Under Review" selected={statusFilter === "Under Review"}>Under Review</option>
+          <option value="Resolved" selected={statusFilter === "Resolved"}>Resolved</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Topic of Inquiry</label>
+        <select name="category" class="w-full bg-white border border-brand-border rounded-xl px-4 py-2.5 text-brand-navy focus:outline-none focus:border-brand-saffron transition-colors" onchange="this.form.submit()">
+          <option value="">All Topics</option>
+          <option value="Payments & Credits" selected={categoryFilter === "Payments & Credits"}>Payments & Credits</option>
+          <option value="AI Readings" selected={categoryFilter === "AI Readings"}>AI Readings</option>
+          <option value="Chart Prediction" selected={categoryFilter === "Chart Prediction"}>Chart Prediction</option>
+          <option value="Other Query" selected={categoryFilter === "Other Query"}>Other Query</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Priority Tier</label>
+        <select name="priority" class="w-full bg-white border border-brand-border rounded-xl px-4 py-2.5 text-brand-navy focus:outline-none focus:border-brand-saffron transition-colors" onchange="this.form.submit()">
+          <option value="">All Priorities</option>
+          <option value="Low" selected={priorityFilter === "Low"}>Low</option>
+          <option value="Medium" selected={priorityFilter === "Medium"}>Medium</option>
+          <option value="High" selected={priorityFilter === "High"}>High</option>
+        </select>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tickets Table -->
+  <div class="bg-white rounded-xl shadow-sm border border-brand-border overflow-hidden" x-data="{ openModal: false, selectedTicket: null }">
+    <div class="px-6 py-4 border-b border-brand-border bg-slate-50">
+      <h3 class="font-bold text-brand-navy">Cosmic Helpdesk Tickets</h3>
+    </div>
+    
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm whitespace-nowrap">
+        <thead class="text-xs text-brand-text-muted uppercase bg-slate-50/50">
+          <tr>
+            <th class="px-6 py-3 font-medium tracking-wider">Ticket ID</th>
+            <th class="px-6 py-3 font-medium tracking-wider">User Profile / Contacts</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Inquiry Subject</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Priority</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Status</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Reply Status</th>
+            <th class="px-6 py-3 font-medium tracking-wider text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-brand-border/50">
+          {ticketsResult.map(ticket => {
+            const isResolved = ticket.status === 'Resolved';
+            const isHigh = ticket.priority === 'High';
+            const isMedium = ticket.priority === 'Medium';
+            const hasReply = !!ticket.admin_reply;
+
+            return (
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 font-mono font-bold text-brand-navy">{ticket.id}</td>
+                <td class="px-6 py-4">
+                  <div class="font-bold text-brand-navy">{ticket.user_name || 'Guest User'}</div>
+                  <div class="text-xs text-brand-text-muted">{ticket.email || 'No Email'}</div>
+                  {ticket.mobile_number && <div class="text-xs text-brand-text-muted">{ticket.country_code || ''} {ticket.mobile_number}</div>}
+                </td>
+                <td class="px-6 py-4 max-w-xs overflow-hidden text-ellipsis">
+                  <div class="font-bold text-brand-navy">{ticket.subject}</div>
+                  <div class="text-xs text-brand-text-muted">{ticket.category} • {new Date(ticket.created_at).toLocaleDateString()}</div>
+                </td>
+                <td class="px-6 py-4">
+                  {isHigh ? (
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">High</span>
+                  ) : isMedium ? (
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800">Medium</span>
+                  ) : (
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">Low</span>
+                  )}
+                </td>
+                <td class="px-6 py-4">
+                  {isResolved ? (
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800">Resolved</span>
+                  ) : (
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-amber-100 text-amber-800 font-bold">Under Review</span>
+                  )}
+                </td>
+                <td class="px-6 py-4">
+                  {hasReply ? (
+                    <span class="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                      Replied
+                    </span>
+                  ) : (
+                    <span class="inline-flex items-center gap-1 text-xs text-amber-600 font-medium">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                      Pending Reply
+                    </span>
+                  )}
+                </td>
+                <td class="px-6 py-4 text-right">
+                  <button 
+                    class="px-3 py-1.5 text-xs font-bold bg-slate-100 text-brand-navy rounded-md hover:bg-slate-200 transition-colors border border-slate-300"
+                    data-ticket={JSON.stringify({
+                      id: ticket.id,
+                      userName: ticket.user_name || 'Guest User',
+                      email: ticket.email || 'No Email',
+                      mobile: ticket.mobile_number ? `${ticket.country_code || ''} ${ticket.mobile_number}` : 'No Phone',
+                      subject: ticket.subject,
+                      description: ticket.description,
+                      category: ticket.category,
+                      priority: ticket.priority,
+                      status: ticket.status,
+                      adminReply: ticket.admin_reply || '',
+                      createdAt: new Date(ticket.created_at).toLocaleString()
+                    })}
+                    @click="selectedTicket = JSON.parse($el.getAttribute('data-ticket')); openModal = true;"
+                  >
+                    Manage
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+          {ticketsResult.length === 0 && (
+            <tr>
+              <td colspan="7" class="px-6 py-10 text-center text-brand-text-muted">No tickets match current filters.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="px-6 py-4 border-t border-brand-border bg-white flex items-center justify-between">
+      <div class="text-sm text-brand-text-muted">
+        Showing <span class="font-medium text-brand-navy">{totalTickets === 0 ? 0 : offset + 1}</span> to <span class="font-medium text-brand-navy">{Math.min(offset + limit, totalTickets)}</span> of <span class="font-medium text-brand-navy">{totalTickets}</span> tickets
+      </div>
+      <div class="flex items-center gap-2">
+        {page > 1 ? (
+          <a href={`?page=${page - 1}&status=${statusFilter}&category=${categoryFilter}&priority=${priorityFilter}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Previous</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Previous</span>
+        )}
+        <span class="px-3 py-1 text-sm font-medium text-brand-navy">Page {page} of {Math.max(totalPages, 1)}</span>
+        {page < totalPages ? (
+          <a href={`?page=${page + 1}&status=${statusFilter}&category=${categoryFilter}&priority=${priorityFilter}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Next</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Next</span>
+        )}
+      </div>
+    </div>
+
+    <!-- Edit/Manage Ticket Modal -->
+    <div x-show="openModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0" style="display: none;">
+      <div class="fixed inset-0 bg-brand-navy/60 backdrop-blur-sm transition-opacity" @click="openModal = false"></div>
+      
+      <div class="relative bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden transform transition-all max-h-[90vh] flex flex-col" x-show="openModal" x-transition>
+        <div class="px-6 py-4 border-b border-brand-border bg-slate-50 flex justify-between items-center shrink-0">
+          <h3 class="font-bold text-brand-navy font-serif text-lg">Manage Cosmic Ticket</h3>
+          <button type="button" @click="openModal = false" class="text-brand-text-muted hover:text-brand-navy transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+        
+        <div class="p-6 space-y-4 overflow-y-auto flex-1" x-data="{ loading: false }">
+          <div class="bg-slate-50 rounded-xl p-4 border border-brand-border text-xs space-y-2">
+            <div class="flex justify-between">
+              <span class="font-bold text-brand-text-muted">TICKET ID:</span>
+              <span class="font-mono font-bold text-brand-navy" x-text="selectedTicket?.id"></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-bold text-brand-text-muted">CREATED AT:</span>
+              <span class="text-brand-navy" x-text="selectedTicket?.createdAt"></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-bold text-brand-text-muted">USER NAME:</span>
+              <span class="font-bold text-brand-navy" x-text="selectedTicket?.userName"></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-bold text-brand-text-muted">CONTACTS:</span>
+              <span class="text-brand-navy" x-text="selectedTicket?.email + ' • ' + selectedTicket?.mobile"></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-bold text-brand-text-muted">TOPIC:</span>
+              <span class="text-brand-navy" x-text="selectedTicket?.category"></span>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-xs font-bold text-brand-navy uppercase tracking-wider mb-1">Subject</h4>
+            <p class="font-serif font-bold text-brand-navy text-base" x-text="selectedTicket?.subject"></p>
+          </div>
+
+          <div>
+            <h4 class="text-xs font-bold text-brand-navy uppercase tracking-wider mb-1">Description</h4>
+            <div class="bg-slate-50 p-4 rounded-xl border border-brand-border text-sm text-brand-navy whitespace-pre-line leading-relaxed max-h-40 overflow-y-auto" x-text="selectedTicket?.description"></div>
+          </div>
+
+          <form class="space-y-4 pt-2" @submit.prevent="
+            loading = true;
+            try {
+              const res = await fetch('/api/admin/reply-ticket', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  ticketId: selectedTicket.id,
+                  status: selectedTicket.status,
+                  adminReply: selectedTicket.adminReply
+                })
+              });
+              const data = await res.json();
+              if (data.success) {
+                window.location.reload();
+              } else {
+                alert('Error: ' + data.error);
+                loading = false;
+              }
+            } catch (e) {
+              alert('Failed to save changes');
+              loading = false;
+            }
+          ">
+            <div>
+              <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Ticket Status</label>
+              <select x-model="selectedTicket.status" class="w-full bg-white border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:border-brand-saffron transition-colors">
+                <option value="Under Review">Under Review</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-brand-navy mb-1 uppercase tracking-wider">Official Response / Reply</label>
+              <textarea x-model="selectedTicket.adminReply" rows="4" class="w-full bg-white border border-brand-border rounded-xl px-4 py-3 text-brand-navy focus:outline-none focus:border-brand-saffron transition-colors text-sm" placeholder="Provide response, solutions, or comments to the customer here..."></textarea>
+            </div>
+
+            <div class="pt-2 flex gap-3">
+              <button type="button" @click="openModal = false" class="flex-1 px-4 py-3 border border-brand-border text-brand-navy font-bold rounded-xl hover:bg-slate-50 transition-colors">Cancel</button>
+              <button type="submit" class="flex-1 px-4 py-3 bg-brand-navy text-white font-bold rounded-xl hover:bg-brand-purple transition-colors shadow-md flex justify-center items-center gap-2" :disabled="loading" :class="loading ? 'opacity-70 cursor-not-allowed' : ''">
+                <span x-show="!loading">Save & Update</span>
+                <span x-show="loading">Saving...</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
