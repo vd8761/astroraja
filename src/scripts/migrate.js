@@ -1,4 +1,8 @@
 import { neon } from '@neondatabase/serverless';
+import dns from 'node:dns';
+
+// Fix local Node.js IPv6 resolution timeout issues
+dns.setDefaultResultOrder('ipv4first');
 
 const sql = neon(process.env.DATABASE_URL);
 
@@ -66,6 +70,18 @@ async function main() {
     )
   `;
   console.log("- transactions table created");
+
+  // Feedbacks
+  await sql`
+    CREATE TABLE IF NOT EXISTS feedbacks (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      report_id UUID REFERENCES reports(id) ON DELETE CASCADE,
+      rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+      message TEXT,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    )
+  `;
+  console.log("- feedbacks table created");
 
   console.log("All tables created successfully!");
 }
