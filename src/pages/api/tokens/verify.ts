@@ -13,7 +13,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const body = await request.json();
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, custom_credits } = body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, custom_credits, is_report } = body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return new Response(JSON.stringify({ error: 'Missing payment details' }), { status: 400 });
@@ -47,13 +47,25 @@ export const POST: APIRoute = async ({ request }) => {
     let tokensToAdd = parseInt(import.meta.env.TOKEN_PACK_AMOUNT || process.env.TOKEN_PACK_AMOUNT || '10000');
     let priceInr = parseInt(import.meta.env.TOKEN_PACK_PRICE_INR || process.env.TOKEN_PACK_PRICE_INR || '99');
     
-    if (isSandboxBypass && custom_credits) {
+    if (is_report) {
+      tokensToAdd = 0;
+      // Fetch order from Razorpay to get the actual amount paid for report
+      try {
+        const key_id = import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID || import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID;
+        const razorpay = new Razorpay({ key_id, key_secret });
+        const order = await razorpay.orders.fetch(razorpay_order_id);
+        priceInr = Math.round((order.amount as number) / 100);
+      } catch (e) {
+        // Fallback: report pricing is usually 249 or 999
+        priceInr = 249; 
+      }
+    } else if (isSandboxBypass && custom_credits) {
       tokensToAdd = parseInt(custom_credits);
       priceInr = Math.round((tokensToAdd / 10000) * 99);
     } else {
       // For real payments, fetch order from Razorpay to get the actual amount paid!
       try {
-        const key_id = import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID;
+        const key_id = import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID || import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID;
         const razorpay = new Razorpay({ key_id, key_secret });
         const order = await razorpay.orders.fetch(razorpay_order_id);
         priceInr = Math.round((order.amount as number) / 100);
@@ -73,22 +85,60 @@ export const POST: APIRoute = async ({ request }) => {
     // Use a transaction if possible, but neon serverless sql handles simple queries. 
     // We will do them sequentially safely.
     
-    // Add tokens to user
-    await sql`
-      UPDATE users 
-      SET token_balance = COALESCE(token_balance, 0) + ${tokensToAdd} 
-      WHERE id = ${user.userId as string}
-    `;
+    // Add tokens to user (ONLY if it is a token purchase, NOT a report purchase)
+    if (!is_report && tokensToAdd > 0) {
+      await sql`
+        UPDATE users 
+        SET token_balance = COALESCE(token_balance, 0) + ${tokensToAdd} 
+        WHERE id = ${user.userId as string}
+      `;
+      await sql`
+        INSERT INTO notifications (user_id, title, message, category, action_type)
+        VALUES (${user.userId as string}, 'Top-Up Successful', ${`Successfully added ${tokensToAdd} credits to your account. Your connection with the cosmos is fully powered!`}, 'Promo', 'promo')
+      `;
+    }
 
     // Log the transaction
     const newTx = await sql`
-      INSERT INTO transactions (user_id, amount, currency, tokens_added, razorpay_order_id, razorpay_payment_id, status, ip_address)
-      VALUES (${user.userId as string}, ${priceInr}, 'INR', ${tokensToAdd}, ${razorpay_order_id}, ${razorpay_payment_id}, 'successful', ${clientIp})
+      INSERT INTO transactions (user_id, amount, currency, tokens_added, razorpay_order_id, razorpay_payment_id, status, ip_address, transaction_type)
+      VALUES (${user.userId as string}, ${priceInr}, 'INR', ${tokensToAdd}, ${razorpay_order_id}, ${razorpay_payment_id}, 'successful', ${clientIp}, ${is_report ? 'report' : 'credits'})
       RETURNING id
     `;
     const transactionId = newTx[0].id;
 
-
+    // 5. Check for Referral Rewards
+    // Get the user's referrer, if any
+    const userInfo = await sql`SELECT referred_by FROM users WHERE id = ${user.userId as string}`;
+    if (userInfo.length > 0 && userInfo[0].referred_by) {
+      const referrerId = userInfo[0].referred_by;
+      
+      // Check if this was the user's first successful transaction
+      const pastTxs = await sql`SELECT id FROM transactions WHERE user_id = ${user.userId as string} AND status = 'successful'`;
+      
+      // If pastTxs.length === 1, it means the transaction we JUST inserted is their first ever
+      if (pastTxs.length === 1) {
+        const REWARD_TOKENS = parseInt(import.meta.env.REFERRAL_REWARD_TOKENS || process.env.REFERRAL_REWARD_TOKENS || '10');
+        
+        // Add tokens to referrer
+        await sql`
+          UPDATE users 
+          SET token_balance = COALESCE(token_balance, 0) + ${REWARD_TOKENS} 
+          WHERE id = ${referrerId}
+        `;
+        
+        // Log earning
+        await sql`
+          INSERT INTO referral_earnings (referrer_id, referred_user_id, tokens_awarded, trigger_transaction_id)
+          VALUES (${referrerId}, ${user.userId as string}, ${REWARD_TOKENS}, ${transactionId})
+        `;
+        
+        await sql`
+          INSERT INTO notifications (user_id, title, message, category, action_type)
+          VALUES (${referrerId}, 'Referral Bonus Received!', ${`Your friend completed their first purchase! You have earned ${REWARD_TOKENS} bonus credits as a referral reward.`}, 'Promo', 'promo')
+        `;
+        console.log(`Referral reward of ${REWARD_TOKENS} granted to ${referrerId} for referring ${user.userId}`);
+      }
+    }
 
     return new Response(JSON.stringify({ 
       success: true, 

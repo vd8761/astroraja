@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import sql from '../../../lib/db';
+import { parsePhone } from '../../../lib/auth';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -21,6 +22,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     if (mobile) {
+      const { countryCode, mobileNumber } = parsePhone(mobile);
       const cleanedMobile = mobile.trim();
       const mobileWithPlus = cleanedMobile.startsWith('+') ? cleanedMobile : `+${cleanedMobile}`;
       const mobileWithoutPlus = cleanedMobile.startsWith('+') ? cleanedMobile.substring(1) : cleanedMobile;
@@ -28,7 +30,8 @@ export const POST: APIRoute = async ({ request }) => {
 
       const existingMobile = await sql`
         SELECT id FROM users 
-        WHERE mobile_number = ${mobileWithPlus} 
+        WHERE (country_code = ${countryCode} AND mobile_number = ${mobileNumber})
+           OR mobile_number = ${mobileWithPlus} 
            OR mobile_number = ${mobileWithoutPlus}
            OR mobile_number LIKE ${'%' + last10Digits}
         LIMIT 1
