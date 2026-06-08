@@ -1,0 +1,122 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import sql from '../../../lib/db';
+
+const url = new URL(Astro.request.url);
+const page = parseInt(url.searchParams.get('page') || '1');
+const limit = 20;
+const offset = (page - 1) * limit;
+
+// We need to count total feedbacks but ensure we don't crash if the table doesn't exist yet
+let count = '0';
+let feedbacksResult = [];
+let dbError = null;
+
+try {
+  const [result] = await sql`SELECT COUNT(*) FROM feedbacks`;
+  count = result.count;
+  
+  feedbacksResult = await sql`
+    SELECT f.id, f.rating, f.message, f.created_at, r.id as report_id, p.name as profile_name, u.email
+    FROM feedbacks f
+    JOIN reports r ON f.report_id = r.id
+    JOIN profiles p ON r.profile_id = p.id
+    JOIN users u ON r.user_id = u.id
+    ORDER BY f.created_at DESC 
+    LIMIT ${limit} OFFSET ${offset}
+  `;
+} catch (error) {
+  console.error("Database error (feedbacks table might not exist):", error);
+  dbError = "The feedbacks table hasn't been created yet. Please run the database migration.";
+}
+
+const totalFeedbacks = parseInt(count);
+const totalPages = Math.ceil(totalFeedbacks / limit);
+---
+
+<AdminLayout title="Customer Feedbacks" activeTab="feedbacks">
+  {dbError && (
+    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-lg">
+      <p class="font-bold">Database Error</p>
+      <p>{dbError}</p>
+    </div>
+  )}
+
+  <div class="bg-white rounded-xl shadow-sm border border-brand-border overflow-hidden">
+    <div class="px-6 py-4 border-b border-brand-border bg-slate-50 flex justify-between items-center">
+      <h3 class="font-bold text-brand-navy">Customer Ratings & Reviews</h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm whitespace-nowrap">
+        <thead class="text-xs text-brand-text-muted uppercase bg-slate-50/50">
+          <tr>
+            <th class="px-6 py-3 font-medium tracking-wider">Date</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Customer</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Rating</th>
+            <th class="px-6 py-3 font-medium tracking-wider w-1/2 whitespace-normal">Message</th>
+            <th class="px-6 py-3 font-medium tracking-wider text-right">Report</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-brand-border/50">
+          {feedbacksResult.map(feedback => (
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="px-6 py-4 text-brand-text-muted text-xs">
+                {new Date(feedback.created_at).toLocaleDateString()} <br/>
+                {new Date(feedback.created_at).toLocaleTimeString()}
+              </td>
+              <td class="px-6 py-4">
+                <div class="font-bold text-brand-navy">{feedback.profile_name}</div>
+                <div class="text-xs text-brand-text-muted">{feedback.email}</div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex items-center text-amber-400">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <svg class={`w-4 h-4 ${i < feedback.rating ? 'text-amber-400' : 'text-slate-200'}`} fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                  <span class="ml-2 font-bold text-brand-navy">{feedback.rating}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-normal text-sm text-slate-700 italic border-l border-r border-slate-100 bg-slate-50/30">
+                "{feedback.message || 'No written message provided.'}"
+              </td>
+              <td class="px-6 py-4 text-right">
+                <a href={`/admin/report-preview/${feedback.report_id}`} target="_blank" class="px-2.5 py-1.5 text-xs font-medium bg-slate-100 text-brand-navy rounded hover:bg-slate-200 transition-colors" title="View Report">
+                  View Report
+                </a>
+              </td>
+            </tr>
+          ))}
+          {(!dbError && feedbacksResult.length === 0) && (
+            <tr>
+              <td colspan="5" class="px-6 py-10 text-center text-brand-text-muted">No feedbacks have been submitted yet.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    {!dbError && totalFeedbacks > 0 && (
+      <div class="px-6 py-4 border-t border-brand-border bg-white flex items-center justify-between">
+        <div class="text-sm text-brand-text-muted">
+          Showing <span class="font-medium text-brand-navy">{offset + 1}</span> to <span class="font-medium text-brand-navy">{Math.min(offset + limit, totalFeedbacks)}</span> of <span class="font-medium text-brand-navy">{totalFeedbacks}</span> feedbacks
+        </div>
+        <div class="flex items-center gap-2">
+          {page > 1 ? (
+            <a href={`?page=${page - 1}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Previous</a>
+          ) : (
+            <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Previous</span>
+          )}
+          
+          {page < totalPages ? (
+            <a href={`?page=${page + 1}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Next</a>
+          ) : (
+            <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Next</span>
+          )}
+        </div>
+      </div>
+    )}
+  </div>
+</AdminLayout>
