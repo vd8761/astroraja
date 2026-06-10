@@ -18,10 +18,13 @@ export const GET: APIRoute = async ({ request }) => {
     `;
 
     const tokenBalance = userRecord[0]?.token_balance ?? 0;
+    const freeCreditsEnv = import.meta.env.FREE_CREDITS || process.env.FREE_CREDITS;
+    const freeCreditsLimit = freeCreditsEnv ? parseInt(freeCreditsEnv, 10) : 100;
 
     return new Response(JSON.stringify({ 
       success: true, 
-      token_balance: tokenBalance
+      token_balance: tokenBalance,
+      free_credits_limit: freeCreditsLimit
     }), { status: 200 });
 
   } catch (error: any) {

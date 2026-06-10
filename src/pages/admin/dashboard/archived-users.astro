@@ -1,0 +1,313 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import sql from '../../../lib/db';
+
+const page = parseInt(Astro.url.searchParams.get('page') || '1');
+const search = Astro.url.searchParams.get('search') || '';
+const limit = 20;
+const offset = (page - 1) * limit;
+
+let countResult;
+let usersResult;
+
+if (search.trim() !== '') {
+  const querySearch = `%${search.trim()}%`;
+  countResult = await sql`
+    SELECT COUNT(*) as total FROM archived_users
+    WHERE email ILIKE ${querySearch} 
+       OR mobile_number ILIKE ${querySearch}
+       OR user_id::text ILIKE ${querySearch}
+  `;
+  usersResult = await sql`
+    SELECT * FROM archived_users
+    WHERE email ILIKE ${querySearch} 
+       OR mobile_number ILIKE ${querySearch}
+       OR user_id::text ILIKE ${querySearch}
+    ORDER BY deleted_at DESC
+    LIMIT ${limit} OFFSET ${offset}
+  `;
+} else {
+  countResult = await sql`SELECT COUNT(*) as total FROM archived_users`;
+  usersResult = await sql`
+    SELECT * FROM archived_users
+    ORDER BY deleted_at DESC
+    LIMIT ${limit} OFFSET ${offset}
+  `;
+}
+
+const totalUsers = parseInt(countResult[0].total);
+const totalPages = Math.ceil(totalUsers / limit);
+---
+
+<AdminLayout title="Archived Users" activeTab="archived-users">
+  <!-- Filters/Search Area -->
+  <div class="bg-white rounded-xl shadow-sm border border-brand-border p-6 mb-6">
+    <h3 class="font-serif font-bold text-brand-navy mb-4">Search Archive</h3>
+    <form method="GET" action="/admin/dashboard/archived-users" class="flex flex-col sm:flex-row gap-4" x-data x-ref="searchForm">
+      <div class="flex-1">
+        <input 
+          type="text" 
+          name="search" 
+          value={search} 
+          placeholder="Search by email address or mobile number..." 
+          class="w-full bg-slate-50 border border-brand-border rounded-xl px-4 py-2.5 text-brand-navy focus:outline-none focus:border-brand-saffron transition-colors text-sm"
+          @input.debounce.500ms="$refs.searchForm.submit()"
+          x-init="if ($el.value) { $el.focus(); $el.setSelectionRange($el.value.length, $el.value.length) }"
+        />
+      </div>
+      <div class="flex gap-2">
+        {search && (
+          <a href="/admin/dashboard/archived-users" class="px-4 py-2.5 border border-brand-border rounded-xl hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors flex items-center">
+            Clear
+          </a>
+        )}
+      </div>
+    </form>
+  </div>
+
+  <!-- Main Table Grid -->
+  <div class="bg-white rounded-xl shadow-sm border border-brand-border overflow-hidden" x-data="{ openModal: false, selectedUser: null, activeTab: 'profiles' }">
+    <div class="px-6 py-4 border-b border-brand-border bg-slate-50">
+      <h3 class="font-bold text-brand-navy">Deleted User Accounts Archive</h3>
+    </div>
+    
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm whitespace-nowrap">
+        <thead class="text-xs text-brand-text-muted uppercase bg-slate-50/50">
+          <tr>
+            <th class="px-6 py-3 font-medium tracking-wider">Mobile / Email</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Registration Date</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Deletion Date</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Tokens Left</th>
+            <th class="px-6 py-3 font-medium tracking-wider">Assets Summary</th>
+            <th class="px-6 py-3 font-medium tracking-wider text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-brand-border/50">
+          {usersResult.map(user => {
+            const uData = user.user_data || {};
+            const regDate = uData.user?.created_at ? new Date(uData.user.created_at).toLocaleString() : 'N/A';
+            const delDate = new Date(user.deleted_at).toLocaleString();
+            const tokens = uData.user?.token_balance ?? 0;
+            const profilesCount = uData.profiles?.length || 0;
+            const reportsCount = uData.reports?.length || 0;
+            const txCount = uData.transactions?.length || 0;
+            const ticketsCount = uData.support_tickets?.length || 0;
+
+            return (
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4">
+                  <div class="font-bold text-brand-navy">{user.mobile_number || 'No mobile'}</div>
+                  <div class="text-xs text-brand-text-muted">{user.email || 'No email'}</div>
+                  <div class="text-[10px] text-slate-400 font-mono mt-1">ID: {user.user_id}</div>
+                </td>
+                <td class="px-6 py-4 text-brand-text-muted">{regDate}</td>
+                <td class="px-6 py-4 text-brand-text-muted">{delDate}</td>
+                <td class="px-6 py-4 text-amber-600 font-bold">{tokens}</td>
+                <td class="px-6 py-4">
+                  <div class="flex flex-wrap gap-1 text-xs">
+                    <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">{profilesCount} profiles</span>
+                    <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">{reportsCount} reports</span>
+                    <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">{txCount} tx</span>
+                    {ticketsCount > 0 && <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">{ticketsCount} tickets</span>}
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-right">
+                  <button 
+                    class="px-3 py-1.5 text-xs font-bold bg-slate-100 text-brand-navy rounded-md hover:bg-slate-200 transition-colors border border-slate-300"
+                    data-user={JSON.stringify({
+                      userId: user.user_id,
+                      email: user.email || 'N/A',
+                      mobile: user.mobile_number || 'N/A',
+                      deletedAt: delDate,
+                      registeredAt: regDate,
+                      tokenBalance: tokens,
+                      profiles: uData.profiles || [],
+                      transactions: uData.transactions || [],
+                      support_tickets: uData.support_tickets || []
+                    })}
+                    @click="selectedUser = JSON.parse($el.getAttribute('data-user')); openModal = true; activeTab = 'profiles';"
+                  >
+                    Inspect Details
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+          {usersResult.length === 0 && (
+            <tr>
+              <td colspan="6" class="px-6 py-10 text-center text-brand-text-muted">No archived users found.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Pagination Controls -->
+    <div class="px-6 py-4 border-t border-brand-border bg-white flex items-center justify-between">
+      <div class="text-sm text-brand-text-muted">
+        Showing <span class="font-medium text-brand-navy">{totalUsers === 0 ? 0 : offset + 1}</span> to <span class="font-medium text-brand-navy">{Math.min(offset + limit, totalUsers)}</span> of <span class="font-medium text-brand-navy">{totalUsers}</span> archived records
+      </div>
+      <div class="flex items-center gap-2">
+        {page > 1 ? (
+          <a href={`?page=${page - 1}&search=${search}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Previous</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Previous</span>
+        )}
+        <span class="px-3 py-1 text-sm font-medium text-brand-navy">Page {page} of {Math.max(totalPages, 1)}</span>
+        {page < totalPages ? (
+          <a href={`?page=${page + 1}&search=${search}`} class="px-3 py-1 border border-brand-border rounded hover:bg-slate-50 text-sm font-medium text-brand-navy transition-colors">Next</a>
+        ) : (
+          <span class="px-3 py-1 border border-brand-border/50 text-brand-text-muted/50 rounded text-sm font-medium cursor-not-allowed">Next</span>
+        )}
+      </div>
+    </div>
+
+    <!-- Inspector Modal -->
+    <div x-show="openModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0" style="display: none;">
+      <div class="fixed inset-0 bg-brand-navy/60 backdrop-blur-sm transition-opacity" @click="openModal = false"></div>
+      
+      <div class="relative bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[75vh] overflow-hidden transform transition-all flex flex-col" x-show="openModal" x-transition>
+        <!-- Modal Header -->
+        <div class="px-6 py-4 border-b border-brand-border bg-slate-50 flex justify-between items-center shrink-0">
+          <div>
+            <h3 class="font-bold text-brand-navy font-serif text-lg">Archived Account Record</h3>
+            <p class="text-xs text-brand-text-muted mt-0.5" x-text="'ID: ' + selectedUser?.userId"></p>
+          </div>
+          <button type="button" @click="openModal = false" class="text-brand-text-muted hover:text-brand-navy transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-6 min-h-0">
+          <!-- Summary card -->
+          <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-brand-border text-xs">
+            <div>
+              <span class="font-bold text-brand-text-muted block mb-0.5">MOBILE NUMBER</span>
+              <span class="font-bold text-brand-navy" x-text="selectedUser?.mobile"></span>
+            </div>
+            <div>
+              <span class="font-bold text-brand-text-muted block mb-0.5">EMAIL ADDRESS</span>
+              <span class="font-bold text-brand-navy text-wrap break-all" x-text="selectedUser?.email"></span>
+            </div>
+            <div>
+              <span class="font-bold text-brand-text-muted block mb-0.5">REGISTRATION DATE</span>
+              <span class="text-brand-navy" x-text="selectedUser?.registeredAt"></span>
+            </div>
+            <div>
+              <span class="font-bold text-brand-text-muted block mb-0.5">DELETION DATE</span>
+              <span class="text-brand-navy" x-text="selectedUser?.deletedAt"></span>
+            </div>
+            <div>
+              <span class="font-bold text-brand-text-muted block mb-0.5">TOKEN BALANCE AT DELETION</span>
+              <span class="text-amber-600 font-bold" x-text="selectedUser?.tokenBalance + ' Tokens'"></span>
+            </div>
+          </div>
+
+          <!-- Tabs header -->
+          <div class="flex border-b border-brand-border">
+            <button 
+              @click="activeTab = 'profiles'" 
+              class="px-4 py-2 text-sm font-medium border-b-2 transition-all" 
+              :class="activeTab === 'profiles' ? 'border-brand-saffron text-brand-navy font-bold' : 'border-transparent text-brand-text-muted hover:text-brand-navy'"
+            >
+              Saved Profiles (<span x-text="selectedUser?.profiles?.length || 0"></span>)
+            </button>
+            <button 
+              @click="activeTab = 'transactions'" 
+              class="px-4 py-2 text-sm font-medium border-b-2 transition-all" 
+              :class="activeTab === 'transactions' ? 'border-brand-saffron text-brand-navy font-bold' : 'border-transparent text-brand-text-muted hover:text-brand-navy'"
+            >
+              Transactions (<span x-text="selectedUser?.transactions?.length || 0"></span>)
+            </button>
+            <button 
+              @click="activeTab = 'tickets'" 
+              class="px-4 py-2 text-sm font-medium border-b-2 transition-all" 
+              :class="activeTab === 'tickets' ? 'border-brand-saffron text-brand-navy font-bold' : 'border-transparent text-brand-text-muted hover:text-brand-navy'"
+            >
+              Tickets (<span x-text="selectedUser?.support_tickets?.length || 0"></span>)
+            </button>
+          </div>
+
+          <!-- Tabs Content -->
+          <div>
+            <!-- Profiles Tab -->
+            <div x-show="activeTab === 'profiles'" class="space-y-3">
+              <template x-if="!selectedUser?.profiles || selectedUser.profiles.length === 0">
+                <p class="text-sm text-brand-text-muted text-center py-6">No saved profiles were found for this user.</p>
+              </template>
+              <div class="grid grid-cols-1 gap-3">
+                <template x-for="profile in selectedUser?.profiles" :key="profile.id">
+                  <div class="p-3 border border-brand-border rounded-xl bg-slate-50/50 flex flex-col sm:flex-row sm:justify-between sm:items-center text-xs">
+                    <div>
+                      <div class="font-bold text-brand-navy text-sm" x-text="profile.name"></div>
+                      <div class="text-brand-text-muted mt-1" x-text="'Relation: ' + (profile.relationship || 'Self')"></div>
+                    </div>
+                    <div class="mt-2 sm:mt-0 text-left sm:text-right text-brand-navy font-medium">
+                      <div x-text="'Raasi: ' + (profile.raasi || 'N/A')"></div>
+                      <div class="text-[10px] text-brand-text-muted mt-0.5" x-text="'Nakshatra: ' + (profile.nakshatra || 'N/A')"></div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Transactions Tab -->
+            <div x-show="activeTab === 'transactions'" class="space-y-3">
+              <template x-if="!selectedUser?.transactions || selectedUser.transactions.length === 0">
+                <p class="text-sm text-brand-text-muted text-center py-6">No transactions recorded for this user.</p>
+              </template>
+              <div class="space-y-2">
+                <template x-for="tx in selectedUser?.transactions" :key="tx.id">
+                  <div class="p-3 border border-brand-border rounded-xl bg-slate-50/50 flex justify-between items-center text-xs">
+                    <div>
+                      <div class="font-bold text-brand-navy uppercase" x-text="tx.transaction_type || 'credit_purchase'"></div>
+                      <div class="text-slate-400 mt-1 font-mono text-[9px]" x-text="'Razorpay Order ID: ' + (tx.razorpay_order_id || 'N/A')"></div>
+                      <div class="text-slate-400 font-mono text-[9px]" x-text="'Payment ID: ' + (tx.razorpay_payment_id || 'N/A')"></div>
+                    </div>
+                    <div class="text-right">
+                      <div class="font-bold" :class="tx.status === 'successful' ? 'text-green-600' : 'text-brand-text-muted'" x-text="(tx.amount > 0 ? '₹' + tx.amount : 'Free') + ' • ' + (tx.status || 'pending')"></div>
+                      <div class="text-[10px] text-brand-text-muted mt-0.5" x-text="new Date(tx.created_at).toLocaleDateString()"></div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Tickets Tab -->
+            <div x-show="activeTab === 'tickets'" class="space-y-3">
+              <template x-if="!selectedUser?.support_tickets || selectedUser.support_tickets.length === 0">
+                <p class="text-sm text-brand-text-muted text-center py-6">No support tickets created by this user.</p>
+              </template>
+              <div class="space-y-3">
+                <template x-for="ticket in selectedUser?.support_tickets" :key="ticket.id">
+                  <div class="p-3 border border-brand-border rounded-xl bg-slate-50/50 space-y-2 text-xs">
+                    <div class="flex justify-between items-center">
+                      <span class="font-bold text-brand-navy" x-text="'[' + (ticket.category || 'Support') + '] ' + ticket.subject"></span>
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold" :class="ticket.status === 'Resolved' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'" x-text="ticket.status"></span>
+                    </div>
+                    <p class="text-brand-text-muted leading-relaxed" x-text="ticket.description"></p>
+                    <template x-if="ticket.admin_reply">
+                      <div class="p-2 bg-white rounded border border-brand-border/60 mt-1">
+                        <span class="font-bold text-brand-navy text-[10px] block mb-0.5">OFFICIAL REPLY:</span>
+                        <span class="text-brand-navy" x-text="ticket.admin_reply"></span>
+                      </div>
+                    </template>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 border-t border-brand-border bg-slate-50 flex justify-end shrink-0">
+          <button type="button" @click="openModal = false" class="px-4 py-2 border border-brand-border text-brand-navy font-bold rounded-xl hover:bg-slate-100 transition-colors text-sm">
+            Close Inspector
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>

@@ -10,6 +10,9 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   site: 'https://askastroraja.com',
   output: 'server',
+  security: {
+    checkOrigin: false
+  },
   adapter: vercel({
     maxDuration: 300
   }),
