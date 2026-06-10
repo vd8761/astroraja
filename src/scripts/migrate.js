@@ -83,6 +83,19 @@ async function main() {
   `;
   console.log("- feedbacks table created");
 
+  // Archived Users
+  await sql`
+    CREATE TABLE IF NOT EXISTS archived_users (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id UUID,
+      email VARCHAR(255),
+      mobile_number VARCHAR(20),
+      user_data JSONB NOT NULL,
+      deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    )
+  `;
+  console.log("- archived_users table created");
+
   console.log("All tables created successfully!");
 }
 
