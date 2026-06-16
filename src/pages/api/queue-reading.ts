@@ -86,30 +86,40 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // 1.2 Validate and Record Payment if present
+    let justPaid = false;
     if (data.paymentDetails && data.paymentDetails.razorpay_payment_id) {
       const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = data.paymentDetails;
       
       const isProduction = (import.meta.env.IS_PRODUCTION || process.env.IS_PRODUCTION) === 'true';
       const key_secret = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_SECRET || process.env.RAZORPAY_PROD_KEY_SECRET) : (import.meta.env.RAZORPAY_DEV_KEY_SECRET || process.env.RAZORPAY_DEV_KEY_SECRET || import.meta.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET);
       
-      if (key_secret) {
-        const generated_signature = crypto
-          .createHmac('sha256', key_secret)
-          .update(razorpay_order_id + "|" + razorpay_payment_id)
-          .digest('hex');
+      if (!key_secret) {
+        return new Response(JSON.stringify({ error: 'Server configuration error: Razorpay key_secret is missing. Please check Vercel environment variables.' }), { 
+          status: 500, headers: { 'Content-Type': 'application/json' }
+        });
+      }
 
-        if (generated_signature === razorpay_signature) {
-          // Check if this payment was already recorded
-          const existingTx = await sql`SELECT id FROM transactions WHERE razorpay_payment_id = ${razorpay_payment_id}`;
-          if (existingTx.length === 0) {
-            // Record the transaction! This officially credits the user with a paid report slot.
-            const priceInr = data.price_paid || 249;
-            await sql`
-              INSERT INTO transactions (user_id, amount, currency, tokens_added, razorpay_order_id, razorpay_payment_id, status, ip_address, transaction_type)
-              VALUES (${user_id}, ${priceInr}, 'INR', 0, ${razorpay_order_id}, ${razorpay_payment_id}, 'successful', ${clientIp}, 'report')
-            `;
-          }
-        }
+      const generated_signature = crypto
+        .createHmac('sha256', key_secret)
+        .update(razorpay_order_id + "|" + razorpay_payment_id)
+        .digest('hex');
+
+      if (generated_signature !== razorpay_signature) {
+        return new Response(JSON.stringify({ error: `Payment verification failed. Invalid signature. Expected ${generated_signature.slice(0, 5)}... got ${razorpay_signature.slice(0, 5)}...` }), { 
+          status: 400, headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      // Check if this payment was already recorded
+      const existingTx = await sql`SELECT id FROM transactions WHERE razorpay_payment_id = ${razorpay_payment_id}`;
+      if (existingTx.length === 0) {
+        // Record the transaction! This officially credits the user with a paid report slot.
+        const priceInr = data.price_paid || 249;
+        await sql`
+          INSERT INTO transactions (user_id, amount, currency, tokens_added, razorpay_order_id, razorpay_payment_id, status, ip_address, transaction_type)
+          VALUES (${user_id}, ${priceInr}, 'INR', 0, ${razorpay_order_id}, ${razorpay_payment_id}, 'successful', ${clientIp}, 'report')
+        `;
+        justPaid = true;
       }
     }
 
@@ -126,7 +136,7 @@ export const POST: APIRoute = async ({ request }) => {
     `;
     const reportsCount = parseInt(reportsRes[0]?.count?.toString() || '0', 10);
 
-    if (txCount <= reportsCount) {
+    if (!justPaid && txCount <= reportsCount) {
       return new Response(JSON.stringify({ error: 'Payment required. No available paid report slot.' }), { 
         status: 402,
         headers: { 'Content-Type': 'application/json' }
