@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import sql from '../../lib/db';
 import { qstash } from '../../lib/qstash';
 import { parsePhone } from '../../lib/auth';
+import crypto from 'crypto';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -81,6 +82,32 @@ export const POST: APIRoute = async ({ request }) => {
           RETURNING id
         `;
         user_id = inserted[0].id;
+      }
+    }
+
+    // 1.2 Validate and Record Payment if present
+    if (data.paymentDetails && data.paymentDetails.razorpay_payment_id) {
+      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = data.paymentDetails;
+      const key_secret = import.meta.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET;
+      
+      if (key_secret) {
+        const generated_signature = crypto
+          .createHmac('sha256', key_secret)
+          .update(razorpay_order_id + "|" + razorpay_payment_id)
+          .digest('hex');
+
+        if (generated_signature === razorpay_signature) {
+          // Check if this payment was already recorded
+          const existingTx = await sql`SELECT id FROM transactions WHERE razorpay_payment_id = ${razorpay_payment_id}`;
+          if (existingTx.length === 0) {
+            // Record the transaction! This officially credits the user with a paid report slot.
+            const priceInr = data.price_paid || 249;
+            await sql`
+              INSERT INTO transactions (user_id, amount, currency, tokens_added, razorpay_order_id, razorpay_payment_id, status, ip_address, transaction_type)
+              VALUES (${user_id}, ${priceInr}, 'INR', 0, ${razorpay_order_id}, ${razorpay_payment_id}, 'successful', ${clientIp}, 'report')
+            `;
+          }
+        }
       }
     }
 

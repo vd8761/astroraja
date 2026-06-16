@@ -1,10 +1,4 @@
-import { neon } from '@neondatabase/serverless';
-import dns from 'node:dns';
-
-// Fix local Node.js IPv6 resolution timeout issues
-dns.setDefaultResultOrder('ipv4first');
-
-const sql = neon(process.env.DATABASE_URL);
+import sql from '../lib/db.js';
 
 async function main() {
   console.log("Creating tables...");
