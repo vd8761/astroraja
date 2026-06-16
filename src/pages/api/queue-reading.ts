@@ -88,7 +88,9 @@ export const POST: APIRoute = async ({ request }) => {
     // 1.2 Validate and Record Payment if present
     if (data.paymentDetails && data.paymentDetails.razorpay_payment_id) {
       const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = data.paymentDetails;
-      const key_secret = import.meta.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET;
+      
+      const isProduction = (import.meta.env.IS_PRODUCTION || process.env.IS_PRODUCTION) === 'true';
+      const key_secret = isProduction ? (import.meta.env.RAZORPAY_PROD_KEY_SECRET || process.env.RAZORPAY_PROD_KEY_SECRET) : (import.meta.env.RAZORPAY_DEV_KEY_SECRET || process.env.RAZORPAY_DEV_KEY_SECRET || import.meta.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET);
       
       if (key_secret) {
         const generated_signature = crypto
