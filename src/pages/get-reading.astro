@@ -587,7 +587,8 @@ document.addEventListener('alpine:init', () => {
     formData: {
       name: '', email: '', countryCode: '+91', mobile: '', language: 'English', raasi: '', lagnam: '', nakshatra: '', padam: '',
       struggles: [], dailyLife: '', goals: [], spiritual: '', referralCode: '',
-      whatsappSameAsMobile: true, whatsappNumber: '', whatsappCountryCode: '+91'
+      whatsappSameAsMobile: true, whatsappNumber: '', whatsappCountryCode: '+91',
+      paymentDetails: null
     },
     errors: {
       name: false, email: false, mobile: false, raasi: false, lagnam: false, nakshatra: false,
@@ -935,6 +936,11 @@ document.addEventListener('alpine:init', () => {
             this.isPaying = false;
             this.formData.price_paid = orderData.amount / 100;
             this.formData.currency = orderData.currency;
+            this.formData.paymentDetails = {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature
+            };
             this.step++;
             window.scrollTo({ top: 0, behavior: 'smooth' });
           },
