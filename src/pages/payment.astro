@@ -1,0 +1,434 @@
+---
+import '../styles/global.css';
+import { jwtVerify } from 'jose';
+
+// Server-side parsing of query params
+const url = new URL(Astro.request.url);
+const token = url.searchParams.get('token') || '';
+const orderId = url.searchParams.get('order_id') || '';
+const keyId = url.searchParams.get('key_id') || '';
+const amountPaise = parseInt(url.searchParams.get('amount') || '0');
+const type = url.searchParams.get('type') || 'report';
+const credits = url.searchParams.get('credits') || '';
+const callback = url.searchParams.get('callback') || 'astroraja://payment-complete';
+
+// Validate token server-side
+const jwtSecret = new TextEncoder().encode(
+  import.meta.env.JWT_SECRET || process.env.JWT_SECRET || 'fallback_secret'
+);
+
+let isValidToken = false;
+let userPayload = null;
+let validationError = '';
+
+if (!token) {
+  validationError = 'Session token is missing. Please initiate the payment from the mobile app.';
+} else if (!orderId || !keyId || !amountPaise) {
+  validationError = 'Payment information is incomplete or corrupted. Please try again.';
+} else {
+  try {
+    const { payload } = await jwtVerify(token, jwtSecret);
+    userPayload = payload;
+    isValidToken = true;
+  } catch (e) {
+    console.error("JWT validation failed on payment page:", e);
+    validationError = 'Session expired or invalid. Please log in again from the app.';
+  }
+}
+
+// Format the amount for display
+const amountInr = (amountPaise / 100).toFixed(2);
+const itemName = type === 'report' 
+  ? 'Life Transformation Report Assessment' 
+  : `${parseInt(credits).toLocaleString()} Cosmic Credits Pack`;
+const itemDescription = type === 'report'
+  ? 'Personalized Vedic astrology pattern analysis and behavioral blueprint.'
+  : 'Credits to ask questions to AstroRaja AI and generate birth reports.';
+---
+
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Secure Checkout - Ask Astro Raja</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Razorpay Checkout SDK -->
+    <script is:inline src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+      body {
+        font-family: 'Outfit', sans-serif;
+        background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 100%);
+      }
+      h1, h2, h3 {
+        font-family: 'Lora', serif;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .custom-spinner {
+        border-top-color: #f59e0b;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      /* Checkmark Animation */
+      .checkmark-circle {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 2;
+        stroke-miterlimit: 10;
+        stroke: #10b981;
+        fill: none;
+        animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+      }
+      .checkmark {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: block;
+        stroke-width: 4;
+        stroke: #fff;
+        stroke-miterlimit: 10;
+        box-shadow: inset 0px 0px 0px #10b981;
+        animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s forwards;
+      }
+      .checkmark-check {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+      }
+      @keyframes stroke {
+        100% { stroke-dashoffset: 0; }
+      }
+      @keyframes scale {
+        0%, 100% { transform: none; }
+        50% { transform: scale3d(1.1, 1.1, 1); }
+      }
+      @keyframes fill {
+        100% { box-shadow: inset 0px 0px 0px 50px #10b981; }
+      }
+    </style>
+  </head>
+  <body class="h-full flex items-center justify-center p-4">
+    
+    <div class="w-full max-w-md">
+      
+      <!-- Logo Header -->
+      <div class="flex flex-col items-center mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-brand-saffron" viewBox="0 0 100 100" fill="currentColor">
+          <circle cx="38" cy="50" r="20" fill="none" stroke="currentColor" stroke-width="4.5" />
+          <circle cx="38" cy="18" r="3.5" />
+          <circle cx="38" cy="82" r="3.5" />
+          <circle cx="8" cy="50" r="3.5" />
+          <path d="M 38 38 Q 38 50 26 50 Q 38 50 38 62 Q 38 50 50 50 Q 38 50 38 38 Z" fill="currentColor" />
+          <path d="M 64 20 C 84 20 94 38 94 50 C 94 62 84 80 64 80 C 76 74 80 62 80 50 C 80 38 76 26 64 20 Z" fill="currentColor" />
+        </svg>
+        <span class="text-white text-xl font-bold tracking-wider mt-2">Ask Astro Raja</span>
+      </div>
+
+      <!-- Main Payment Container -->
+      <div class="glass-card rounded-3xl overflow-hidden shadow-2xl p-8 relative min-h-[350px] flex flex-col justify-between">
+        
+        {validationError ? (
+          /* Error State - Server side validation failure */
+          <div class="flex-grow flex flex-col items-center justify-center text-center py-6">
+            <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-full text-red-400 mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 class="text-white font-bold text-lg mb-2">Validation Error</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">{validationError}</p>
+          </div>
+        ) : (
+          /* Checkout States (Client-managed) */
+          <>
+            <!-- 1. PRE-CHECKOUT UI (Default) -->
+            <div id="checkout-pre" class="flex-grow flex flex-col justify-between">
+              <div>
+                <div class="text-brand-saffron font-bold text-xs tracking-widest uppercase mb-1">SECURE CHECKOUT</div>
+                <h2 class="text-white font-bold text-2xl mb-4">Confirm Payment</h2>
+                
+                <!-- Order Summary Card -->
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-5 mb-6">
+                  <h4 class="text-white font-bold text-base mb-1">{itemName}</h4>
+                  <p class="text-slate-300 text-xs leading-relaxed mb-4">{itemDescription}</p>
+                  
+                  <div class="flex justify-between items-center border-t border-white/10 pt-4">
+                    <span class="text-slate-400 text-sm font-semibold">Total Amount</span>
+                    <span class="text-white text-2xl font-bold">₹{amountInr}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Button Controls -->
+              <div class="space-y-4">
+                <button 
+                  id="pay-btn" 
+                  class="w-full py-4 px-6 rounded-2xl bg-brand-saffron text-brand-navy font-bold hover:bg-brand-saffron-dark transition-all duration-300 shadow-lg shadow-brand-saffron/20 hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  Pay Securely
+                </button>
+                
+                <p class="text-slate-400 text-center text-xs flex items-center justify-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-green-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                  100% Encrypted & Secure payment via Razorpay
+                </p>
+              </div>
+            </div>
+
+            <!-- 2. VERIFYING / PROCESSING UI -->
+            <div id="checkout-loading" class="hidden flex-grow flex flex-col items-center justify-center text-center py-8">
+              <div class="w-16 h-16 border-4 border-white/10 custom-spinner rounded-full mb-6"></div>
+              <h3 class="text-white font-bold text-xl mb-2" id="loading-title">Initiating Gateway</h3>
+              <p class="text-slate-300 text-sm" id="loading-msg">Please wait while we set up your secure transaction...</p>
+            </div>
+
+            <!-- 3. SUCCESS UI -->
+            <div id="checkout-success" class="hidden flex-grow flex flex-col items-center justify-center text-center py-6">
+              <div class="flex items-center justify-center mb-6">
+                <div class="checkmark">
+                  <svg class="checkmark-circle" viewBox="0 0 52 52">
+                    <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                  </svg>
+                  <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </div>
+              </div>
+              
+              <h3 class="text-white font-bold text-2xl mb-2">Payment Complete</h3>
+              <p class="text-slate-300 text-sm leading-relaxed mb-6">Your AstroRaja payment was successful and verified. Your cosmic alignment is active!</p>
+              
+              <div class="bg-white/5 border border-white/10 rounded-2xl p-4 w-full mb-8 text-left text-xs space-y-2">
+                <div class="flex justify-between"><span class="text-slate-400">Order ID:</span><span class="text-slate-200 font-mono" id="success-order-id">-</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Payment ID:</span><span class="text-slate-200 font-mono" id="success-payment-id">-</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">Status:</span><span class="text-green-400 font-bold">Successful & Synced</span></div>
+              </div>
+
+              <button 
+                id="success-btn" 
+                class="w-full py-4 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all duration-300 shadow-lg shadow-emerald-500/20 cursor-pointer"
+              >
+                Return to App
+              </button>
+            </div>
+
+            <!-- 4. ERROR UI -->
+            <div id="checkout-error" class="hidden flex-grow flex flex-col items-center justify-center text-center py-6">
+              <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-full text-red-400 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <h3 class="text-white font-bold text-xl mb-2">Payment Failed</h3>
+              <p class="text-slate-300 text-sm leading-relaxed mb-6" id="error-description">The transaction was cancelled or could not be completed. You have not been charged.</p>
+              
+              <div class="flex gap-4 w-full">
+                <button 
+                  id="retry-btn" 
+                  class="flex-1 py-3.5 px-6 rounded-2xl bg-white/10 text-white font-bold hover:bg-white/20 border border-white/10 transition-all cursor-pointer"
+                >
+                  Try Again
+                </button>
+                <button 
+                  id="error-close-btn" 
+                  class="flex-1 py-3.5 px-6 rounded-2xl bg-red-500/20 text-red-400 font-bold hover:bg-red-500/30 border border-red-500/30 transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+      </div>
+
+      <!-- Footer Help -->
+      <div class="text-center mt-6">
+        <p class="text-slate-400 text-xs">
+          Need help? Contact Ask Astro Raja support at <span class="text-brand-saffron">support@askastroraja.com</span>
+        </p>
+      </div>
+
+    </div>
+
+    {isValidToken && (
+      <script is:inline define:vars={{ token, orderId, keyId, amountPaise, type, credits, callback }}>
+        // Client-side execution state variables
+        const preEl = document.getElementById('checkout-pre');
+        const loadingEl = document.getElementById('checkout-loading');
+        const successEl = document.getElementById('checkout-success');
+        const errorEl = document.getElementById('checkout-error');
+        
+        const loadingTitleEl = document.getElementById('loading-title');
+        const loadingMsgEl = document.getElementById('loading-msg');
+        const errorDescEl = document.getElementById('error-description');
+        
+        const successOrderIdEl = document.getElementById('success-order-id');
+        const successPaymentIdEl = document.getElementById('success-payment-id');
+        
+        const payBtn = document.getElementById('pay-btn');
+        const successBtn = document.getElementById('success-btn');
+        const retryBtn = document.getElementById('retry-btn');
+        const errorCloseBtn = document.getElementById('error-close-btn');
+
+        let isCheckoutLaunched = false;
+
+        function showState(stateName) {
+          preEl.classList.add('hidden');
+          loadingEl.classList.add('hidden');
+          successEl.classList.add('hidden');
+          errorEl.classList.add('hidden');
+          
+          if (stateName === 'pre') preEl.classList.remove('hidden');
+          else if (stateName === 'loading') loadingEl.classList.remove('hidden');
+          else if (stateName === 'success') successEl.classList.remove('hidden');
+          else if (stateName === 'error') errorEl.classList.remove('hidden');
+        }
+
+        function triggerCallback(orderId, paymentId, statusStr) {
+          // Send deep link message to Flutter webview
+          const returnUrl = new URL(callback);
+          returnUrl.searchParams.set('status', statusStr);
+          returnUrl.searchParams.set('order_id', orderId);
+          if (paymentId) returnUrl.searchParams.set('payment_id', paymentId);
+          
+          console.log('Redirecting back to app:', returnUrl.toString());
+          window.location.href = returnUrl.toString();
+        }
+
+        function verifyPaymentSignature(response) {
+          showState('loading');
+          loadingTitleEl.innerText = "Verifying Payment";
+          loadingMsgEl.innerText = "Securing transaction with celestial nodes, please wait...";
+
+          const bodyData = {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            is_report: type === 'report'
+          };
+
+          if (credits) {
+            bodyData.custom_credits = parseInt(credits);
+          }
+
+          fetch('/api/tokens/verify', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify(bodyData)
+          })
+          .then(res => {
+            if (!res.ok) {
+              return res.json().then(data => { throw new Error(data.error || 'Verification failed') });
+            }
+            return res.json();
+          })
+          .then(data => {
+            // Show Success screen
+            successOrderIdEl.innerText = orderId;
+            successPaymentIdEl.innerText = response.razorpay_payment_id;
+            showState('success');
+            
+            // Automatically trigger callback deep link after a brief delay
+            setTimeout(() => {
+              triggerCallback(orderId, response.razorpay_payment_id, 'success');
+            }, 1200);
+          })
+          .catch(err => {
+            console.error('Verify error:', err);
+            errorDescEl.innerText = 'Payment verification failed: ' + err.message + '. Please contact support if your account was debited.';
+            showState('error');
+          });
+        }
+
+        function launchRazorpay() {
+          if (isCheckoutLaunched) return;
+          isCheckoutLaunched = true;
+
+          showState('loading');
+          loadingTitleEl.innerText = "Opening Gateway";
+          loadingMsgEl.innerText = "Please complete the payment in the Razorpay pop-up...";
+
+          const options = {
+            key: keyId,
+            amount: amountPaise,
+            currency: 'INR',
+            name: 'Ask Astro Raja',
+            description: type === 'report' ? 'Vedic Astrology Report' : 'Purchase Credits',
+            order_id: orderId,
+            prefill: {
+              name: '',
+              email: ''
+            },
+            theme: {
+              color: '#f59e0b' // Saffron theme
+            },
+            handler: function(response) {
+              isCheckoutLaunched = false;
+              verifyPaymentSignature(response);
+            },
+            modal: {
+              ondismiss: function() {
+                isCheckoutLaunched = false;
+                showState('pre');
+              }
+            }
+          };
+
+          try {
+            const rzp = new Razorpay(options);
+            rzp.open();
+          } catch (e) {
+            console.error('Failed to open Razorpay:', e);
+            errorDescEl.innerText = 'Unable to launch Razorpay gateway: ' + e.message;
+            showState('error');
+            isCheckoutLaunched = false;
+          }
+        }
+
+        // Attach event listeners
+        payBtn.addEventListener('click', () => {
+          launchRazorpay();
+        });
+
+        retryBtn.addEventListener('click', () => {
+          launchRazorpay();
+        });
+
+        successBtn.addEventListener('click', () => {
+          const paymentId = successPaymentIdEl.innerText;
+          triggerCallback(orderId, paymentId, 'success');
+        });
+
+        errorCloseBtn.addEventListener('click', () => {
+          triggerCallback(orderId, '', 'cancelled');
+        });
+
+        // Auto-launch checkout on page load (standard UX for WebViews)
+        window.addEventListener('load', () => {
+          setTimeout(launchRazorpay, 500);
+        });
+      </script>
+    )}
+
+  </body>
+</html>

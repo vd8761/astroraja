@@ -20,9 +20,16 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // 2. Verify Signature
-    const key_secret = import.meta.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET;
-    if (!key_secret) {
-      return new Response(JSON.stringify({ error: 'Razorpay secret not configured' }), { status: 500 });
+    const isProduction = (import.meta.env.IS_PRODUCTION || process.env.IS_PRODUCTION) === 'true';
+    const key_id = isProduction 
+      ? (import.meta.env.RAZORPAY_PROD_KEY_ID || process.env.RAZORPAY_PROD_KEY_ID) 
+      : (import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID || import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID);
+    const key_secret = isProduction 
+      ? (import.meta.env.RAZORPAY_PROD_KEY_SECRET || process.env.RAZORPAY_PROD_KEY_SECRET) 
+      : (import.meta.env.RAZORPAY_DEV_KEY_SECRET || process.env.RAZORPAY_DEV_KEY_SECRET || import.meta.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET);
+    
+    if (!key_id || !key_secret) {
+      return new Response(JSON.stringify({ error: 'Razorpay keys are not configured' }), { status: 500 });
     }
 
     const generated_signature = crypto
@@ -37,13 +44,17 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ error: 'Invalid payment signature' }), { status: 400 });
     }
 
-    // 3. Prevent Duplicate Processing
+    // 3. Prevent Duplicate Processing (Initial SELECT check)
     const existingTx = await sql`SELECT id FROM transactions WHERE razorpay_payment_id = ${razorpay_payment_id}`;
     if (existingTx.length > 0) {
-      return new Response(JSON.stringify({ error: 'Payment already processed' }), { status: 400 });
+      return new Response(JSON.stringify({ 
+        success: true, 
+        message: 'Payment already processed', 
+        tokens_added: 0 
+      }), { status: 200 });
     }
 
-    // 4. Update Database
+    // 4. Determine Tokens and Price
     let tokensToAdd = parseInt(import.meta.env.TOKEN_PACK_AMOUNT || process.env.TOKEN_PACK_AMOUNT || '10000');
     let priceInr = parseInt(import.meta.env.TOKEN_PACK_PRICE_INR || process.env.TOKEN_PACK_PRICE_INR || '99');
     
@@ -51,7 +62,6 @@ export const POST: APIRoute = async ({ request }) => {
       tokensToAdd = 0;
       // Fetch order from Razorpay to get the actual amount paid for report
       try {
-        const key_id = import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID || import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID;
         const razorpay = new Razorpay({ key_id, key_secret });
         const order = await razorpay.orders.fetch(razorpay_order_id);
         priceInr = Math.round((order.amount as number) / 100);
@@ -65,7 +75,6 @@ export const POST: APIRoute = async ({ request }) => {
     } else {
       // For real payments, fetch order from Razorpay to get the actual amount paid!
       try {
-        const key_id = import.meta.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID || import.meta.env.RAZORPAY_DEV_KEY_ID || process.env.RAZORPAY_DEV_KEY_ID;
         const razorpay = new Razorpay({ key_id, key_secret });
         const order = await razorpay.orders.fetch(razorpay_order_id);
         priceInr = Math.round((order.amount as number) / 100);
@@ -82,10 +91,28 @@ export const POST: APIRoute = async ({ request }) => {
     const ipHeader = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     const clientIp = ipHeader.split(',')[0].trim();
 
-    // Use a transaction if possible, but neon serverless sql handles simple queries. 
-    // We will do them sequentially safely.
-    
-    // Add tokens to user (ONLY if it is a token purchase, NOT a report purchase)
+    // 5. Log the transaction FIRST to catch any duplicate payments (UNIQUE constraint race condition protection)
+    let transactionId;
+    try {
+      const newTx = await sql`
+        INSERT INTO transactions (user_id, amount, currency, tokens_added, razorpay_order_id, razorpay_payment_id, status, ip_address, transaction_type)
+        VALUES (${user.userId as string}, ${priceInr}, 'INR', ${tokensToAdd}, ${razorpay_order_id}, ${razorpay_payment_id}, 'successful', ${clientIp}, ${is_report ? 'report' : 'credits'})
+        RETURNING id
+      `;
+      transactionId = newTx[0].id;
+    } catch (e: any) {
+      // If UNIQUE constraint violation occurs
+      if (e.message && (e.message.includes('unique constraint') || e.code === '23505')) {
+        return new Response(JSON.stringify({ 
+          success: true, 
+          message: 'Payment already processed (duplicate request)', 
+          tokens_added: 0 
+        }), { status: 200 });
+      }
+      throw e;
+    }
+
+    // 6. Update Database (ONLY if it is a token purchase, NOT a report purchase)
     if (!is_report && tokensToAdd > 0) {
       await sql`
         UPDATE users 
@@ -97,14 +124,6 @@ export const POST: APIRoute = async ({ request }) => {
         VALUES (${user.userId as string}, 'Top-Up Successful', ${`Successfully added ${tokensToAdd} credits to your account. Your connection with the cosmos is fully powered!`}, 'Promo', 'promo')
       `;
     }
-
-    // Log the transaction
-    const newTx = await sql`
-      INSERT INTO transactions (user_id, amount, currency, tokens_added, razorpay_order_id, razorpay_payment_id, status, ip_address, transaction_type)
-      VALUES (${user.userId as string}, ${priceInr}, 'INR', ${tokensToAdd}, ${razorpay_order_id}, ${razorpay_payment_id}, 'successful', ${clientIp}, ${is_report ? 'report' : 'credits'})
-      RETURNING id
-    `;
-    const transactionId = newTx[0].id;
 
     // 5. Check for Referral Rewards
     // Get the user's referrer, if any
