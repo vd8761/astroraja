@@ -11,6 +11,11 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ error: 'Mobile number or Email is required' }), { status: 400 });
     }
 
+    // Google Play Store Test Account Bypass
+    if (email === 'test@vikashuvi.me') {
+      return new Response(JSON.stringify({ success: true, message: 'OTP sent to email' }), { status: 200 });
+    }
+
     // Check if user already exists when signing up, or if they exist when logging in
     if (type === 'signup') {
       if (email) {
