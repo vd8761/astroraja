@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.97.1",
-    "@astrojs/node": "^10.1.1",
+    "@astrojs/node": "^11.0.2",
     "@astrojs/sitemap": "^3.7.2",
     "@astrojs/vercel": "^10.0.7",
     "@ishubhamx/panchangam-js": "^2.2.6",
